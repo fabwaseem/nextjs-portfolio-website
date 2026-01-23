@@ -134,15 +134,16 @@ export const portfolioFiles: FileNode[] = [
               '<span class="syntax-keyword">class</span> <span class="syntax-type">Developer</span> <span class="syntax-operator">{</span>',
               '  <span class="syntax-function">constructor</span><span class="syntax-operator">() {</span>',
               '    <span class="syntax-keyword">this</span><span class="syntax-operator">.</span><span class="syntax-variable">name</span> <span class="syntax-operator">=</span> <span class="syntax-string">"Waseem Anjum"</span><span class="syntax-operator">;</span>',
-              '    <span class="syntax-keyword">this</span><span class="syntax-operator">.</span><span class="syntax-variable">title</span> <span class="syntax-operator">=</span> <span class="syntax-string">"Full Stack Developer"</span><span class="syntax-operator">;</span>',
+              '    <span class="syntax-keyword">this</span><span class="syntax-operator">.</span><span class="syntax-variable">title</span> <span class="syntax-operator">=</span> <span class="syntax-string">"Full Stack & Web3 Developer"</span><span class="syntax-operator">;</span>',
               '    <span class="syntax-keyword">this</span><span class="syntax-operator">.</span><span class="syntax-variable">location</span> <span class="syntax-operator">=</span> <span class="syntax-string">"Building the future"</span><span class="syntax-operator">;</span>',
               '  <span class="syntax-operator">}</span>',
               "",
               '  <span class="syntax-function">getSkillset</span><span class="syntax-operator">() {</span>',
               '    <span class="syntax-keyword">return</span> <span class="syntax-operator">{</span>',
-              '      <span class="syntax-variable">languages</span><span class="syntax-operator">:</span> <span class="syntax-operator">[</span><span class="syntax-string">"TypeScript"</span><span class="syntax-operator">,</span> <span class="syntax-string">"JavaScript"</span><span class="syntax-operator">,</span> <span class="syntax-string">"Python"</span><span class="syntax-operator">],</span>',
-              '      <span class="syntax-variable">frontend</span><span class="syntax-operator">:</span> <span class="syntax-operator">[</span><span class="syntax-string">"React"</span><span class="syntax-operator">,</span> <span class="syntax-string">"Next.js"</span><span class="syntax-operator">,</span> <span class="syntax-string">"Tailwind"</span><span class="syntax-operator">],</span>',
+              '      <span class="syntax-variable">languages</span><span class="syntax-operator">:</span> <span class="syntax-operator">[</span><span class="syntax-string">"TypeScript"</span><span class="syntax-operator">,</span> <span class="syntax-string">"JavaScript"</span><span class="syntax-operator">,</span> <span class="syntax-string">"Solidity"</span><span class="syntax-operator">,</span> <span class="syntax-string">"Python"</span><span class="syntax-operator">],</span>',
+              '      <span class="syntax-variable">frontend</span><span class="syntax-operator">:</span> <span class="syntax-operator">[</span><span class="syntax-string">"React"</span><span class="syntax-operator">,</span> <span class="syntax-string">"Next.js"</span><span class="syntax-operator">,</span> <span class="syntax-string">"Tailwind"</span><span class="syntax-operator">,</span> <span class="syntax-string">"Web3.js"</span><span class="syntax-operator">],</span>',
               '      <span class="syntax-variable">backend</span><span class="syntax-operator">:</span> <span class="syntax-operator">[</span><span class="syntax-string">"Node.js"</span><span class="syntax-operator">,</span> <span class="syntax-string">"PostgreSQL"</span><span class="syntax-operator">,</span> <span class="syntax-string">"Prisma"</span><span class="syntax-operator">],</span>',
+              '      <span class="syntax-variable">web3</span><span class="syntax-operator">:</span> <span class="syntax-operator">[</span><span class="syntax-string">"Ethereum"</span><span class="syntax-operator">,</span> <span class="syntax-string">"Smart Contracts"</span><span class="syntax-operator">,</span> <span class="syntax-string">"DApp Development"</span><span class="syntax-operator">],</span>',
               '      <span class="syntax-variable">tools</span><span class="syntax-operator">:</span> <span class="syntax-operator">[</span><span class="syntax-string">"Git"</span><span class="syntax-operator">,</span> <span class="syntax-string">"Docker"</span><span class="syntax-operator">,</span> <span class="syntax-string">"AWS"</span><span class="syntax-operator">]</span>',
               '    <span class="syntax-operator">};</span>',
               '  <span class="syntax-operator">}</span>',
@@ -150,7 +151,7 @@ export const portfolioFiles: FileNode[] = [
               '  <span class="syntax-function">getCurrentFocus</span><span class="syntax-operator">() {</span>',
               '    <span class="syntax-keyword">return</span> <span class="syntax-operator">[</span>',
               '      <span class="syntax-string">"Building scalable web apps"</span><span class="syntax-operator">,</span>',
-              '      <span class="syntax-string">"Creating exceptional UX"</span><span class="syntax-operator">,</span>',
+              '      <span class="syntax-string">"Creating DApps & Web3 products"</span><span class="syntax-operator">,</span>',
               '      <span class="syntax-string">"Writing clean code"</span>',
               '    <span class="syntax-operator">];</span>',
               '  <span class="syntax-operator">}</span>',
@@ -357,6 +358,3 @@ export const portfolioFiles: FileNode[] = [
     ],
   },
 ];
-
-// Default folders to have open
-export const defaultOpenFolders = ["portfolio", "app", "components"];

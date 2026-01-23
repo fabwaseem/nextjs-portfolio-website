@@ -7,14 +7,6 @@ import { createProjectTagSchema } from "@/lib/validations";
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const tags = await prisma.projectTags.findMany({
       orderBy: {
         title: "asc",

@@ -1,5 +1,5 @@
 import React from "react";
-import { MouseFollower, Navbar, Footer } from "@/components/portfolio";
+import { MouseFollower, Navbar, Footer, FloatingActions } from "@/components/portfolio";
 
 const WebLayout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -8,6 +8,7 @@ const WebLayout = ({ children }: { children: React.ReactNode }) => {
       <Navbar />
       <main className="min-h-screen">{children}</main>
       <Footer />
+      <FloatingActions />
     </>
   );
 };

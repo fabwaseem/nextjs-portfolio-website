@@ -1,4 +1,9 @@
-import { S3Client, PutObjectCommand, DeleteObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+  GetObjectCommand,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const s3Client = new S3Client({
@@ -12,7 +17,11 @@ const s3Client = new S3Client({
 const BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME!;
 const BUCKET_REGION = process.env.AWS_REGION || "us-east-1";
 
-export function getS3Key(projectId: string, filename: string, type: "thumbnail" | "cover"): string {
+export function getS3Key(
+  projectId: string,
+  filename: string,
+  type: "thumbnail" | "cover"
+): string {
   const timestamp = Date.now();
   const extension = filename.split(".").pop()?.toLowerCase() || "jpg";
   return `projects/${projectId}/${type}-${timestamp}.${extension}`;
@@ -25,7 +34,10 @@ export function getS3Url(key: string): string {
 export function extractS3Key(url: string): string | null {
   try {
     const urlObj = new URL(url);
-    if (urlObj.hostname.includes("s3") || urlObj.hostname.includes("amazonaws.com")) {
+    if (
+      urlObj.hostname.includes("s3") ||
+      urlObj.hostname.includes("amazonaws.com")
+    ) {
       return urlObj.pathname.substring(1);
     }
     return null;
@@ -68,7 +80,9 @@ export async function deleteS3Objects(keys: string[]): Promise<void> {
   await Promise.allSettled(keys.map((key) => deleteS3Object(key)));
 }
 
-export async function extractAndDeleteS3Images(urls: (string | null | undefined)[]): Promise<void> {
+export async function extractAndDeleteS3Images(
+  urls: (string | null | undefined)[]
+): Promise<void> {
   const keys = urls
     .filter((url): url is string => Boolean(url))
     .map((url) => {

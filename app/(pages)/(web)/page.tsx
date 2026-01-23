@@ -5,6 +5,7 @@ import {
   ProjectsSection,
   ExperienceSection,
 } from "@/components/portfolio";
+import { BlogsSection } from "@/components/portfolio/blogs-section";
 
 export default function HomePage() {
   return (
@@ -18,6 +19,8 @@ export default function HomePage() {
       <ProjectsSection />
       <div className="glow-line" />
       <ExperienceSection />
+      <div className="glow-line" />
+      <BlogsSection />
     </>
   );
 }

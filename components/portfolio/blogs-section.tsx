@@ -4,20 +4,20 @@ import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { formatDistanceToNow } from "date-fns";
 import {
   ArrowUpRight,
-  ExternalLink,
-  FolderGit2,
-  Github,
-  Star,
+  BookOpen,
+  Clock,
+  Eye,
+  Calendar,
   Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import { useProjects, Project } from "@/hooks/use-projects";
+import { useBlogs, Blog } from "@/hooks/use-blogs";
 
-function ProjectCard({ project, index }: { project: Project; index: number }) {
+function BlogCard({ blog, index }: { blog: Blog; index: number }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(cardRef, { once: true, margin: "-50px" });
 
@@ -29,93 +29,98 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
       transition={{ duration: 0.6, delay: index * 0.1 }}
       className="group relative"
     >
-      <Link href={`/projects/${project.slug}`}>
+      <Link href={`/blog/${blog.slug}`}>
         <div className="relative overflow-hidden rounded-xl border border-border bg-card/50 backdrop-blur-sm transition-all duration-500 hover:border-primary/30 card-hover-lift">
           <div className="relative aspect-video overflow-hidden bg-muted">
-            {project.thumbnail ? (
+            {blog.featuredImage ? (
               <Image
-                src={project.thumbnail}
-                alt={project.title}
+                src={blog.featuredImage}
+                alt={blog.featuredImageAlt || blog.title}
                 fill
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
               />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5">
-                <FolderGit2 className="w-16 h-16 text-primary/30" />
+                <BookOpen className="w-16 h-16 text-primary/30" />
               </div>
             )}
 
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-            <div className="absolute inset-0 flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              {project.githubLink && (
-                <Link
-                  href={project.githubLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="p-3 rounded-full bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
-                >
-                  <Github className="w-5 h-5" />
-                </Link>
-              )}
-              {project.demoLink && (
-                <Link
-                  href={project.demoLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="p-3 rounded-full bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
-                >
-                  <ExternalLink className="w-5 h-5" />
-                </Link>
-              )}
-            </div>
-
-            {project.featured && (
+            {blog.featured && (
               <div className="absolute top-3 left-3">
                 <Badge variant="default">Featured</Badge>
               </div>
             )}
 
-            {project.views > 0 && (
-              <div className="absolute top-3 right-3 flex items-center gap-2">
-                <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-background/80 backdrop-blur-sm text-xs font-medium">
-                  <Star className="w-3 h-3 text-yellow-500" />
-                  {project.views.toLocaleString()}
-                </span>
+            <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-xs text-foreground/80">
+              <div className="flex items-center gap-3">
+                {blog.readingTime && (
+                  <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-background/80 backdrop-blur-sm">
+                    <Clock className="w-3 h-3" />
+                    {blog.readingTime} min
+                  </span>
+                )}
+                {blog.views > 0 && (
+                  <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-background/80 backdrop-blur-sm">
+                    <Eye className="w-3 h-3" />
+                    {blog.views.toLocaleString()}
+                  </span>
+                )}
               </div>
-            )}
+            </div>
           </div>
 
           <div className="p-6">
-            <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
-              {project.title}
-            </h3>
-            <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
-              {project.excerpt || project.description}
-            </p>
-
-            <div className="flex flex-wrap gap-2 mb-4">
-              {project.tags.slice(0, 4).map((tag) => (
+            <div className="flex flex-wrap gap-2 mb-3">
+              {blog.categories.slice(0, 2).map((category) => (
                 <Badge
-                  key={tag.id}
+                  key={category.id}
                   variant="secondary"
-                  className="text-xs font-mono"
+                  className="text-xs"
+                  style={
+                    category.color
+                      ? {
+                          backgroundColor: `${category.color}20`,
+                          borderColor: category.color,
+                          color: category.color,
+                        }
+                      : undefined
+                  }
                 >
-                  {tag.title}
+                  {category.icon && <span className="mr-1">{category.icon}</span>}
+                  {category.title}
                 </Badge>
               ))}
-              {project.tags.length > 4 && (
+              {blog.categories.length > 2 && (
                 <Badge variant="outline" className="text-xs">
-                  +{project.tags.length - 4}
+                  +{blog.categories.length - 2}
                 </Badge>
               )}
             </div>
 
-            <div className="flex items-center gap-2 text-sm font-medium text-primary">
-              View Project
-              <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+            <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors line-clamp-2">
+              {blog.title}
+            </h3>
+            <p className="text-muted-foreground text-sm mb-4 line-clamp-2">
+              {blog.excerpt}
+            </p>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                {blog.publishedAt && (
+                  <span className="flex items-center gap-1">
+                    <Calendar className="w-3 h-3" />
+                    {formatDistanceToNow(new Date(blog.publishedAt), {
+                      addSuffix: true,
+                    })}
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-2 text-sm font-medium text-primary">
+                Read More
+                <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </div>
             </div>
           </div>
         </div>
@@ -124,21 +129,21 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
   );
 }
 
-export function ProjectsSection() {
+export function BlogsSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
-  const { data, isLoading } = useProjects({
+  const { data, isLoading } = useBlogs({
     status: "PUBLISHED",
     featured: "true",
-    limit: 6,
+    limit: 3,
   });
 
-  const featuredProjects = data?.projects || [];
+  const featuredBlogs = data?.blogs || [];
 
   return (
     <section
       ref={sectionRef}
-      id="projects"
+      id="blog"
       className="relative py-24 md:py-32 overflow-hidden"
     >
       <div className="absolute inset-0 bg-code-dots" />
@@ -152,20 +157,20 @@ export function ProjectsSection() {
           className="text-center mb-16"
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
-            <FolderGit2 className="w-4 h-4 text-primary" />
+            <BookOpen className="w-4 h-4 text-primary" />
             <span className="text-sm font-mono text-primary">
-              ~/projects --featured
+              ~/blog --featured
             </span>
           </div>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
             Featured{" "}
             <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              Projects
+              Blog Posts
             </span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            A selection of my recent work. Each project represents a unique
-            challenge and solution.
+            Thoughts, tutorials, and insights on Web3 development, full-stack
+            engineering, and more.
           </p>
         </motion.div>
 
@@ -173,18 +178,18 @@ export function ProjectsSection() {
           <div className="flex items-center justify-center py-20">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
           </div>
-        ) : featuredProjects.length === 0 ? (
+        ) : featuredBlogs.length === 0 ? (
           <div className="text-center py-20">
-            <FolderGit2 className="w-16 h-16 text-muted-foreground/50 mx-auto mb-4" />
+            <BookOpen className="w-16 h-16 text-muted-foreground/50 mx-auto mb-4" />
             <p className="text-muted-foreground text-lg">
-              No featured projects yet. Check back soon!
+              No featured blog posts yet. Check back soon!
             </p>
           </div>
         ) : (
           <>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-              {featuredProjects.map((project, idx) => (
-                <ProjectCard key={project.id} project={project} index={idx} />
+              {featuredBlogs.map((blog, idx) => (
+                <BlogCard key={blog.id} blog={blog} index={idx} />
               ))}
             </div>
 
@@ -195,8 +200,8 @@ export function ProjectsSection() {
               className="text-center mt-12"
             >
               <Button asChild variant="outline" size="lg" className="gap-2">
-                <Link href="/projects">
-                  View All Projects
+                <Link href="/blog">
+                  View All Blog Posts
                   <ArrowUpRight className="w-4 h-4" />
                 </Link>
               </Button>

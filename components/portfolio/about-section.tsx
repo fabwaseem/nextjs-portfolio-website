@@ -5,9 +5,17 @@ import { motion, useInView } from "framer-motion";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Code2, Coffee, Lightbulb, Rocket, Terminal } from "lucide-react";
-import { CodeEditor } from "./code-editor";
-import { portfolioFiles, defaultOpenFolders } from "./portfolio-files";
+import {
+  Code2,
+  Coffee,
+  Lightbulb,
+  Rocket,
+  Terminal,
+  Smartphone,
+  Cloud,
+  Lock,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -16,6 +24,29 @@ const stats = [
   { value: "50+", label: "Projects Completed", icon: Rocket },
   { value: "100%", label: "Code Quality Focus", icon: Code2 },
   { value: "∞", label: "Ideas to Build", icon: Lightbulb },
+];
+
+const focusAreas = [
+  {
+    title: "Full Stack Development",
+    description: "Building end-to-end solutions with modern frameworks",
+    icon: Code2,
+  },
+  {
+    title: "Web3 & DApps",
+    description: "Creating decentralized applications on Ethereum",
+    icon: Lock,
+  },
+  {
+    title: "UI/UX Excellence",
+    description: "Crafting beautiful and intuitive user experiences",
+    icon: Smartphone,
+  },
+  {
+    title: "Cloud Architecture",
+    description: "Designing scalable and reliable cloud solutions",
+    icon: Cloud,
+  },
 ];
 
 export function AboutSection() {
@@ -40,10 +71,10 @@ export function AboutSection() {
             trigger: ".stats-container",
             start: "top 80%",
           },
-        },
+        }
       );
     },
-    { scope: sectionRef },
+    { scope: sectionRef }
   );
 
   return (
@@ -53,8 +84,8 @@ export function AboutSection() {
       className="relative py-24 md:py-32 overflow-hidden"
     >
       {/* Background */}
-      <div className="absolute inset-0 bg-dots-sparse" />
-      <div className="absolute inset-0 bg-aurora opacity-50" />
+      <div className="absolute inset-0 bg-code-dots" />
+      <div className="absolute inset-0 bg-mesh opacity-60" />
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
@@ -74,15 +105,15 @@ export function AboutSection() {
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
             About{" "}
             <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-              Me
+              Me & Web3
             </span>
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            A passionate developer who transforms ideas into elegant,
-            production-ready solutions
+          <p className="text-muted-foreground text-base max-w-2xl mx-auto">
+            Full Stack & Web3 Developer crafting elegant solutions and DApps
           </p>
         </motion.div>
 
+        {/* Main Content Grid */}
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
           {/* Left - Text Content */}
           <motion.div
@@ -94,69 +125,104 @@ export function AboutSection() {
               <p>
                 Hey there! I&apos;m a{" "}
                 <span className="text-foreground font-medium">
-                  Full Stack Developer
+                  Full Stack & Web3 Developer
                 </span>{" "}
-                with a deep passion for crafting beautiful, performant web
-                applications that solve real problems.
+                with a passion for crafting beautiful, performant decentralized
+                solutions that solve real problems.
+                <span className="hidden md:inline">
+                  {" "}
+                  I thrive on turning complex ideas into elegant, user-friendly
+                  applications.
+                </span>
               </p>
-              <p>
-                My journey in development started with curiosity and has evolved
-                into a love for{" "}
+              <p className="hidden md:block">
+                My journey in development has evolved into a love for{" "}
                 <span className="text-primary">clean architecture</span>,{" "}
-                <span className="text-primary">modern frameworks</span>, and{" "}
+                <span className="text-primary">modern frameworks</span>,{" "}
+                <span className="text-primary">blockchain technology</span>, and{" "}
                 <span className="text-primary">
                   exceptional user experiences
                 </span>
-                .
+                . I specialize in building{" "}
+                <span className="text-primary">
+                  decentralized applications (DApps)
+                </span>{" "}
+                and full-stack web solutions, bringing Web3 products to life in
+                weeks, not months. From smart contracts to responsive
+                interfaces, I handle every aspect of the development process.
               </p>
-              <p>
+              <p className="hidden md:block">
                 I believe in writing code that&apos;s not just functional, but
-                maintainable, scalable, and a joy for other developers to work
-                with. Every project is an opportunity to push boundaries and
-                deliver something extraordinary.
-              </p>
-              <p>
+                maintainable and scalable. Every project is an opportunity to
+                learn, improve, and push the boundaries of what&apos;s possible.
                 When I&apos;m not coding, you&apos;ll find me exploring new
-                technologies, contributing to open source, or brewing the
-                perfect cup of coffee to fuel the next coding session.
+                technologies, contributing to open source, or diving into the
+                latest Web3 innovations.
               </p>
             </div>
 
             {/* Stats */}
-            <div className="stats-container grid grid-cols-2 md:grid-cols-4 gap-4 mt-10">
-              {stats.map((stat, idx) => (
-                <motion.div
-                  key={stat.label}
-                  className="stat-item text-center p-4 rounded-xl bg-card/50 border border-border hover:border-primary/30 transition-colors"
-                  whileHover={{ y: -2 }}
-                >
-                  <stat.icon className="w-5 h-5 text-primary mx-auto mb-2" />
-                  <div className="text-2xl md:text-3xl font-bold text-foreground mb-1">
-                    {stat.value}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {stat.label}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="stats-container mt-10"
+            >
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {stats.map((stat, idx) => (
+                  <motion.div
+                    key={stat.label}
+                    className="stat-item text-center p-4 rounded-xl bg-card/5 backdrop-blur-[2px] border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10"
+                    whileHover={{ y: -4, scale: 1.02 }}
+                  >
+                    <stat.icon className="w-4 h-4 text-primary mx-auto mb-2" />
+                    <div className="text-xl md:text-2xl font-bold text-foreground mb-1">
+                      {stat.value}
+                    </div>
+                    <div className="text-xs text-muted-foreground leading-tight">
+                      {stat.label}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
           </motion.div>
 
-          {/* Right - Code Editor */}
+          {/* Right - Focus Areas */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.3 }}
             className="sticky top-24"
           >
-            <CodeEditor
-              files={portfolioFiles}
-              defaultOpenFile="about.tsx"
-              defaultOpenFolders={defaultOpenFolders}
-              showFileTree={true}
-              showTabs={true}
-              showTerminal={false}
-            />
+            <h3 className="text-2xl font-bold mb-6">What I Focus On</h3>
+            <div className="space-y-4">
+              {focusAreas.map((area, idx) => (
+                <motion.div
+                  key={area.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={isInView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.6, delay: 0.3 + idx * 0.1 }}
+                  className="group relative p-6 rounded-xl bg-card/5 backdrop-blur-[2px] border border-border hover:border-primary/30 transition-all duration-300 overflow-hidden"
+                  whileHover={{ y: -2, scale: 1.02 }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/0 to-primary/0 group-hover:from-primary/10 group-hover:to-primary/5 transition-all duration-300" />
+                  <div className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shrink-0">
+                      <area.icon className="w-6 h-6 text-primary-foreground" />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-lg font-semibold mb-1">
+                        {area.title}
+                      </h4>
+                      <p className="text-sm text-muted-foreground">
+                        {area.description}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </motion.div>
         </div>
       </div>

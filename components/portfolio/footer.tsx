@@ -12,28 +12,29 @@ import {
   Terminal,
   Heart,
 } from "lucide-react";
+import { Terminal as TerminalComponent } from "./terminal";
 
 const socialLinks = [
   {
     name: "GitHub",
-    url: "https://github.com/waseemanjum",
+    url: "https://github.com/fabwaseem",
     icon: Github,
     command: "git remote -v",
-    username: "@waseemanjum",
+    username: "@fabwaseem",
   },
   {
     name: "LinkedIn",
-    url: "https://linkedin.com/in/waseemanjum",
+    url: "https://linkedin.com/in/fabwaseem",
     icon: Linkedin,
     command: "open linkedin.com",
-    username: "/in/waseemanjum",
+    username: "/in/fabwaseem",
   },
   {
     name: "Twitter",
-    url: "https://twitter.com/waseemanjum",
+    url: "https://twitter.com/fabwaseeem",
     icon: Twitter,
     command: "curl twitter.com",
-    username: "@waseemanjum",
+    username: "@fabwaseeem",
   },
   {
     name: "Email",
@@ -101,49 +102,12 @@ export function Footer() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="max-w-2xl mx-auto mb-16"
         >
-          <div className="terminal-window">
-            <div className="terminal-header">
-              <div className="editor-dots">
-                <div className="editor-dot editor-dot-red" />
-                <div className="editor-dot editor-dot-yellow" />
-                <div className="editor-dot editor-dot-green" />
-              </div>
-              <span className="terminal-title">social-links.sh</span>
-            </div>
-            <div className="terminal-content space-y-2">
-              <div className="text-muted-foreground text-xs mb-3">
-                # Connect with me
-              </div>
-              {socialLinks.map((link, idx) => (
-                <motion.a
-                  key={link.name}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={isInView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ duration: 0.3, delay: 0.3 + idx * 0.1 }}
-                  className="flex items-center gap-3 py-2 px-2 -mx-2 rounded hover:bg-editor-selection transition-colors group"
-                >
-                  <span className="text-terminal-green">❯</span>
-                  <span className="text-terminal-cyan font-mono text-sm">
-                    {link.command}
-                  </span>
-                  <span className="text-muted-foreground">→</span>
-                  <span className="flex items-center gap-2 text-foreground group-hover:text-primary transition-colors">
-                    <link.icon className="w-4 h-4" />
-                    {link.username}
-                  </span>
-                  <ArrowUpRight className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                </motion.a>
-              ))}
-              <div className="pt-2 mt-2 border-t border-border">
-                <span className="text-terminal-green">❯</span>
-                <span className="text-muted-foreground ml-3 text-sm">_</span>
-                <span className="inline-block w-2 h-4 bg-primary ml-1 cursor-blink" />
-              </div>
-            </div>
-          </div>
+          <TerminalComponent
+            title="social-links.sh"
+            links={socialLinks}
+            isInView={isInView}
+            delay={0.3}
+          />
         </motion.div>
 
         {/* Footer Links */}

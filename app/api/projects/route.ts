@@ -11,14 +11,11 @@ export async function GET(request: NextRequest) {
       headers: await headers(),
     });
 
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const searchParams = request.nextUrl.searchParams;
     const status = searchParams.get("status");
     const featured = searchParams.get("featured");
     const search = searchParams.get("search");
+    const tags = searchParams.getAll("tags");
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
     const skip = (page - 1) * limit;
@@ -29,6 +26,8 @@ export async function GET(request: NextRequest) {
 
     if (status) {
       where.status = status;
+    } else if (!session) {
+      where.status = "PUBLISHED";
     }
 
     if (featured !== null) {
@@ -39,8 +38,19 @@ export async function GET(request: NextRequest) {
       where.OR = [
         { title: { contains: search, mode: "insensitive" } },
         { description: { contains: search, mode: "insensitive" } },
+        { excerpt: { contains: search, mode: "insensitive" } },
         { slug: { contains: search, mode: "insensitive" } },
       ];
+    }
+
+    if (tags.length > 0) {
+      where.tags = {
+        some: {
+          id: {
+            in: tags,
+          },
+        },
+      };
     }
 
     const [projects, total] = await Promise.all([

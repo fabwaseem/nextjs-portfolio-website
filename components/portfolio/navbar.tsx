@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/admin/theme-toggle";
 import {
   Menu,
   X,
@@ -16,6 +17,8 @@ import {
   Briefcase,
   BookOpen,
   Mail,
+  Moon,
+  Sun,
 } from "lucide-react";
 
 const navItems = [
@@ -23,36 +26,91 @@ const navItems = [
   { name: "Skills", href: "#skills", icon: Code2 },
   { name: "Projects", href: "#projects", icon: FolderGit2 },
   { name: "Experience", href: "#experience", icon: Briefcase },
-  { name: "Blog", href: "/blog", icon: BookOpen },
+  { name: "Blog", href: "#blog", icon: BookOpen },
 ];
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
+  const [mounted, setMounted] = useState(false);
+  const pathname = usePathname();
+  const { setTheme, resolvedTheme } = useTheme();
 
-  // Handle scroll
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const toggleTheme = () => {
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+  };
+
+  const isDark = resolvedTheme === "dark";
+
+  const handleNavigation = (href: string) => {
+    if (href.startsWith("#")) {
+      const isOnHomePage = window.location.pathname === "/";
+      const sectionId = href.substring(1);
+
+      if (isOnHomePage) {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      } else {
+        window.location.href = `/${href}`;
+      }
+    }
+  };
+
+  // Handle route-based active section
+  useEffect(() => {
+    if (pathname === "/") {
+      // On home page, active section is determined by scroll
+      // Don't set anything here, let scroll handler do it
+    } else if (pathname.startsWith("/projects")) {
+      setActiveSection("#projects");
+    } else if (pathname.startsWith("/blog")) {
+      setActiveSection("#blog");
+    } else {
+      // Reset active section on other pages
+      setActiveSection("");
+    }
+  }, [pathname]);
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
 
-      // Update active section based on scroll position
-      const sections = ["about", "skills", "projects", "experience"];
-      for (const section of sections) {
-        const element = document.getElementById(section);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          if (rect.top <= 100 && rect.bottom >= 100) {
-            setActiveSection(`#${section}`);
-            break;
+      // Only track scroll-based active sections on home page
+      if (pathname === "/") {
+        const sections = ["about", "skills", "projects", "blog", "experience"];
+        for (const section of sections) {
+          const element = document.getElementById(section);
+          if (element) {
+            const rect = element.getBoundingClientRect();
+            if (rect.top <= 100 && rect.bottom >= 100) {
+              setActiveSection(`#${section}`);
+              break;
+            }
           }
         }
       }
     };
 
+    const hash = window.location.hash;
+    if (hash && pathname === "/") {
+      setTimeout(() => {
+        const element = document.querySelector(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
+    }
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [pathname]);
 
   // Close mobile menu on resize
   useEffect(() => {
@@ -87,8 +145,8 @@ export function Navbar() {
         className={cn(
           "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
           isScrolled
-            ? "py-3 bg-background/80 backdrop-blur-xl border-b border-border shadow-sm"
-            : "py-5 bg-transparent",
+            ? "py-3 bg-background/30 backdrop-blur border-b border-border shadow-sm"
+            : "py-5 bg-transparent"
         )}
       >
         <div className="container mx-auto px-4">
@@ -117,15 +175,12 @@ export function Navbar() {
                     "px-4 py-2 text-sm font-medium rounded-lg transition-colors",
                     activeSection === item.href
                       ? "text-primary bg-primary/10"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted",
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   )}
                   onClick={(e) => {
                     if (item.href.startsWith("#")) {
                       e.preventDefault();
-                      const element = document.querySelector(item.href);
-                      if (element) {
-                        element.scrollIntoView({ behavior: "smooth" });
-                      }
+                      handleNavigation(item.href);
                     }
                   }}
                 >
@@ -136,7 +191,29 @@ export function Navbar() {
 
             {/* Right side actions */}
             <div className="flex items-center gap-3">
-              <ThemeToggle />
+              {/* Theme Toggle */}
+              {mounted && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleTheme}
+                  className="relative h-9 w-9"
+                  aria-label="Toggle theme"
+                >
+                  <Sun
+                    className={cn(
+                      "h-4 w-4 transition-all duration-300",
+                      isDark ? "rotate-90 scale-0" : "rotate-0 scale-100"
+                    )}
+                  />
+                  <Moon
+                    className={cn(
+                      "absolute h-4 w-4 transition-all duration-300",
+                      isDark ? "rotate-0 scale-100" : "-rotate-90 scale-0"
+                    )}
+                  />
+                </Button>
+              )}
 
               <Button asChild size="sm" className="hidden md:flex gap-2">
                 <Link href="/contact">
@@ -211,17 +288,14 @@ export function Navbar() {
                           "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors",
                           activeSection === item.href
                             ? "text-primary bg-primary/10"
-                            : "text-muted-foreground hover:text-foreground hover:bg-muted",
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted"
                         )}
                         onClick={(e) => {
                           setIsMobileMenuOpen(false);
                           if (item.href.startsWith("#")) {
                             e.preventDefault();
                             setTimeout(() => {
-                              const element = document.querySelector(item.href);
-                              if (element) {
-                                element.scrollIntoView({ behavior: "smooth" });
-                              }
+                              handleNavigation(item.href);
                             }, 300);
                           }
                         }}
@@ -233,7 +307,7 @@ export function Navbar() {
                   ))}
                 </div>
 
-                {/* Contact button */}
+                {/* Contact */}
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}

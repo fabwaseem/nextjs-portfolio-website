@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -11,17 +12,20 @@ import {
   Code2,
   Sparkles,
   ArrowDown,
+  Mail,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Typewriter } from "./text-effects";
 import { CodeEditor } from "./code-editor";
-import { portfolioFiles, defaultOpenFolders } from "./portfolio-files";
+import { portfolioFiles } from "./portfolio-files";
 
 gsap.registerPlugin(ScrollTrigger);
 
 // Roles to cycle through
 const roles = [
   "Full Stack Developer",
+  "Web3 Developer",
+  "DApp Builder",
   "React Specialist",
   "Node.js Expert",
   "TypeScript Enthusiast",
@@ -55,12 +59,9 @@ export function HeroSection() {
     const command = "npm run build:amazing";
 
     if (terminalText.length < command.length) {
-      const timer = setTimeout(
-        () => {
-          setTerminalText((prev) => command.slice(0, prev.length + 1));
-        },
-        40 + Math.random() * 20,
-      );
+      const timer = setTimeout(() => {
+        setTerminalText((prev) => command.slice(0, prev.length + 1));
+      }, 40 + Math.random() * 20);
       return () => clearTimeout(timer);
     } else if (!showTerminalOutput) {
       setTimeout(() => setShowTerminalOutput(true), 300);
@@ -83,7 +84,7 @@ export function HeroSection() {
             duration: 1,
             ease: "power3.out",
             delay: 0.2,
-          },
+          }
         );
       }
 
@@ -99,7 +100,7 @@ export function HeroSection() {
             duration: 1,
             ease: "power3.out",
             delay: 0.5,
-          },
+          }
         );
       }
 
@@ -115,7 +116,7 @@ export function HeroSection() {
         },
       });
     },
-    { scope: sectionRef },
+    { scope: sectionRef }
   );
 
   // Terminal content with typing effect
@@ -195,7 +196,7 @@ export function HeroSection() {
         }}
       />
 
-      <div className="container mx-auto px-4 py-20 relative z-10">
+      <div className="container mx-auto px-4 py-20 pb-32 md:pb-40 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Left side - Text content */}
           <div className="text-center lg:text-left order-2 lg:order-1">
@@ -253,9 +254,9 @@ export function HeroSection() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-8"
             >
-              I craft modern, high-performance web applications with clean code
-              and exceptional user experiences. Let&apos;s build something
-              extraordinary together.
+              I craft modern, high-performance applications and decentralized
+              solutions with clean code and exceptional user experiences.
+              Let&apos;s build something extraordinary together.
             </motion.p>
 
             <motion.div
@@ -264,15 +265,54 @@ export function HeroSection() {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
             >
-              <Button size="lg" className="group gap-2 glow-primary">
-                <Code2 className="w-5 h-5" />
-                View My Work
-                <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-              </Button>
-              <Button variant="outline" size="lg" className="group gap-2">
-                <Terminal className="w-5 h-5" />
-                Get in Touch
-              </Button>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button
+                  size="lg"
+                  className="group gap-2 glow-primary relative overflow-hidden"
+                  onClick={() => {
+                    const isOnHomePage = window.location.pathname === "/";
+                    if (isOnHomePage) {
+                      const element = document.getElementById("projects");
+                      if (element) {
+                        element.scrollIntoView({ behavior: "smooth" });
+                      }
+                    } else {
+                      window.location.href = "/#projects";
+                    }
+                  }}
+                >
+                  <Code2 className="w-5 h-5 relative z-10" />
+                  <span className="relative z-10">View My Work</span>
+                  <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1 relative z-10" />
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity"
+                    initial={false}
+                  />
+                </Button>
+              </motion.div>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="group gap-2 relative overflow-hidden border-2 hover:border-primary/50 transition-all"
+                >
+                  <Link href="/contact">
+                    <Mail className="w-5 h-5 relative z-10 group-hover:text-primary transition-colors" />
+                    <span className="relative z-10">Get in Touch</span>
+                    <motion.div
+                      className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"
+                      initial={false}
+                    />
+                  </Link>
+                </Button>
+              </motion.div>
             </motion.div>
           </div>
 
@@ -287,7 +327,7 @@ export function HeroSection() {
             <CodeEditor
               files={portfolioFiles}
               defaultOpenFile="page.tsx"
-              defaultOpenFolders={defaultOpenFolders}
+              defaultOpenFolders={["portfolio", "app"]}
               showFileTree={true}
               showTabs={true}
               showTerminal={true}
@@ -298,24 +338,69 @@ export function HeroSection() {
             />
           </motion.div>
         </div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.5, duration: 0.5 }}
-        >
-          <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="flex flex-col items-center gap-2 text-muted-foreground"
-          >
-            <span className="text-xs uppercase tracking-widest">Scroll</span>
-            <ArrowDown className="w-4 h-4" />
-          </motion.div>
-        </motion.div>
       </div>
+
+      {/* Scroll indicator - positioned outside container */}
+      <motion.div
+        className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-20 w-full flex justify-center pointer-events-none"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 2, duration: 0.6, ease: "easeOut" }}
+      >
+        <motion.button
+          className="flex flex-col items-center gap-3 group cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/50 rounded-lg p-2 -m-2 transition-all pointer-events-auto"
+          onClick={() => {
+            window.scrollTo({
+              top: window.innerHeight,
+              behavior: "smooth",
+            });
+          }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <span className="text-xs font-medium text-muted-foreground/70 uppercase tracking-wider group-hover:text-foreground transition-colors">
+            Scroll to explore
+          </span>
+          <div className="relative flex flex-col items-center gap-2">
+            <div className="relative w-6 h-10">
+              <motion.div
+                className="absolute inset-0 rounded-full border-2 border-primary/30 group-hover:border-primary/50 transition-colors"
+                animate={{
+                  scale: [1, 1.1, 1],
+                  opacity: [0.3, 0.5, 0.3],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              />
+              <motion.div className="absolute inset-0 rounded-full border-2 border-primary/40 flex items-start justify-center p-1.5 group-hover:border-primary transition-colors">
+                <motion.div
+                  className="w-1.5 h-1.5 rounded-full bg-primary"
+                  animate={{ y: [0, 16, 0] }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                  }}
+                />
+              </motion.div>
+            </div>
+            <motion.div
+              animate={{ y: [0, 3, 0] }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 0.3,
+              }}
+            >
+              <ArrowDown className="w-4 h-4 text-primary/50 group-hover:text-primary transition-colors" />
+            </motion.div>
+          </div>
+        </motion.button>
+      </motion.div>
     </section>
   );
 }

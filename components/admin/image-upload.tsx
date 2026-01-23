@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback } from "react";
+import axios from "axios";
 import { ImageDropzone } from "@/components/ui/image-dropzone";
 import { cn } from "@/lib/utils";
 
@@ -25,38 +26,77 @@ export function ImageUpload({
 }: ImageUploadProps) {
   const handleUpload = useCallback(
     async (file: File): Promise<string> => {
-      const response = await fetch("/api/upload/presigned-url", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      try {
+        const response = await axios.post("/api/upload/presigned-url", {
           projectId: projectId || "temp",
           filename: file.name,
           type,
           contentType: file.type,
-        }),
-      });
+        });
 
-      if (!response.ok) {
-        throw new Error("Failed to get presigned URL");
+        const { presignedUrl, url } = response.data;
+
+        try {
+          await axios.put(presignedUrl, file, {
+            headers: {
+              "Content-Type": file.type,
+            },
+            maxContentLength: Infinity,
+            maxBodyLength: Infinity,
+          });
+
+          return url;
+        } catch (uploadError) {
+          console.error("S3 upload error:", {
+            error: uploadError,
+            message: axios.isAxiosError(uploadError)
+              ? uploadError.message
+              : "Unknown error",
+            response: axios.isAxiosError(uploadError)
+              ? {
+                  status: uploadError.response?.status,
+                  statusText: uploadError.response?.statusText,
+                  data: uploadError.response?.data,
+                }
+              : null,
+            presignedUrl,
+            fileName: file.name,
+            fileType: file.type,
+            fileSize: file.size,
+          });
+          throw new Error(
+            `Failed to upload image to S3: ${
+              axios.isAxiosError(uploadError)
+                ? uploadError.response?.statusText || uploadError.message
+                : "Unknown error"
+            }`
+          );
+        }
+      } catch (error) {
+        console.error("Presigned URL generation error:", {
+          error,
+          message: axios.isAxiosError(error) ? error.message : "Unknown error",
+          response: axios.isAxiosError(error)
+            ? {
+                status: error.response?.status,
+                statusText: error.response?.statusText,
+                data: error.response?.data,
+              }
+            : null,
+          fileName: file.name,
+          fileType: file.type,
+          fileSize: file.size,
+          projectId: projectId || "temp",
+          type,
+        });
+        throw new Error(
+          `Failed to get presigned URL: ${
+            axios.isAxiosError(error)
+              ? error.response?.data?.error || error.message
+              : "Unknown error"
+          }`
+        );
       }
-
-      const { presignedUrl, url } = await response.json();
-
-      const uploadResponse = await fetch(presignedUrl, {
-        method: "PUT",
-        body: file,
-        headers: {
-          "Content-Type": file.type,
-        },
-      });
-
-      if (!uploadResponse.ok) {
-        throw new Error("Failed to upload image");
-      }
-
-      return url;
     },
     [projectId, type],
   );

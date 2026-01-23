@@ -11,14 +11,6 @@ const createTagSchema = z.object({
 
 export async function GET() {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const tags = await prisma.blogTags.findMany({
       orderBy: { title: "asc" },
       include: {

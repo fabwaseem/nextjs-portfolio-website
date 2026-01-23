@@ -1,9 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
-import gsap from "gsap";
+import { cn } from "@/lib/utils";
 import { useGSAP } from "@gsap/react";
+import { AnimatePresence, motion, useInView } from "framer-motion";
+import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   Braces,
@@ -14,10 +14,13 @@ import {
   Settings,
   Smartphone,
   Zap,
+  Lock,
+  Cloud,
+  Code2,
+  GitBranch,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { CodeEditor } from "./code-editor";
-import { portfolioFiles, defaultOpenFolders } from "./portfolio-files";
+import { useRef, useState } from "react";
+import { Badge } from "@/components/ui/badge";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -25,7 +28,6 @@ type SkillCategory = {
   id: string;
   name: string;
   icon: React.ElementType;
-  color: string;
   skills: { name: string; level: number }[];
 };
 
@@ -34,33 +36,45 @@ const skillCategories: SkillCategory[] = [
     id: "frontend",
     name: "Frontend",
     icon: Globe,
-    color: "from-blue-500 to-cyan-500",
     skills: [
       { name: "React / Next.js", level: 95 },
       { name: "TypeScript", level: 90 },
       { name: "Tailwind CSS", level: 95 },
       { name: "Framer Motion", level: 85 },
       { name: "HTML5 / CSS3", level: 95 },
+      { name: "Web3.js", level: 85 },
     ],
   },
   {
     id: "backend",
     name: "Backend",
     icon: Server,
-    color: "from-green-500 to-emerald-500",
     skills: [
       { name: "Node.js", level: 90 },
       { name: "Python", level: 80 },
       { name: "REST APIs", level: 95 },
       { name: "GraphQL", level: 75 },
       { name: "Authentication", level: 90 },
+      { name: "Express.js", level: 88 },
+    ],
+  },
+  {
+    id: "web3",
+    name: "Web3 & Blockchain",
+    icon: Lock,
+    skills: [
+      { name: "Solidity", level: 85 },
+      { name: "Smart Contracts", level: 85 },
+      { name: "Ethereum", level: 90 },
+      { name: "DApp Development", level: 88 },
+      { name: "Web3.js / Ethers.js", level: 85 },
+      { name: "Hardhat / Truffle", level: 80 },
     ],
   },
   {
     id: "database",
     name: "Database",
     icon: Database,
-    color: "from-orange-500 to-amber-500",
     skills: [
       { name: "PostgreSQL", level: 90 },
       { name: "MongoDB", level: 85 },
@@ -71,17 +85,26 @@ const skillCategories: SkillCategory[] = [
   },
   {
     id: "tools",
-    name: "Tools",
+    name: "Tools & DevOps",
     icon: Settings,
-    color: "from-purple-500 to-pink-500",
     skills: [
       { name: "Git / GitHub", level: 95 },
       { name: "Docker", level: 80 },
       { name: "VS Code", level: 95 },
       { name: "Linux / CLI", level: 85 },
       { name: "CI/CD", level: 80 },
+      { name: "AWS", level: 75 },
     ],
   },
+];
+
+const additionalSkills = [
+  { name: "Mobile-First Design", icon: Smartphone },
+  { name: "Design Systems", icon: Layers },
+  { name: "Performance Optimization", icon: Zap },
+  { name: "Cloud Architecture", icon: Cloud },
+  { name: "Code Quality", icon: Code2 },
+  { name: "Version Control", icon: GitBranch },
 ];
 
 export function SkillsSection() {
@@ -109,10 +132,10 @@ export function SkillsSection() {
             trigger: ".skills-container",
             start: "top 80%",
           },
-        },
+        }
       );
     },
-    { scope: sectionRef, dependencies: [activeCategory] },
+    { scope: sectionRef, dependencies: [activeCategory] }
   );
 
   return (
@@ -122,8 +145,8 @@ export function SkillsSection() {
       className="relative py-24 md:py-32 overflow-hidden"
     >
       {/* Background */}
-      <div className="absolute inset-0 bg-circuit" />
-      <div className="absolute inset-0 bg-spotlight-bottom opacity-70" />
+      <div className="absolute inset-0 bg-code-dots" />
+      <div className="absolute inset-0 bg-mesh opacity-60" />
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
@@ -148,116 +171,120 @@ export function SkillsSection() {
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
-          {/* Left - Interactive Skills */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="skills-container"
-          >
-            {/* Category Tabs */}
-            <div className="flex flex-wrap gap-2 mb-8">
-              {skillCategories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => setActiveCategory(category.id)}
-                  className={cn(
-                    "flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all duration-300",
-                    activeCategory === category.id
-                      ? "bg-primary text-primary-foreground shadow-lg glow-primary"
-                      : "bg-card/50 text-muted-foreground hover:bg-card hover:text-foreground border border-border",
-                  )}
-                >
-                  <category.icon className="w-4 h-4" />
-                  {category.name}
-                </button>
-              ))}
-            </div>
+        {/* Category Tabs */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="flex flex-wrap justify-center gap-3 mb-12"
+        >
+          {skillCategories.map((category) => (
+            <button
+              key={category.id}
+              onClick={() => setActiveCategory(category.id)}
+              className={cn(
+                "flex items-center gap-2 px-5 py-3 rounded-lg font-medium transition-all duration-300",
+                activeCategory === category.id
+                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105"
+                  : "bg-card/5 backdrop-blur-[2px] text-muted-foreground hover:bg-card hover:text-foreground border border-border hover:border-primary/30"
+              )}
+            >
+              <category.icon className="w-4 h-4" />
+              {category.name}
+            </button>
+          ))}
+        </motion.div>
 
-            {/* Skill Bars */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeCategory}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-                className="space-y-5"
-              >
-                {activeSkills.map((skill, idx) => (
-                  <div key={skill.name} className="space-y-2">
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium text-foreground">
-                        {skill.name}
-                      </span>
-                      <span className="text-sm text-muted-foreground font-mono">
-                        {skill.level}%
-                      </span>
-                    </div>
-                    <div className="h-2.5 bg-muted rounded-full overflow-hidden">
-                      <motion.div
-                        className={cn(
-                          "skill-bar-fill h-full rounded-full bg-gradient-to-r",
-                          skillCategories.find((c) => c.id === activeCategory)
-                            ?.color,
-                        )}
-                        style={
-                          {
-                            "--skill-level": `${skill.level}%`,
-                          } as React.CSSProperties
-                        }
-                        initial={{ width: 0 }}
-                        animate={{ width: `${skill.level}%` }}
-                        transition={{ duration: 0.8, delay: idx * 0.1 }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Quick Icons */}
-            <div className="mt-10 pt-8 border-t border-border">
-              <p className="text-sm text-muted-foreground mb-4">
-                Also experienced with:
-              </p>
-              <div className="flex flex-wrap gap-3">
-                {[
-                  { icon: Smartphone, label: "Mobile-First" },
-                  { icon: Layers, label: "Design Systems" },
-                  { icon: Zap, label: "Performance" },
-                  { icon: Server, label: "DevOps" },
-                ].map((item) => (
-                  <div
-                    key={item.label}
-                    className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/50 text-sm text-muted-foreground"
-                  >
-                    <item.icon className="w-3.5 h-3.5" />
-                    {item.label}
-                  </div>
-                ))}
+        {/* Skills Grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="max-w-5xl mx-auto"
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeCategory}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="skills-container"
+            >
+              <div className="grid md:grid-cols-2 gap-6 mb-12">
+                {activeSkills.map((skill, idx) => {
+                  const category = skillCategories.find(
+                    (c) => c.id === activeCategory
+                  );
+                  return (
+                    <motion.div
+                      key={skill.name}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.4, delay: idx * 0.05 }}
+                      className="p-6 rounded-xl bg-card/5 backdrop-blur-[2px] border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5"
+                    >
+                      <div className="flex justify-between items-center mb-3">
+                        <span className="font-semibold text-foreground">
+                          {skill.name}
+                        </span>
+                        <span className="text-sm text-muted-foreground font-mono font-bold">
+                          {skill.level}%
+                        </span>
+                      </div>
+                      <div className="h-3 bg-muted rounded-full overflow-hidden relative">
+                        <motion.div
+                          className="skill-bar-fill h-full rounded-full bg-gradient-to-r from-primary to-primary/60"
+                          style={
+                            {
+                              "--skill-level": `${skill.level}%`,
+                            } as React.CSSProperties
+                          }
+                          initial={{ width: 0 }}
+                          animate={{ width: `${skill.level}%` }}
+                          transition={{ duration: 1, delay: idx * 0.1 }}
+                        />
+                      </div>
+                    </motion.div>
+                  );
+                })}
               </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </AnimatePresence>
+        </motion.div>
 
-          {/* Right - Code Editor */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="sticky top-24"
-          >
-            <CodeEditor
-              files={portfolioFiles}
-              defaultOpenFile="skills.tsx"
-              defaultOpenFolders={defaultOpenFolders}
-              showFileTree={true}
-              showTabs={true}
-              showTerminal={false}
-            />
-          </motion.div>
-        </div>
+        {/* Additional Skills */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="max-w-4xl mx-auto"
+        >
+          <div className="text-center mb-6">
+            <p className="text-sm text-muted-foreground mb-4">
+              Also experienced with:
+            </p>
+          </div>
+          <div className="flex flex-wrap justify-center gap-3">
+            {additionalSkills.map((skill, idx) => (
+              <motion.div
+                key={skill.name}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={isInView ? { opacity: 1, scale: 1 } : {}}
+                transition={{ duration: 0.3, delay: 0.4 + idx * 0.05 }}
+                whileHover={{ scale: 1.05 }}
+              >
+                <Badge
+                  variant="secondary"
+                  className="px-4 py-2 text-sm font-medium cursor-default group"
+                >
+                  <skill.icon className="w-4 h-4 mr-2 text-primary" />
+                  {skill.name}
+                </Badge>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </section>
   );

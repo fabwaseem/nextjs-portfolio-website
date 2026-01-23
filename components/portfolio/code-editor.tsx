@@ -106,7 +106,7 @@ function FileTreeItem({
           onClick={() => onToggleFolder(node.id)}
           className={cn(
             "w-full flex items-center gap-1.5 py-1 text-sm cursor-pointer hover:bg-editor-selection/50 transition-colors",
-            "text-muted-foreground hover:text-foreground",
+            "text-muted-foreground hover:text-foreground"
           )}
           style={{ paddingLeft }}
         >
@@ -156,7 +156,7 @@ function FileTreeItem({
         "w-full flex items-center gap-1.5 py-1 text-sm cursor-pointer transition-colors",
         isActive
           ? "bg-editor-selection text-foreground"
-          : "text-muted-foreground hover:bg-editor-selection/50 hover:text-foreground",
+          : "text-muted-foreground hover:bg-editor-selection/50 hover:text-foreground"
       )}
       style={{ paddingLeft: paddingLeft + 16 }}
     >
@@ -209,7 +209,7 @@ export function CodeEditor({
 }: CodeEditorProps) {
   // State
   const [openFolders, setOpenFolders] = useState<Set<string>>(
-    new Set(defaultOpenFolders),
+    new Set(defaultOpenFolders)
   );
   const [openTabs, setOpenTabs] = useState<EditorTab[]>([]);
   const [activeTabId, setActiveTabId] = useState<string | null>(null);
@@ -244,7 +244,7 @@ export function CodeEditor({
       }
       setActiveTabId(openTabs[newIndex].id);
     },
-    [openTabs, activeTabId],
+    [openTabs, activeTabId]
   );
 
   // Keyboard shortcuts
@@ -280,17 +280,17 @@ export function CodeEditor({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [closeActiveTab, switchTab]);
 
-  // Typing effect state
   const [displayedLines, setDisplayedLines] = useState<CodeLine[]>([]);
   const [currentLineIndex, setCurrentLineIndex] = useState(0);
   const [currentCharIndex, setCurrentCharIndex] = useState(0);
   const [typingStarted, setTypingStarted] = useState(false);
   const [typingFileId, setTypingFileId] = useState<string | null>(null);
+  const pendingLineMoveRef = useRef<number | null>(null);
 
   // Get current active tab content
   const activeTab = useMemo(
     () => openTabs.find((tab) => tab.id === activeTabId),
-    [openTabs, activeTabId],
+    [openTabs, activeTabId]
   );
 
   // Initialize with default open file
@@ -347,13 +347,13 @@ export function CodeEditor({
         setActiveTabId(node.id);
       }
 
-      // Reset typing for new file
       if (typingEffect) {
         setDisplayedLines([]);
         setCurrentLineIndex(0);
         setCurrentCharIndex(0);
         setTypingFileId(node.id);
         setTypingStarted(false);
+        pendingLineMoveRef.current = null;
         setTimeout(() => setTypingStarted(true), 200);
       }
 
@@ -362,7 +362,7 @@ export function CodeEditor({
 
       onFileSelect?.(node.id);
     },
-    [openTabs, typingEffect, onFileSelect],
+    [openTabs, typingEffect, onFileSelect]
   );
 
   // Close tab
@@ -380,7 +380,7 @@ export function CodeEditor({
         return filtered;
       });
     },
-    [activeTabId],
+    [activeTabId]
   );
 
   // Typing effect
@@ -403,59 +403,72 @@ export function CodeEditor({
 
     const plainText = getPlainText(currentLine.content);
 
-    if (currentCharIndex === 0 && displayedLines.length <= currentLineIndex) {
-      setDisplayedLines((prev) => [
-        ...prev,
-        { lineNum: currentLine.lineNum, content: "" },
-      ]);
+    if (currentCharIndex === 0) {
+      setDisplayedLines((prev) => {
+        if (prev.length > currentLineIndex) {
+          return prev;
+        }
+        return [...prev, { lineNum: currentLine.lineNum, content: "" }];
+      });
     }
 
     if (currentCharIndex < plainText.length) {
-      const timer = setTimeout(
-        () => {
-          const targetLength = currentCharIndex + 1;
-          const htmlContent = currentLine.content;
-          let visibleChars = 0;
-          let result = "";
+      pendingLineMoveRef.current = null;
+      const timer = setTimeout(() => {
+        const targetLength = currentCharIndex + 1;
+        const htmlContent = currentLine.content;
+        let visibleChars = 0;
+        let result = "";
 
-          for (
-            let i = 0;
-            i < htmlContent.length && visibleChars < targetLength;
-            i++
-          ) {
-            const char = htmlContent[i];
-            if (char === "<") {
-              const closingIndex = htmlContent.indexOf(">", i);
-              if (closingIndex !== -1) {
-                result += htmlContent.slice(i, closingIndex + 1);
-                i = closingIndex;
-              }
+        for (
+          let i = 0;
+          i < htmlContent.length && visibleChars < targetLength;
+          i++
+        ) {
+          const char = htmlContent[i];
+          if (char === "<") {
+            const closingIndex = htmlContent.indexOf(">", i);
+            if (closingIndex !== -1) {
+              result += htmlContent.slice(i, closingIndex + 1);
+              i = closingIndex;
+            }
+          } else if (char === "&") {
+            const semiIndex = htmlContent.indexOf(";", i);
+            if (semiIndex !== -1 && semiIndex - i <= 10) {
+              result += htmlContent.slice(i, semiIndex + 1);
+              i = semiIndex;
+              visibleChars++;
             } else {
               result += char;
               visibleChars++;
             }
+          } else {
+            result += char;
+            visibleChars++;
           }
+        }
 
-          setDisplayedLines((prev) => {
-            const newLines = [...prev];
-            if (newLines[currentLineIndex]) {
-              newLines[currentLineIndex] = {
-                lineNum: currentLine.lineNum,
-                content: result,
-              };
-            }
-            return newLines;
-          });
-          setCurrentCharIndex((prev) => prev + 1);
-        },
-        typingSpeed + Math.random() * 15,
-      );
+        setDisplayedLines((prev) => {
+          const newLines = [...prev];
+          if (newLines[currentLineIndex]) {
+            newLines[currentLineIndex] = {
+              lineNum: currentLine.lineNum,
+              content: result,
+            };
+          }
+          return newLines;
+        });
+        setCurrentCharIndex((prev) => prev + 1);
+      }, typingSpeed + Math.random() * 15);
       return () => clearTimeout(timer);
     } else {
-      setTimeout(() => {
-        setCurrentLineIndex((prev) => prev + 1);
-        setCurrentCharIndex(0);
-      }, 50);
+      if (pendingLineMoveRef.current !== currentLineIndex) {
+        pendingLineMoveRef.current = currentLineIndex;
+        setTimeout(() => {
+          setCurrentLineIndex((prev) => prev + 1);
+          setCurrentCharIndex(0);
+        }, 50);
+      }
     }
   }, [
     typingEffect,
@@ -465,7 +478,6 @@ export function CodeEditor({
     typingFileId,
     currentLineIndex,
     currentCharIndex,
-    displayedLines.length,
     typingSpeed,
   ]);
 
@@ -487,7 +499,7 @@ export function CodeEditor({
       ref={editorRef}
       className={cn(
         "editor-window overflow-hidden lg:min-h-[500px] flex flex-col",
-        className,
+        className
       )}
       tabIndex={0}
     >
@@ -542,7 +554,7 @@ export function CodeEditor({
                     "inline-flex items-center gap-1 px-2 sm:px-3 py-2 text-xs font-medium border-r border-border/50 whitespace-nowrap transition-colors shrink-0",
                     activeTabId === tab.id
                       ? "bg-editor-bg text-foreground border-b-2 border-b-primary"
-                      : "bg-editor-line/30 text-muted-foreground hover:text-foreground hover:bg-editor-line/50",
+                      : "bg-editor-line/30 text-muted-foreground hover:text-foreground hover:bg-editor-line/50"
                   )}
                 >
                   {getFileIcon(tab.name)}
@@ -555,7 +567,7 @@ export function CodeEditor({
                       "ml-1 rounded p-0.5 transition-all hover:bg-muted",
                       activeTabId === tab.id
                         ? "opacity-60 hover:opacity-100"
-                        : "opacity-0 group-hover:opacity-60 hover:!opacity-100",
+                        : "opacity-0 group-hover:opacity-60 hover:!opacity-100"
                     )}
                   >
                     <X className="w-3 h-3" />
@@ -597,7 +609,7 @@ export function CodeEditor({
                 // Desktop: inline, Mobile: overlay
                 mobileFileSheetOpen
                   ? "absolute left-0 top-0 bottom-0 z-20 bg-editor-bg"
-                  : "hidden md:flex",
+                  : "hidden md:flex"
               )}
             >
               <div className="px-3 py-2 flex items-center justify-between shrink-0">

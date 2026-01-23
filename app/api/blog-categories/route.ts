@@ -15,14 +15,6 @@ const createCategorySchema = z.object({
 
 export async function GET() {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const categories = await prisma.blogCategory.findMany({
       orderBy: [{ order: "asc" }, { title: "asc" }],
       include: {
