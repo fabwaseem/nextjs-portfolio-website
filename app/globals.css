@@ -1,0 +1,900 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@plugin "@tailwindcss/typography";
+@custom-variant dark (&:is(.dark *));
+
+
+
+@theme inline {
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  /* Glass effect custom properties */
+  --color-glass: var(--glass);
+  --color-glass-foreground: var(--glass-foreground);
+  --color-glass-border: var(--glass-border);
+  --color-glass-muted: var(--glass-muted);
+  /* VS Code Editor colors */
+  --color-editor-bg: var(--editor-bg);
+  --color-editor-line: var(--editor-line);
+  --color-editor-selection: var(--editor-selection);
+  --color-editor-gutter: var(--editor-gutter);
+  --color-syntax-keyword: var(--syntax-keyword);
+  --color-syntax-string: var(--syntax-string);
+  --color-syntax-function: var(--syntax-function);
+  --color-syntax-variable: var(--syntax-variable);
+  --color-syntax-comment: var(--syntax-comment);
+  --color-syntax-number: var(--syntax-number);
+  --color-syntax-operator: var(--syntax-operator);
+  --color-syntax-type: var(--syntax-type);
+  --color-terminal-bg: var(--terminal-bg);
+  --color-terminal-green: var(--terminal-green);
+  --color-terminal-yellow: var(--terminal-yellow);
+  --color-terminal-blue: var(--terminal-blue);
+  --color-terminal-red: var(--terminal-red);
+  --color-terminal-cyan: var(--terminal-cyan);
+  --color-terminal-magenta: var(--terminal-magenta);
+}
+
+:root {
+  --radius: 1rem;
+  /* Light theme with VS Code vibes */
+  --background: oklch(0.98 0.005 250);
+  --foreground: oklch(0.15 0.01 250);
+
+  /* Glass effect colors */
+  --glass: oklch(1 0 0 / 60%);
+  --glass-foreground: oklch(0.15 0.01 250);
+  --glass-border: oklch(0 0 0 / 8%);
+  --glass-muted: oklch(0.95 0.005 250 / 80%);
+
+  --card: oklch(1 0 0 / 70%);
+  --card-foreground: oklch(0.15 0.01 250);
+  --popover: oklch(1 0 0 / 80%);
+  --popover-foreground: oklch(0.15 0.01 250);
+
+  /* Blue accent */
+  --primary: oklch(0.55 0.22 250);
+  --primary-foreground: oklch(1 0 0);
+
+  --secondary: oklch(0.96 0.01 250 / 80%);
+  --secondary-foreground: oklch(0.25 0.01 250);
+
+  --muted: oklch(0.95 0.005 250 / 60%);
+  --muted-foreground: oklch(0.45 0.01 250);
+
+  --accent: oklch(0.94 0.01 250 / 70%);
+  --accent-foreground: oklch(0.2 0.01 250);
+
+  --destructive: oklch(0.6 0.22 25);
+
+  --border: oklch(0 0 0 / 10%);
+  --input: oklch(1 0 0 / 60%);
+  --ring: oklch(0.55 0.22 250 / 50%);
+
+  --chart-1: oklch(0.55 0.22 250);
+  --chart-2: oklch(0.6 0.18 170);
+  --chart-3: oklch(0.65 0.2 320);
+  --chart-4: oklch(0.7 0.15 80);
+  --chart-5: oklch(0.55 0.2 30);
+
+  /* Sidebar */
+  --sidebar: oklch(0.97 0.005 250 / 80%);
+  --sidebar-foreground: oklch(0.15 0.01 250);
+  --sidebar-primary: oklch(0.55 0.22 250);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.94 0.01 250 / 60%);
+  --sidebar-accent-foreground: oklch(0.2 0.01 250);
+  --sidebar-border: oklch(0 0 0 / 8%);
+  --sidebar-ring: oklch(0.55 0.22 250 / 50%);
+
+  /* VS Code Editor Theme (Light) */
+  --editor-bg: oklch(0.98 0.005 250);
+  --editor-line: oklch(0.96 0.005 250);
+  --editor-selection: oklch(0.7 0.1 220 / 30%);
+  --editor-gutter: oklch(0.5 0.01 250);
+
+  /* Syntax Highlighting - Light */
+  --syntax-keyword: oklch(0.5 0.25 300);
+  --syntax-string: oklch(0.5 0.18 25);
+  --syntax-function: oklch(0.45 0.2 60);
+  --syntax-variable: oklch(0.45 0.2 220);
+  --syntax-comment: oklch(0.5 0.15 140);
+  --syntax-number: oklch(0.5 0.18 160);
+  --syntax-operator: oklch(0.2 0.01 250);
+  --syntax-type: oklch(0.45 0.2 180);
+
+  /* Terminal Colors (Light) */
+  --terminal-bg: oklch(0.96 0.005 250);
+  --terminal-green: oklch(0.45 0.2 145);
+  --terminal-yellow: oklch(0.55 0.2 85);
+  --terminal-blue: oklch(0.5 0.2 230);
+  --terminal-red: oklch(0.5 0.22 25);
+  --terminal-cyan: oklch(0.5 0.15 195);
+  --terminal-magenta: oklch(0.5 0.2 320);
+}
+
+.dark {
+  /* VS Code Dark+ inspired theme */
+  --background: oklch(0.13 0.02 260);
+  --foreground: oklch(0.92 0.01 250);
+
+  /* Glass effect colors - translucent darks */
+  --glass: oklch(0.16 0.02 260 / 80%);
+  --glass-foreground: oklch(0.92 0.01 250);
+  --glass-border: oklch(1 0 0 / 8%);
+  --glass-muted: oklch(0.2 0.02 260 / 70%);
+
+  --card: oklch(0.16 0.02 260 / 90%);
+  --card-foreground: oklch(0.92 0.01 250);
+  --popover: oklch(0.18 0.02 260 / 95%);
+  --popover-foreground: oklch(0.92 0.01 250);
+
+  /* VS Code blue accent */
+  --primary: oklch(0.7 0.18 220);
+  --primary-foreground: oklch(0.13 0.02 260);
+
+  --secondary: oklch(0.22 0.02 260 / 80%);
+  --secondary-foreground: oklch(0.9 0.01 250);
+
+  --muted: oklch(0.22 0.02 260 / 60%);
+  --muted-foreground: oklch(0.6 0.01 250);
+
+  --accent: oklch(0.25 0.02 260 / 70%);
+  --accent-foreground: oklch(0.9 0.01 250);
+
+  --destructive: oklch(0.6 0.22 25);
+
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(0.18 0.02 260 / 80%);
+  --ring: oklch(0.7 0.18 220 / 50%);
+
+  --chart-1: oklch(0.7 0.18 220);
+  --chart-2: oklch(0.7 0.18 140);
+  --chart-3: oklch(0.7 0.18 320);
+  --chart-4: oklch(0.7 0.15 60);
+  --chart-5: oklch(0.65 0.2 30);
+
+  /* Sidebar */
+  --sidebar: oklch(0.14 0.02 260 / 90%);
+  --sidebar-foreground: oklch(0.92 0.01 250);
+  --sidebar-primary: oklch(0.7 0.18 220);
+  --sidebar-primary-foreground: oklch(0.13 0.02 260);
+  --sidebar-accent: oklch(0.25 0.02 260 / 60%);
+  --sidebar-accent-foreground: oklch(0.9 0.01 250);
+  --sidebar-border: oklch(1 0 0 / 6%);
+  --sidebar-ring: oklch(0.7 0.18 220 / 50%);
+
+  /* VS Code Editor Theme */
+  --editor-bg: oklch(0.12 0.02 260);
+  --editor-line: oklch(0.16 0.02 260);
+  --editor-selection: oklch(0.3 0.08 220 / 40%);
+  --editor-gutter: oklch(0.55 0.01 250);
+
+  /* Syntax Highlighting - VS Code Dark+ */
+  --syntax-keyword: oklch(0.7 0.2 300);
+  /* Purple - const, let, function */
+  --syntax-string: oklch(0.7 0.15 50);
+  /* Orange - strings */
+  --syntax-function: oklch(0.8 0.15 90);
+  /* Yellow - function names */
+  --syntax-variable: oklch(0.75 0.18 200);
+  /* Light blue - variables */
+  --syntax-comment: oklch(0.55 0.12 140);
+  /* Green - comments */
+  --syntax-number: oklch(0.75 0.15 160);
+  /* Teal - numbers */
+  --syntax-operator: oklch(0.9 0.01 250);
+  /* White - operators */
+  --syntax-type: oklch(0.7 0.18 180);
+  /* Cyan - types */
+
+  /* Terminal Colors */
+  --terminal-bg: oklch(0.1 0.02 260);
+  --terminal-green: oklch(0.7 0.2 145);
+  --terminal-yellow: oklch(0.8 0.15 85);
+  --terminal-blue: oklch(0.7 0.18 230);
+  --terminal-red: oklch(0.65 0.2 25);
+  --terminal-cyan: oklch(0.75 0.12 195);
+  --terminal-magenta: oklch(0.7 0.2 320);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
+
+/* iOS-style Glassmorphism Utilities */
+@layer utilities {
+  .glass {
+    @apply bg-glass backdrop-blur-xl border border-glass-border shadow-lg;
+  }
+
+  .glass-subtle {
+    @apply bg-glass/40 backdrop-blur-md border border-glass-border/50;
+  }
+
+  .glass-strong {
+    @apply bg-glass/80 backdrop-blur-2xl border border-glass-border shadow-xl;
+  }
+
+  .glass-card {
+    @apply bg-card backdrop-blur-xl border border-glass-border shadow-lg rounded-2xl;
+  }
+
+  .glass-popover {
+    @apply bg-popover backdrop-blur-2xl border border-glass-border shadow-2xl;
+  }
+
+  .glass-sidebar {
+    @apply bg-sidebar backdrop-blur-xl border-r border-sidebar-border;
+  }
+
+  .glass-input {
+    @apply bg-input backdrop-blur-sm border border-border/50 shadow-sm;
+  }
+
+  /* iOS-style button hover glow */
+  .glass-glow {
+    @apply transition-all duration-300;
+  }
+
+  .glass-glow:hover {
+    box-shadow: 0 0 20px oklch(from var(--primary) l c h / 0.3);
+  }
+
+  /* Liquid animation for interactive elements */
+  .liquid-hover {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .liquid-hover:hover {
+    @apply scale-[1.02] shadow-lg;
+  }
+
+  .liquid-hover:active {
+    @apply scale-[0.98];
+  }
+}
+
+
+
+@layer base {
+  .prose {
+    @apply text-foreground;
+  }
+
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4,
+  .prose h5,
+  .prose h6 {
+    @apply text-foreground font-semibold;
+  }
+
+  .prose p {
+    @apply text-foreground/90;
+  }
+
+  .prose a {
+    @apply text-primary hover:text-primary/80;
+  }
+
+  .prose code {
+    @apply bg-muted text-foreground px-1 py-0.5 rounded text-sm;
+  }
+
+  .prose pre {
+    @apply bg-muted text-foreground;
+  }
+
+  .prose blockquote {
+    @apply border-l-4 border-primary/50 text-foreground/80;
+  }
+
+  .prose ul,
+  .prose ol {
+    @apply text-foreground/90;
+  }
+
+  .prose strong {
+    @apply text-foreground font-semibold;
+  }
+
+  .prose em {
+    @apply text-foreground/90;
+  }
+}
+
+.ql-container {
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.ql-editor {
+  min-height: 300px;
+}
+
+.ql-editor.ql-blank::before {
+  color: hsl(var(--muted-foreground));
+  font-style: normal;
+}
+
+.ql-toolbar {
+  border-top: 1px solid hsl(var(--border));
+  border-left: 1px solid hsl(var(--border));
+  border-right: 1px solid hsl(var(--border));
+  border-bottom: none;
+  border-radius: calc(var(--radius) - 2px) calc(var(--radius) - 2px) 0 0;
+  background: hsl(var(--background));
+}
+
+.ql-container {
+  border-bottom: 1px solid hsl(var(--border));
+  border-left: 1px solid hsl(var(--border));
+  border-right: 1px solid hsl(var(--border));
+  border-top: none;
+  border-radius: 0 0 calc(var(--radius) - 2px) calc(var(--radius) - 2px);
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+.ql-stroke {
+  stroke: hsl(var(--foreground));
+}
+
+.ql-fill {
+  fill: hsl(var(--foreground));
+}
+
+.ql-picker-label {
+  color: hsl(var(--foreground));
+}
+
+.ql-picker-options {
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(var(--radius) - 2px);
+}
+
+.ql-picker-item:hover {
+  background: hsl(var(--muted));
+  color: hsl(var(--foreground));
+}
+
+.ql-snow .ql-stroke {
+  stroke: hsl(var(--foreground));
+}
+
+.ql-snow .ql-fill {
+  fill: hsl(var(--foreground));
+}
+
+.ql-snow .ql-picker {
+  color: hsl(var(--foreground));
+}
+
+/* ===== Portfolio Landing Page Styles ===== */
+
+/* Code Editor Styles */
+.editor-window {
+  @apply bg-editor-bg rounded-lg border border-border overflow-hidden w-full max-w-full;
+  box-shadow:
+    0 0 0 1px oklch(0 0 0 / 5%),
+    0 4px 6px -1px oklch(0 0 0 / 10%),
+    0 2px 4px -2px oklch(0 0 0 / 10%),
+    0 0 40px -10px oklch(from var(--primary) l c h / 15%);
+}
+
+.editor-titlebar {
+  @apply flex items-center gap-2 px-2 py-2 bg-editor-line border-b border-border overflow-hidden;
+}
+
+.editor-dots {
+  @apply flex gap-1.5;
+}
+
+.editor-dot {
+  @apply w-3 h-3 rounded-full transition-opacity hover:opacity-80;
+}
+
+.editor-dot-red {
+  @apply bg-red-500;
+}
+
+.editor-dot-yellow {
+  @apply bg-yellow-500;
+}
+
+.editor-dot-green {
+  @apply bg-green-500;
+}
+
+/* Legacy editor-tabs class - now using ScrollArea */
+.editor-tabs {
+  @apply flex items-center;
+}
+
+.editor-tab {
+  @apply inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-muted-foreground bg-transparent border-r border-border/50 whitespace-nowrap transition-colors;
+}
+
+.editor-tab:hover {
+  @apply text-foreground bg-editor-line/50;
+}
+
+.editor-tab.active {
+  @apply text-foreground bg-editor-bg border-b-2 border-b-primary;
+}
+
+.editor-content {
+  @apply p-6 font-mono text-sm leading-relaxed;
+}
+
+.editor-line-numbers {
+  @apply text-editor-gutter select-none pr-6 text-right;
+}
+
+/* Syntax Highlighting */
+.syntax-keyword {
+  color: var(--syntax-keyword);
+}
+
+.syntax-string {
+  color: var(--syntax-string);
+}
+
+.syntax-function {
+  color: var(--syntax-function);
+}
+
+.syntax-variable {
+  color: var(--syntax-variable);
+}
+
+.syntax-comment {
+  color: var(--syntax-comment);
+  font-style: italic;
+}
+
+.syntax-number {
+  color: var(--syntax-number);
+}
+
+.syntax-operator {
+  color: var(--syntax-operator);
+}
+
+.syntax-type {
+  color: var(--syntax-type);
+}
+
+/* Terminal Styles */
+.terminal-window {
+  @apply bg-terminal-bg rounded-lg border border-border overflow-hidden font-mono;
+  box-shadow:
+    0 0 0 1px oklch(0 0 0 / 5%),
+    0 4px 6px -1px oklch(0 0 0 / 10%);
+}
+
+.terminal-header {
+  @apply flex items-center gap-2 px-4 py-2.5 bg-editor-line border-b border-border;
+}
+
+.terminal-title {
+  @apply text-sm text-muted-foreground ml-2;
+}
+
+.terminal-content {
+  @apply p-4 text-sm;
+}
+
+.terminal-prompt {
+  @apply text-terminal-green;
+}
+
+.terminal-command {
+  @apply text-foreground;
+}
+
+.terminal-output {
+  @apply text-muted-foreground;
+}
+
+/* Blinking Cursor */
+@keyframes blink {
+
+  0%,
+  50% {
+    opacity: 1;
+  }
+
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.cursor-blink {
+  animation: blink 1s step-end infinite;
+}
+
+/* Glow Effects */
+.glow-primary {
+  box-shadow:
+    0 0 20px oklch(from var(--primary) l c h / 20%),
+    0 0 40px oklch(from var(--primary) l c h / 10%);
+}
+
+.glow-primary-strong {
+  box-shadow:
+    0 0 30px oklch(from var(--primary) l c h / 30%),
+    0 0 60px oklch(from var(--primary) l c h / 15%),
+    0 0 100px oklch(from var(--primary) l c h / 10%);
+}
+
+.text-glow {
+  text-shadow: 0 0 20px oklch(from var(--primary) l c h / 50%);
+}
+
+/* ===== Background Patterns ===== */
+
+/* Dot Pattern - Subtle and clean */
+.bg-dots {
+  background-image: radial-gradient(oklch(from var(--primary) l c h / 15%) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.bg-dots-dense {
+  background-image: radial-gradient(oklch(from var(--primary) l c h / 12%) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.bg-dots-sparse {
+  background-image: radial-gradient(oklch(from var(--primary) l c h / 10%) 1.5px, transparent 1.5px);
+  background-size: 40px 40px;
+}
+
+/* Code Rain / Matrix style dots */
+.bg-code-dots {
+  background-image:
+    radial-gradient(oklch(from var(--primary) l c h / 20%) 1px, transparent 1px),
+    radial-gradient(oklch(from var(--primary) l c h / 10%) 1px, transparent 1px);
+  background-size: 40px 40px, 80px 80px;
+  background-position: 0 0, 20px 20px;
+}
+
+/* Circuit Board Pattern */
+.bg-circuit {
+  background-image:
+    linear-gradient(90deg, oklch(from var(--primary) l c h / 4%) 1px, transparent 1px),
+    linear-gradient(oklch(from var(--primary) l c h / 4%) 1px, transparent 1px),
+    radial-gradient(oklch(from var(--primary) l c h / 15%) 2px, transparent 2px);
+  background-size: 60px 60px, 60px 60px, 60px 60px;
+  background-position: -1px -1px, -1px -1px, 29px 29px;
+}
+
+/* Hexagon Pattern */
+.bg-hex {
+  background-color: transparent;
+  background-image:
+    linear-gradient(30deg, oklch(from var(--primary) l c h / 5%) 12%, transparent 12.5%, transparent 87%, oklch(from var(--primary) l c h / 5%) 87.5%, oklch(from var(--primary) l c h / 5%)),
+    linear-gradient(150deg, oklch(from var(--primary) l c h / 5%) 12%, transparent 12.5%, transparent 87%, oklch(from var(--primary) l c h / 5%) 87.5%, oklch(from var(--primary) l c h / 5%)),
+    linear-gradient(30deg, oklch(from var(--primary) l c h / 5%) 12%, transparent 12.5%, transparent 87%, oklch(from var(--primary) l c h / 5%) 87.5%, oklch(from var(--primary) l c h / 5%)),
+    linear-gradient(150deg, oklch(from var(--primary) l c h / 5%) 12%, transparent 12.5%, transparent 87%, oklch(from var(--primary) l c h / 5%) 87.5%, oklch(from var(--primary) l c h / 5%)),
+    linear-gradient(60deg, oklch(from var(--primary) l c h / 8%) 25%, transparent 25.5%, transparent 75%, oklch(from var(--primary) l c h / 8%) 75%, oklch(from var(--primary) l c h / 8%)),
+    linear-gradient(60deg, oklch(from var(--primary) l c h / 8%) 25%, transparent 25.5%, transparent 75%, oklch(from var(--primary) l c h / 8%) 75%, oklch(from var(--primary) l c h / 8%));
+  background-size: 80px 140px;
+  background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px;
+}
+
+/* Crosshatch Pattern */
+.bg-crosshatch {
+  background-image:
+    linear-gradient(45deg, oklch(from var(--primary) l c h / 3%) 25%, transparent 25%),
+    linear-gradient(-45deg, oklch(from var(--primary) l c h / 3%) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, oklch(from var(--primary) l c h / 3%) 75%),
+    linear-gradient(-45deg, transparent 75%, oklch(from var(--primary) l c h / 3%) 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0;
+}
+
+/* Gradient Mesh Background */
+.bg-mesh {
+  background-image:
+    radial-gradient(at 40% 20%, oklch(from var(--primary) l c h / 8%) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, oklch(0.6 0.15 280 / 6%) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, oklch(from var(--primary) l c h / 5%) 0px, transparent 50%),
+    radial-gradient(at 80% 50%, oklch(0.7 0.12 200 / 6%) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, oklch(from var(--primary) l c h / 8%) 0px, transparent 50%),
+    radial-gradient(at 80% 100%, oklch(0.6 0.18 320 / 5%) 0px, transparent 50%);
+}
+
+/* Aurora / Northern Lights Effect */
+.bg-aurora {
+  background:
+    linear-gradient(135deg, oklch(from var(--primary) l c h / 3%) 0%, transparent 50%),
+    linear-gradient(225deg, oklch(0.6 0.15 280 / 3%) 0%, transparent 50%),
+    linear-gradient(315deg, oklch(0.7 0.12 180 / 3%) 0%, transparent 50%);
+}
+
+/* Scanlines Effect */
+.bg-scanlines {
+  background-image: repeating-linear-gradient(0deg,
+      oklch(0 0 0 / 3%),
+      oklch(0 0 0 / 3%) 1px,
+      transparent 1px,
+      transparent 2px);
+}
+
+/* Noise Texture */
+.bg-noise {
+  position: relative;
+}
+
+.bg-noise::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+/* Gradient Spotlight */
+.bg-spotlight {
+  background: radial-gradient(ellipse 80% 50% at 50% -20%,
+      oklch(from var(--primary) l c h / 15%),
+      transparent);
+}
+
+.bg-spotlight-bottom {
+  background: radial-gradient(ellipse 80% 50% at 50% 120%,
+      oklch(from var(--primary) l c h / 10%),
+      transparent);
+}
+
+/* Animated Gradient Border (for cards) */
+@property --gradient-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.bg-gradient-border {
+  --gradient-angle: 0deg;
+  background: linear-gradient(var(--background), var(--background)) padding-box,
+    linear-gradient(var(--gradient-angle), var(--primary), oklch(0.6 0.18 280), oklch(0.7 0.15 180), var(--primary)) border-box;
+  border: 1px solid transparent;
+  animation: gradient-rotate 8s linear infinite;
+}
+
+@keyframes gradient-rotate {
+  to {
+    --gradient-angle: 360deg;
+  }
+}
+
+/* Glow Line */
+.glow-line {
+  height: 1px;
+  background: linear-gradient(90deg,
+      transparent,
+      oklch(from var(--primary) l c h / 50%),
+      oklch(from var(--primary) l c h / 80%),
+      oklch(from var(--primary) l c h / 50%),
+      transparent);
+  box-shadow: 0 0 20px oklch(from var(--primary) l c h / 30%);
+}
+
+/* Legacy Grid Backgrounds (kept for compatibility) */
+.grid-background {
+  background-image:
+    linear-gradient(oklch(from var(--border) l c h / 30%) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(from var(--border) l c h / 30%) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+.grid-background-fine {
+  background-image:
+    linear-gradient(oklch(from var(--border) l c h / 20%) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(from var(--border) l c h / 20%) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Gradient Overlays */
+.gradient-fade-down {
+  background: linear-gradient(to bottom, transparent, var(--background));
+}
+
+.gradient-fade-up {
+  background: linear-gradient(to top, transparent, var(--background));
+}
+
+.gradient-radial-center {
+  background: radial-gradient(ellipse at center, oklch(from var(--primary) l c h / 5%) 0%, transparent 70%);
+}
+
+/* Section dividers */
+.section-divider {
+  @apply h-px w-full;
+  background: linear-gradient(90deg,
+      transparent,
+      oklch(from var(--border) l c h / 50%) 20%,
+      oklch(from var(--border) l c h / 50%) 80%,
+      transparent);
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Selection */
+::selection {
+  background: oklch(from var(--primary) l c h / 30%);
+  color: var(--foreground);
+}
+
+/* Mouse follower styles */
+.mouse-follower {
+  @apply pointer-events-none fixed z-50 mix-blend-difference;
+}
+
+/* Animated underline */
+.animated-underline {
+  @apply relative;
+}
+
+.animated-underline::after {
+  content: '';
+  @apply absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300;
+}
+
+.animated-underline:hover::after {
+  @apply w-full;
+}
+
+/* Git commit timeline styles */
+.git-timeline {
+  @apply relative pl-8;
+}
+
+.git-timeline::before {
+  content: '';
+  @apply absolute left-3 top-0 bottom-0 w-0.5 bg-border;
+}
+
+.git-commit {
+  @apply relative mb-8;
+}
+
+.git-commit::before {
+  content: '';
+  @apply absolute -left-5 top-1.5 w-3 h-3 rounded-full bg-primary border-2 border-background;
+  box-shadow: 0 0 10px oklch(from var(--primary) l c h / 40%);
+}
+
+/* Card hover effects */
+.card-hover-lift {
+  @apply transition-all duration-300;
+}
+
+.card-hover-lift:hover {
+  @apply -translate-y-1;
+  box-shadow:
+    0 10px 30px -10px oklch(0 0 0 / 20%),
+    0 0 20px oklch(from var(--primary) l c h / 10%);
+}
+
+/* Noise texture overlay */
+.noise-overlay {
+  position: relative;
+}
+
+.noise-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+/* Typing animation */
+@keyframes typing {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 100%;
+  }
+}
+
+.typing-effect {
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 2px solid var(--primary);
+  animation: typing 3s steps(40, end), blink 1s step-end infinite;
+}
+
+/* Stagger animation delays */
+.stagger-1 {
+  animation-delay: 0.1s;
+}
+
+.stagger-2 {
+  animation-delay: 0.2s;
+}
+
+.stagger-3 {
+  animation-delay: 0.3s;
+}
+
+.stagger-4 {
+  animation-delay: 0.4s;
+}
+
+.stagger-5 {
+  animation-delay: 0.5s;
+}
+
+.stagger-6 {
+  animation-delay: 0.6s;
+}

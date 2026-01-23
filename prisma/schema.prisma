@@ -1,0 +1,352 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  // This is the output directory for the generated Prisma client dont change it
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  // dont add url here, it will be handled by the prisma config file
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  sessions      Session[]
+  accounts      Account[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model ProjectTags {
+  id        String    @id @default(cuid())
+  title     String
+  slug      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  projects  Project[]
+
+  @@index([slug])
+  @@map("project_tags")
+}
+
+model Project {
+  id              String        @id @default(cuid())
+  title           String
+  slug            String        @unique
+  description     String?
+  excerpt         String?
+  demoLink        String?
+  githubLink      String?
+  videoUrl        String?
+  thumbnail       String
+  cover           String
+  youtubeId       String?
+  body            Json?
+  techStack       String[]
+  featured        Boolean       @default(false)
+  status          ProjectStatus @default(DRAFT)
+  publishedAt     DateTime?
+  order           Int           @default(0)
+  views           Int           @default(0)
+  metaTitle       String?
+  metaDescription String?
+  seoKeywords     String[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  deletedAt       DateTime?
+  tags            ProjectTags[]
+
+  @@index([slug])
+  @@index([status])
+  @@index([featured])
+  @@index([publishedAt])
+  @@index([order])
+  @@index([deletedAt])
+  @@index([status, featured, publishedAt])
+  @@map("projects")
+}
+
+enum ProjectStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model BlogCategory {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String?
+  color       String?  @default("#3B82F6")
+  icon        String?  @default("📝")
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  blogs       Blog[]
+
+  @@index([slug])
+  @@index([order])
+  @@map("blog_categories")
+}
+
+model BlogTags {
+  id        String   @id @default(cuid())
+  title     String
+  slug      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  blogs     Blog[]
+
+  @@index([slug])
+  @@map("blog_tags")
+}
+
+model Blog {
+  id               String         @id @default(cuid())
+  title            String
+  slug             String         @unique
+  excerpt          String
+  metaTitle        String?
+  metaDescription  String?
+  featuredImage    String
+  featuredImageAlt String?
+  publishedAt      DateTime?
+  updatedAt        DateTime       @updatedAt
+  markdownContent  String?
+  body             Json?
+  readingTime      Int?
+  wordCount        Int?
+  views            Int            @default(0)
+  featured         Boolean        @default(false)
+  status           BlogStatus     @default(DRAFT)
+  seoKeywords      String[]
+  order            Int            @default(0)
+  createdAt        DateTime       @default(now())
+  deletedAt        DateTime?
+  categories       BlogCategory[]
+  tags             BlogTags[]
+  relatedPosts     Blog[]         @relation("RelatedPosts")
+  relatedTo        Blog[]         @relation("RelatedPosts")
+
+  @@index([slug])
+  @@index([status])
+  @@index([publishedAt])
+  @@index([featured])
+  @@index([order])
+  @@index([deletedAt])
+  @@index([status, publishedAt])
+  @@map("blogs")
+}
+
+enum BlogStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+// Settings Models - Single row tables for site configuration
+
+model PersonalDetails {
+  id               String   @id @default("default")
+  fullName         String   @default("")
+  title            String   @default("")
+  tagline          String   @default("")
+  bio              String   @default("")
+  avatar           String?
+  location         String   @default("")
+  email            String   @default("")
+  phone            String?
+  availableForHire Boolean  @default(false)
+  showEmail        Boolean  @default(true)
+  showPhone        Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("personal_details")
+}
+
+model SiteDetails {
+  id                     String   @id @default("default")
+  siteName               String   @default("")
+  siteTagline            String   @default("")
+  siteDescription        String   @default("")
+  logo                   String?
+  favicon                String?
+  ogImage                String?
+  language               String   @default("en")
+  timezone               String   @default("UTC")
+  dateFormat             String   @default("MMM DD, YYYY")
+  googleAnalyticsId      String?
+  googleSiteVerification String?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  @@map("site_details")
+}
+
+model SocialLinks {
+  id            String   @id @default("default")
+  github        String?
+  linkedin      String?
+  twitter       String?
+  instagram     String?
+  youtube       String?
+  dribbble      String?
+  behance       String?
+  codepen       String?
+  medium        String?
+  devto         String?
+  hashnode      String?
+  stackoverflow String?
+  discord       String?
+  telegram      String?
+  whatsapp      String?
+  website       String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("social_links")
+}
+
+model PortfolioSettings {
+  id                     String   @id @default("default")
+  projectsPerPage        Int      @default(9)
+  featuredProjectsCount  Int      @default(3)
+  showProjectViews       Boolean  @default(true)
+  showTechStack          Boolean  @default(true)
+  enableProjectFiltering Boolean  @default(true)
+  enableProjectSearch    Boolean  @default(true)
+  defaultProjectSort     String   @default("order")
+  showGithubLink         Boolean  @default(true)
+  showDemoLink           Boolean  @default(true)
+  projectCardStyle       String   @default("modern")
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  @@map("portfolio_settings")
+}
+
+model BlogSettings {
+  id                  String   @id @default("default")
+  postsPerPage        Int      @default(10)
+  featuredPostsCount  Int      @default(3)
+  showReadingTime     Boolean  @default(true)
+  showViews           Boolean  @default(true)
+  showTableOfContents Boolean  @default(true)
+  enableComments      Boolean  @default(false)
+  commentSystem       String   @default("none")
+  enableNewsletter    Boolean  @default(false)
+  newsletterProvider  String   @default("none")
+  enableRss           Boolean  @default(true)
+  enableSearch        Boolean  @default(true)
+  showRelatedPosts    Boolean  @default(true)
+  relatedPostsCount   Int      @default(3)
+  showShareButtons    Boolean  @default(true)
+  showCategories      Boolean  @default(true)
+  showTags            Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@map("blog_settings")
+}
+
+model ResumeSettings {
+  id                 String   @id @default("default")
+  resumeUrl          String?
+  showDownloadButton Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@map("resume_settings")
+}
+
+model ContactSettings {
+  id                   String   @id @default("default")
+  enableContactForm    Boolean  @default(true)
+  contactEmail         String   @default("")
+  enableSpamProtection Boolean  @default(true)
+  officeAddress        String?
+  workingHours         String   @default("Mon - Fri, 9:00 AM - 6:00 PM")
+  responseTime         String   @default("24 hours")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@map("contact_settings")
+}
+
+model SeoSettings {
+  id                     String   @id @default("default")
+  defaultMetaTitle       String   @default("")
+  defaultMetaDescription String   @default("")
+  defaultKeywords        String   @default("")
+  enableSitemap          Boolean  @default(true)
+  enableRobotsTxt        Boolean  @default(true)
+  canonicalUrl           String?
+  twitterHandle          String?
+  ogType                 String   @default("website")
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  @@map("seo_settings")
+}
