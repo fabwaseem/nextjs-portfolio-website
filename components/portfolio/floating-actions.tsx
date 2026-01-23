@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUp, Moon, Sun, Palette, Check } from "lucide-react";
+import { ArrowUp, Moon, Sun, Palette, Check, Loader2 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useColorScheme } from "@/lib/themes";
 import {
@@ -14,7 +14,7 @@ import {
   CommandItem,
 } from "@/components/ui/command";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { ThemeManager, type ColorScheme } from "@/lib/themes/theme-config";
+import type { ColorScheme } from "@/lib/themes/theme-config";
 import { cn } from "@/lib/utils";
 
 interface FloatingActionsProps {
@@ -30,10 +30,16 @@ export function FloatingActions({
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isThemeDialogOpen, setIsThemeDialogOpen] = useState(false);
-  const [hoveredTheme, setHoveredTheme] = useState<ColorScheme | null>(null);
   const originalThemeRef = useRef<ColorScheme | null>(null);
-  const { setTheme, theme: themeMode, resolvedTheme } = useTheme();
-  const { colorScheme, setColorScheme, availableThemes } = useColorScheme();
+  const { setTheme, theme: themeMode } = useTheme();
+  const {
+    colorScheme,
+    setColorScheme,
+    availableThemes,
+    isLoadingThemes,
+    applyThemePreview,
+    getPreviewColors,
+  } = useColorScheme();
 
   // Calculate scroll progress
   const handleScroll = useCallback(() => {
@@ -58,120 +64,34 @@ export function FloatingActions({
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Apply theme preview (temporary)
-  const applyThemePreview = useCallback(
-    (schemeId: string | null) => {
-      if (typeof window === "undefined") return;
-      if (!schemeId) {
-        // Reset to original theme
-        if (originalThemeRef.current) {
-          const manager = ThemeManager.getInstance();
-          const colors = manager.getThemeColors(
-            originalThemeRef.current as ColorScheme,
-            resolvedTheme === "dark" ? "dark" : "light"
-          );
-          const cssVariables = manager.generateCSSVariables(colors);
-          const root = document.documentElement;
-          Object.entries(cssVariables).forEach(([key, value]) => {
-            root.style.setProperty(key, value);
-          });
-        }
-        return;
-      }
-
-      const manager = ThemeManager.getInstance();
-      const colors = manager.getThemeColors(
-        schemeId as ColorScheme,
-        resolvedTheme === "dark" ? "dark" : "light"
-      );
-      const cssVariables = manager.generateCSSVariables(colors);
-      const root = document.documentElement;
-      Object.entries(cssVariables).forEach(([key, value]) => {
-        root.style.setProperty(key, value);
-      });
-    },
-    [resolvedTheme]
-  );
-
-  // Handle dialog open
+  // Handle dialog open/close
   const handleDialogOpen = (open: boolean) => {
     setIsThemeDialogOpen(open);
     if (open) {
       originalThemeRef.current = colorScheme;
-      setHoveredTheme(null);
     } else {
-      // Always reset to the actual saved colorScheme when closing
-      setHoveredTheme(null);
-      // Force re-apply the current saved theme
-      const manager = ThemeManager.getInstance();
-      const colors = manager.getThemeColors(
-        colorScheme,
-        resolvedTheme === "dark" ? "dark" : "light"
-      );
-      const cssVariables = manager.generateCSSVariables(colors);
-      const root = document.documentElement;
-      Object.entries(cssVariables).forEach(([key, value]) => {
-        root.style.setProperty(key, value);
-      });
+      // Reset to the saved theme when closing
+      applyThemePreview(null);
     }
   };
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (hoveredTheme && hoveredTheme !== colorScheme) {
-        applyThemePreview(null);
-      }
-    };
-  }, [hoveredTheme, colorScheme, applyThemePreview]);
-
-  // Handle theme hover
-  const handleThemeHover = (themeId: string) => {
-    const schemeId = themeId as ColorScheme;
-    setHoveredTheme(schemeId);
-    if (schemeId !== originalThemeRef.current) {
+  // Handle theme hover - apply preview
+  const handleThemeHover = (themeId: ColorScheme) => {
+    if (themeId !== originalThemeRef.current) {
       applyThemePreview(themeId);
     }
   };
 
-  // Handle theme leave - reset to current saved theme
+  // Handle theme leave - reset to saved theme
   const handleThemeLeave = useCallback(() => {
-    setHoveredTheme(null);
-    if (!originalThemeRef.current) return;
-    const manager = ThemeManager.getInstance();
-    const colors = manager.getThemeColors(
-      originalThemeRef.current,
-      resolvedTheme === "dark" ? "dark" : "light"
-    );
-    const cssVariables = manager.generateCSSVariables(colors);
-    const root = document.documentElement;
-    Object.entries(cssVariables).forEach(([key, value]) => {
-      root.style.setProperty(key, value);
-    });
-  }, [resolvedTheme]);
+    applyThemePreview(null);
+  }, [applyThemePreview]);
 
-  // Handle theme click
-  const handleThemeClick = (themeId: string) => {
-    const schemeId = themeId as ColorScheme;
-    setColorScheme(schemeId);
-    originalThemeRef.current = schemeId;
-    setHoveredTheme(null);
+  // Handle theme click - save and close
+  const handleThemeClick = (themeId: ColorScheme) => {
+    setColorScheme(themeId);
+    originalThemeRef.current = themeId;
     setIsThemeDialogOpen(false);
-  };
-
-  // Get theme colors for palette dots
-  const getThemeColors = (themeId: string) => {
-    const manager = ThemeManager.getInstance();
-    const colors = manager.getThemeColors(
-      themeId as ColorScheme,
-      resolvedTheme === "dark" ? "dark" : "light"
-    );
-    // Extract primary, secondary, and accent colors
-    return [
-      colors.primary,
-      colors.secondary || colors.accent,
-      colors.chart1 || colors.primary,
-    ];
   };
 
   if (!mounted) return null;
@@ -206,48 +126,54 @@ export function FloatingActions({
           <ScrollArea className="h-[400px]">
             <CommandList className="max-h-none">
               <CommandEmpty>No theme found.</CommandEmpty>
-              <CommandGroup heading="Color Schemes">
-                {availableThemes.map((t) => {
-                  const themeColors = getThemeColors(t.id);
-                  return (
-                    <CommandItem
-                      key={t.id}
-                      value={`${t.name} ${t.description} ${t.id}`}
-                      onMouseEnter={() => handleThemeHover(t.id)}
-                      onMouseLeave={handleThemeLeave}
-                      onSelect={() => handleThemeClick(t.id)}
-                      className={cn(
-                        "flex items-center justify-between gap-3 cursor-pointer",
-                        colorScheme === t.id && "bg-primary/10"
-                      )}
-                    >
-                      <div className="flex items-center gap-3 flex-1 min-w-0">
-                        {/* Color Palette Dots */}
-                        <div className="flex items-center gap-1 shrink-0">
-                          {themeColors.map((color, idx) => (
-                            <div
-                              key={idx}
-                              className="w-3 h-3 rounded-full border border-border/50"
-                              style={{ backgroundColor: color }}
-                            />
-                          ))}
+              {isLoadingThemes ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                </div>
+              ) : (
+                <CommandGroup heading="Color Schemes">
+                  {availableThemes.map((t) => {
+                    const themeColors = getPreviewColors(t.id);
+                    return (
+                      <CommandItem
+                        key={t.id}
+                        value={`${t.name} ${t.description} ${t.id}`}
+                        onMouseEnter={() => handleThemeHover(t.id)}
+                        onMouseLeave={handleThemeLeave}
+                        onSelect={() => handleThemeClick(t.id)}
+                        className={cn(
+                          "flex items-center justify-between gap-3 cursor-pointer",
+                          colorScheme === t.id && "bg-primary/10"
+                        )}
+                      >
+                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                          {/* Color Palette Dots */}
+                          <div className="flex items-center gap-1 shrink-0">
+                            {themeColors.map((color, idx) => (
+                              <div
+                                key={idx}
+                                className="w-3 h-3 rounded-full border border-border/50"
+                                style={{ backgroundColor: color }}
+                              />
+                            ))}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-sm truncate">
+                              {t.name}
+                            </p>
+                            <p className="text-xs text-muted-foreground truncate">
+                              {t.description}
+                            </p>
+                          </div>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-sm truncate">
-                            {t.name}
-                          </p>
-                          <p className="text-xs text-muted-foreground truncate">
-                            {t.description}
-                          </p>
-                        </div>
-                      </div>
-                      {colorScheme === t.id && (
-                        <Check className="w-4 h-4 shrink-0 text-primary" />
-                      )}
-                    </CommandItem>
-                  );
-                })}
-              </CommandGroup>
+                        {colorScheme === t.id && (
+                          <Check className="w-4 h-4 shrink-0 text-primary" />
+                        )}
+                      </CommandItem>
+                    );
+                  })}
+                </CommandGroup>
+              )}
               <CommandGroup heading="Appearance">
                 <CommandItem
                   onSelect={() => setTheme("light")}

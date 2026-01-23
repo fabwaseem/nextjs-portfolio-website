@@ -4,8 +4,6 @@ export {
   type ThemeMode,
   type ColorScheme,
   type ThemeDefinition,
-  vscodeTheme,
-  catppuccinTheme,
   themes,
   DEFAULT_COLOR_SCHEME,
   DEFAULT_THEME_MODE,
@@ -18,3 +16,11 @@ export {
   useColorScheme,
   useColorSchemeOptional,
 } from "./color-scheme-context";
+
+// Client-side types for API-based theme fetching
+export type {
+  ThemeMetadata,
+  ThemePreviewColors,
+  ThemeData,
+  CachedTheme,
+} from "./theme-types";

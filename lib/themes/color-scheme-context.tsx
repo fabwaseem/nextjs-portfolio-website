@@ -7,17 +7,16 @@ import {
   useState,
   useCallback,
   useMemo,
+  useRef,
   type ReactNode,
 } from "react";
 import { useTheme } from "next-themes";
-import {
-  type ColorScheme,
-  type ThemeDefinition,
-  themes,
-  ThemeManager,
-  DEFAULT_COLOR_SCHEME,
-  STORAGE_KEY_COLOR_SCHEME,
-} from "./theme-config";
+import type { ColorScheme, ThemeColors } from "./theme-config";
+import type { ThemeMetadata, ThemeData, CachedTheme } from "./theme-types";
+import { DEFAULT_COLOR_SCHEME, STORAGE_KEY_COLOR_SCHEME } from "./theme-config";
+
+// Cache duration in milliseconds (1 hour)
+const CACHE_DURATION = 60 * 60 * 1000;
 
 /**
  * Color Scheme Context Interface
@@ -27,14 +26,18 @@ interface ColorSchemeContextValue {
   colorScheme: ColorScheme;
   /** Set the color scheme */
   setColorScheme: (scheme: ColorScheme) => void;
-  /** Current theme definition */
-  theme: ThemeDefinition;
-  /** All available themes */
-  availableThemes: ThemeDefinition[];
+  /** All available themes (minimal metadata) */
+  availableThemes: ThemeMetadata[];
+  /** Whether themes are loading */
+  isLoadingThemes: boolean;
   /** Whether the context is mounted (for hydration) */
   mounted: boolean;
   /** Toggle between available color schemes */
   toggleColorScheme: () => void;
+  /** Apply theme preview (for hover effects) */
+  applyThemePreview: (scheme: ColorScheme | null) => void;
+  /** Get preview colors for a theme */
+  getPreviewColors: (scheme: ColorScheme) => string[];
 }
 
 const ColorSchemeContext = createContext<ColorSchemeContextValue | undefined>(
@@ -53,14 +56,69 @@ interface ColorSchemeProviderProps {
 /**
  * Apply CSS variables to document root
  */
-function applyCSSVariables(scheme: ColorScheme, isDark: boolean): void {
+function applyCSSVariablesFromColors(colors: ThemeColors): void {
   if (typeof window === "undefined") return;
 
-  const manager = ThemeManager.getInstance();
-  const colors = manager.getThemeColors(scheme, isDark ? "dark" : "light");
-  const cssVariables = manager.generateCSSVariables(colors);
-
   const root = document.documentElement;
+
+  // Map theme colors to CSS variables
+  const cssVariables: Record<string, string> = {
+    "--background": colors.background,
+    "--foreground": colors.foreground,
+    "--glass": colors.glass,
+    "--glass-foreground": colors.glassForeground,
+    "--glass-border": colors.glassBorder,
+    "--glass-muted": colors.glassMuted,
+    "--card": colors.card,
+    "--card-foreground": colors.cardForeground,
+    "--popover": colors.popover,
+    "--popover-foreground": colors.popoverForeground,
+    "--primary": colors.primary,
+    "--primary-foreground": colors.primaryForeground,
+    "--secondary": colors.secondary,
+    "--secondary-foreground": colors.secondaryForeground,
+    "--muted": colors.muted,
+    "--muted-foreground": colors.mutedForeground,
+    "--accent": colors.accent,
+    "--accent-foreground": colors.accentForeground,
+    "--destructive": colors.destructive,
+    "--border": colors.border,
+    "--input": colors.input,
+    "--ring": colors.ring,
+    "--chart-1": colors.chart1,
+    "--chart-2": colors.chart2,
+    "--chart-3": colors.chart3,
+    "--chart-4": colors.chart4,
+    "--chart-5": colors.chart5,
+    "--sidebar": colors.sidebar,
+    "--sidebar-foreground": colors.sidebarForeground,
+    "--sidebar-primary": colors.sidebarPrimary,
+    "--sidebar-primary-foreground": colors.sidebarPrimaryForeground,
+    "--sidebar-accent": colors.sidebarAccent,
+    "--sidebar-accent-foreground": colors.sidebarAccentForeground,
+    "--sidebar-border": colors.sidebarBorder,
+    "--sidebar-ring": colors.sidebarRing,
+    "--editor-bg": colors.editorBg,
+    "--editor-line": colors.editorLine,
+    "--editor-selection": colors.editorSelection,
+    "--editor-gutter": colors.editorGutter,
+    "--syntax-keyword": colors.syntaxKeyword,
+    "--syntax-string": colors.syntaxString,
+    "--syntax-function": colors.syntaxFunction,
+    "--syntax-variable": colors.syntaxVariable,
+    "--syntax-comment": colors.syntaxComment,
+    "--syntax-number": colors.syntaxNumber,
+    "--syntax-operator": colors.syntaxOperator,
+    "--syntax-type": colors.syntaxType,
+    "--terminal-bg": colors.terminalBg,
+    "--terminal-green": colors.terminalGreen,
+    "--terminal-yellow": colors.terminalYellow,
+    "--terminal-blue": colors.terminalBlue,
+    "--terminal-red": colors.terminalRed,
+    "--terminal-cyan": colors.terminalCyan,
+    "--terminal-magenta": colors.terminalMagenta,
+  };
+
   Object.entries(cssVariables).forEach(([key, value]) => {
     root.style.setProperty(key, value);
   });
@@ -68,7 +126,7 @@ function applyCSSVariables(scheme: ColorScheme, isDark: boolean): void {
 
 /**
  * Color Scheme Provider Component
- * Manages color scheme state with local storage persistence
+ * Manages color scheme state with API-based theme fetching
  */
 export function ColorSchemeProvider({
   children,
@@ -78,74 +136,158 @@ export function ColorSchemeProvider({
   const [colorScheme, setColorSchemeState] =
     useState<ColorScheme>(defaultScheme);
   const [mounted, setMounted] = useState(false);
+  const [availableThemes, setAvailableThemes] = useState<ThemeMetadata[]>([]);
+  const [isLoadingThemes, setIsLoadingThemes] = useState(true);
   const { resolvedTheme } = useTheme();
 
-  // Available themes memoized
-  const availableThemes = useMemo(() => {
-    return ThemeManager.getInstance().getAllThemes();
+  // Theme cache ref to avoid re-renders
+  const themeCacheRef = useRef<Map<ColorScheme, CachedTheme>>(new Map());
+  const previewSchemeRef = useRef<ColorScheme | null>(null);
+
+  // Fetch theme list on mount
+  useEffect(() => {
+    async function fetchThemeList() {
+      try {
+        const response = await fetch("/api/themes");
+        if (response.ok) {
+          const themes: ThemeMetadata[] = await response.json();
+          setAvailableThemes(themes);
+        }
+      } catch (error) {
+        console.error("Failed to fetch theme list:", error);
+      } finally {
+        setIsLoadingThemes(false);
+      }
+    }
+
+    fetchThemeList();
   }, []);
 
-  // Current theme definition
-  const theme = useMemo(() => {
-    return themes[colorScheme];
-  }, [colorScheme]);
+  // Fetch and cache a specific theme
+  const fetchTheme = useCallback(
+    async (schemeId: ColorScheme): Promise<ThemeData | null> => {
+      // Check cache first
+      const cached = themeCacheRef.current.get(schemeId);
+      if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+        return cached.data;
+      }
+
+      try {
+        const response = await fetch(`/api/themes/${schemeId}`);
+        if (response.ok) {
+          const theme: ThemeData = await response.json();
+          // Update cache
+          themeCacheRef.current.set(schemeId, {
+            data: theme,
+            timestamp: Date.now(),
+          });
+          return theme;
+        }
+      } catch (error) {
+        console.error(`Failed to fetch theme ${schemeId}:`, error);
+      }
+      return null;
+    },
+    []
+  );
+
+  // Apply theme colors
+  const applyTheme = useCallback(
+    async (schemeId: ColorScheme) => {
+      const theme = await fetchTheme(schemeId);
+      if (theme) {
+        const isDark = resolvedTheme === "dark";
+        const colors = isDark ? theme.dark : theme.light;
+        applyCSSVariablesFromColors(colors);
+      }
+    },
+    [fetchTheme, resolvedTheme]
+  );
 
   // Initialize from local storage
   useEffect(() => {
     const stored = localStorage.getItem(storageKey);
-    // Use Object.keys to get all valid schemes dynamically
-    const validSchemes = Object.keys(themes) as ColorScheme[];
-    if (stored && validSchemes.includes(stored as ColorScheme)) {
+    if (stored) {
       setColorSchemeState(stored as ColorScheme);
     }
     setMounted(true);
   }, [storageKey]);
 
-  // Apply CSS variables when color scheme or theme mode changes
+  // Apply theme when color scheme or theme mode changes
   useEffect(() => {
     if (!mounted) return;
 
-    const isDark = resolvedTheme === "dark";
-    applyCSSVariables(colorScheme, isDark);
+    const schemeToApply = previewSchemeRef.current || colorScheme;
+    applyTheme(schemeToApply);
 
-    // Update data attribute for potential CSS selectors
-    document.documentElement.setAttribute("data-color-scheme", colorScheme);
-  }, [colorScheme, resolvedTheme, mounted]);
+    // Update data attribute
+    document.documentElement.setAttribute("data-color-scheme", schemeToApply);
+  }, [colorScheme, resolvedTheme, mounted, applyTheme]);
 
   // Set color scheme with persistence
   const setColorScheme = useCallback(
     (scheme: ColorScheme) => {
       setColorSchemeState(scheme);
       localStorage.setItem(storageKey, scheme);
-      ThemeManager.getInstance().setCurrentScheme(scheme);
+      previewSchemeRef.current = null;
     },
     [storageKey]
   );
 
+  // Apply theme preview (for hover effects)
+  const applyThemePreview = useCallback(
+    (scheme: ColorScheme | null) => {
+      previewSchemeRef.current = scheme;
+      const schemeToApply = scheme || colorScheme;
+      applyTheme(schemeToApply);
+    },
+    [colorScheme, applyTheme]
+  );
+
+  // Get preview colors for theme picker dots
+  const getPreviewColors = useCallback(
+    (scheme: ColorScheme): string[] => {
+      const theme = availableThemes.find((t) => t.id === scheme);
+      if (!theme) return [];
+
+      const isDark = resolvedTheme === "dark";
+      const colors = isDark
+        ? theme.previewColors.dark
+        : theme.previewColors.light;
+      return [colors.primary, colors.secondary, colors.accent];
+    },
+    [availableThemes, resolvedTheme]
+  );
+
   // Toggle between color schemes
   const toggleColorScheme = useCallback(() => {
-    const schemeKeys = Object.keys(themes) as ColorScheme[];
-    const currentIndex = schemeKeys.indexOf(colorScheme);
-    const nextIndex = (currentIndex + 1) % schemeKeys.length;
-    setColorScheme(schemeKeys[nextIndex]);
-  }, [colorScheme, setColorScheme]);
+    if (availableThemes.length === 0) return;
+
+    const currentIndex = availableThemes.findIndex((t) => t.id === colorScheme);
+    const nextIndex = (currentIndex + 1) % availableThemes.length;
+    setColorScheme(availableThemes[nextIndex].id);
+  }, [colorScheme, availableThemes, setColorScheme]);
 
   const contextValue = useMemo<ColorSchemeContextValue>(
     () => ({
       colorScheme,
       setColorScheme,
-      theme,
       availableThemes,
+      isLoadingThemes,
       mounted,
       toggleColorScheme,
+      applyThemePreview,
+      getPreviewColors,
     }),
     [
       colorScheme,
       setColorScheme,
-      theme,
       availableThemes,
+      isLoadingThemes,
       mounted,
       toggleColorScheme,
+      applyThemePreview,
+      getPreviewColors,
     ]
   );
 
