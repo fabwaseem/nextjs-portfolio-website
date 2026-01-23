@@ -13,6 +13,7 @@ import {
   CommandGroup,
   CommandItem,
 } from "@/components/ui/command";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { ThemeManager, type ColorScheme } from "@/lib/themes/theme-config";
 import { cn } from "@/lib/utils";
 
@@ -96,22 +97,22 @@ export function FloatingActions({
   const handleDialogOpen = (open: boolean) => {
     setIsThemeDialogOpen(open);
     if (open) {
-      // Save original theme
       originalThemeRef.current = colorScheme;
       setHoveredTheme(null);
     } else {
-      // Reset to original theme if not clicked
-      if (hoveredTheme && hoveredTheme !== colorScheme) {
-        applyThemePreview(null);
-      }
+      // Always reset to the actual saved colorScheme when closing
       setHoveredTheme(null);
-      // Ensure we're back to the saved theme
-      if (
-        originalThemeRef.current &&
-        originalThemeRef.current !== colorScheme
-      ) {
-        applyThemePreview(null);
-      }
+      // Force re-apply the current saved theme
+      const manager = ThemeManager.getInstance();
+      const colors = manager.getThemeColors(
+        colorScheme,
+        resolvedTheme === "dark" ? "dark" : "light"
+      );
+      const cssVariables = manager.generateCSSVariables(colors);
+      const root = document.documentElement;
+      Object.entries(cssVariables).forEach(([key, value]) => {
+        root.style.setProperty(key, value);
+      });
     }
   };
 
@@ -127,11 +128,27 @@ export function FloatingActions({
   // Handle theme hover
   const handleThemeHover = (themeId: string) => {
     const schemeId = themeId as ColorScheme;
-    if (schemeId !== colorScheme) {
-      setHoveredTheme(schemeId);
+    setHoveredTheme(schemeId);
+    if (schemeId !== originalThemeRef.current) {
       applyThemePreview(themeId);
     }
   };
+
+  // Handle theme leave - reset to current saved theme
+  const handleThemeLeave = useCallback(() => {
+    setHoveredTheme(null);
+    if (!originalThemeRef.current) return;
+    const manager = ThemeManager.getInstance();
+    const colors = manager.getThemeColors(
+      originalThemeRef.current,
+      resolvedTheme === "dark" ? "dark" : "light"
+    );
+    const cssVariables = manager.generateCSSVariables(colors);
+    const root = document.documentElement;
+    Object.entries(cssVariables).forEach(([key, value]) => {
+      root.style.setProperty(key, value);
+    });
+  }, [resolvedTheme]);
 
   // Handle theme click
   const handleThemeClick = (themeId: string) => {
@@ -186,86 +203,86 @@ export function FloatingActions({
           className="max-w-md"
         >
           <CommandInput placeholder="Search theme..." />
-          <CommandList>
-            <CommandEmpty>No theme found.</CommandEmpty>
-            <CommandGroup heading="Color Schemes">
-              {availableThemes.map((t) => {
-                const themeColors = getThemeColors(t.id);
-                return (
-                  <CommandItem
-                    key={t.id}
-                    value={`${t.name} ${t.description} ${t.id}`}
-                    onMouseEnter={() => handleThemeHover(t.id)}
-                    onMouseLeave={() => {
-                      if (hoveredTheme === t.id && t.id !== colorScheme) {
-                        applyThemePreview(null);
-                        setHoveredTheme(null);
-                      }
-                    }}
-                    onSelect={() => handleThemeClick(t.id)}
-                    className={cn(
-                      "flex items-center justify-between gap-3 cursor-pointer",
-                      colorScheme === t.id && "bg-primary/10"
-                    )}
-                  >
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      {/* Color Palette Dots */}
-                      <div className="flex items-center gap-1 shrink-0">
-                        {themeColors.map((color, idx) => (
-                          <div
-                            key={idx}
-                            className="w-3 h-3 rounded-full border border-border/50"
-                            style={{ backgroundColor: color }}
-                          />
-                        ))}
+          <ScrollArea className="h-[400px]">
+            <CommandList className="max-h-none">
+              <CommandEmpty>No theme found.</CommandEmpty>
+              <CommandGroup heading="Color Schemes">
+                {availableThemes.map((t) => {
+                  const themeColors = getThemeColors(t.id);
+                  return (
+                    <CommandItem
+                      key={t.id}
+                      value={`${t.name} ${t.description} ${t.id}`}
+                      onMouseEnter={() => handleThemeHover(t.id)}
+                      onMouseLeave={handleThemeLeave}
+                      onSelect={() => handleThemeClick(t.id)}
+                      className={cn(
+                        "flex items-center justify-between gap-3 cursor-pointer",
+                        colorScheme === t.id && "bg-primary/10"
+                      )}
+                    >
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        {/* Color Palette Dots */}
+                        <div className="flex items-center gap-1 shrink-0">
+                          {themeColors.map((color, idx) => (
+                            <div
+                              key={idx}
+                              className="w-3 h-3 rounded-full border border-border/50"
+                              style={{ backgroundColor: color }}
+                            />
+                          ))}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm truncate">
+                            {t.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {t.description}
+                          </p>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm truncate">{t.name}</p>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {t.description}
-                        </p>
-                      </div>
-                    </div>
-                    {colorScheme === t.id && (
-                      <Check className="w-4 h-4 shrink-0 text-primary" />
-                    )}
-                  </CommandItem>
-                );
-              })}
-            </CommandGroup>
-            <CommandGroup heading="Appearance">
-              <CommandItem
-                onSelect={() => setTheme("light")}
-                className={cn(
-                  "flex items-center justify-between cursor-pointer",
-                  themeMode === "light" && "bg-primary/10"
-                )}
-              >
-                <div className="flex items-center gap-2">
-                  <Sun className="w-4 h-4" />
-                  <span>Light</span>
-                </div>
-                {themeMode === "light" && (
-                  <Check className="w-4 h-4 shrink-0 text-primary" />
-                )}
-              </CommandItem>
-              <CommandItem
-                onSelect={() => setTheme("dark")}
-                className={cn(
-                  "flex items-center justify-between cursor-pointer",
-                  themeMode === "dark" && "bg-primary/10"
-                )}
-              >
-                <div className="flex items-center gap-2">
-                  <Moon className="w-4 h-4" />
-                  <span>Dark</span>
-                </div>
-                {themeMode === "dark" && (
-                  <Check className="w-4 h-4 shrink-0 text-primary" />
-                )}
-              </CommandItem>
-            </CommandGroup>
-          </CommandList>
+                      {colorScheme === t.id && (
+                        <Check className="w-4 h-4 shrink-0 text-primary" />
+                      )}
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+              <CommandGroup heading="Appearance">
+                <CommandItem
+                  onSelect={() => setTheme("light")}
+                  className={cn(
+                    "flex items-center justify-between cursor-pointer",
+                    themeMode === "light" && "bg-primary/10"
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <Sun className="w-4 h-4" />
+                    <span>Light</span>
+                  </div>
+                  {themeMode === "light" && (
+                    <Check className="w-4 h-4 shrink-0 text-primary" />
+                  )}
+                </CommandItem>
+                <CommandItem
+                  onSelect={() => setTheme("dark")}
+                  className={cn(
+                    "flex items-center justify-between cursor-pointer",
+                    themeMode === "dark" && "bg-primary/10"
+                  )}
+                >
+                  <div className="flex items-center gap-2">
+                    <Moon className="w-4 h-4" />
+                    <span>Dark</span>
+                  </div>
+                  {themeMode === "dark" && (
+                    <Check className="w-4 h-4 shrink-0 text-primary" />
+                  )}
+                </CommandItem>
+              </CommandGroup>
+            </CommandList>
+            <ScrollBar orientation="vertical" />
+          </ScrollArea>
         </CommandDialog>
 
         <motion.button

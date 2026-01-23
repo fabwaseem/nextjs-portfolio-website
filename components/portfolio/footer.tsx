@@ -38,10 +38,10 @@ const socialLinks = [
   },
   {
     name: "Email",
-    url: "mailto:hello@waseemanjum.com",
+    url: "mailto:waseemaofficial@gmail.com",
     icon: Mail,
     command: "mail --compose",
-    username: "hello@waseemanjum.com",
+    username: "waseemaofficial@gmail.com",
   },
 ];
 
@@ -86,7 +86,7 @@ export function Footer() {
             opportunities and ideas.
           </p>
           <Link
-            href="mailto:hello@waseemanjum.com"
+            href="mailto:waseemaofficial@gmail.com"
             className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-xl font-medium transition-all hover:scale-105 glow-primary"
           >
             <Mail className="w-5 h-5" />

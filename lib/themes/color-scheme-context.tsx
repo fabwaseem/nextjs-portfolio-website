@@ -93,18 +93,8 @@ export function ColorSchemeProvider({
   // Initialize from local storage
   useEffect(() => {
     const stored = localStorage.getItem(storageKey);
-    const validSchemes: ColorScheme[] = [
-      "vscode",
-      "catppuccin",
-      "tokyoNight",
-      "dracula",
-      "nord",
-      "gruvbox",
-      "oneDark",
-      "solarized",
-      "rosePine",
-      "ayu",
-    ];
+    // Use Object.keys to get all valid schemes dynamically
+    const validSchemes = Object.keys(themes) as ColorScheme[];
     if (stored && validSchemes.includes(stored as ColorScheme)) {
       setColorSchemeState(stored as ColorScheme);
     }

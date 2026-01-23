@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
     `;
 
     await sendEmail({
-      to: "hello@waseemanjum.com",
+      to: "waseemaofficial@gmail.com",
       subject: `New Project Inquiry from ${name}`,
       html: emailHtml,
     });
