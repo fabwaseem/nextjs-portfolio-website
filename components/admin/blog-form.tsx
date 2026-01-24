@@ -40,11 +40,20 @@ import {
 } from "@/hooks/use-blog-categories";
 import { useBlogTags, useCreateBlogTag } from "@/hooks/use-blog-tags";
 import { useCreateBlog, useUpdateBlog, type Blog } from "@/hooks/use-blogs";
+import { useGenerateBlog } from "@/hooks/use-generate-blog";
 import { cn } from "@/lib/utils";
 import { blogFormSchema, type BlogFormInput } from "@/lib/validations";
 import { generateSlug } from "@/utils/slug";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, ChevronsUpDown, Sparkles, X, Plus } from "lucide-react";
+import {
+  Check,
+  ChevronsUpDown,
+  Sparkles,
+  X,
+  Plus,
+  Wand2,
+  Loader2,
+} from "lucide-react";
 import dynamic from "next/dynamic";
 import { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -68,6 +77,7 @@ export function BlogForm({ blog, onSuccess }: BlogFormProps) {
   const { data: tagsData } = useBlogTags();
   const createCategory = useCreateBlogCategory();
   const createTag = useCreateBlogTag();
+  const generateBlog = useGenerateBlog();
 
   const getBodyHtml = () => {
     if (!blog?.body) return "";
@@ -108,7 +118,58 @@ export function BlogForm({ blog, onSuccess }: BlogFormProps) {
   const [tagInput, setTagInput] = useState("");
   const selectedCategoryIds = form.watch("categoryIds");
   const selectedTagIds = form.watch("tagIds");
+  const bodyValue = form.watch("body");
   const quillEditorRef = useRef<any>(null);
+
+  // Quill editor configuration
+  const quillModules = {
+    toolbar: [
+      [{ header: [1, 2, 3, false] }],
+      ["bold", "italic", "underline", "strike", "blockquote"],
+      [
+        { list: "ordered" },
+        { list: "bullet" },
+        { indent: "-1" },
+        { indent: "+1" },
+      ],
+      ["link", "image", "code-block"],
+      ["clean"],
+    ],
+  };
+
+  const quillFormats = [
+    "header",
+    "bold",
+    "italic",
+    "underline",
+    "strike",
+    "blockquote",
+    "list",
+    "bullet",
+    "indent",
+    "link",
+    "image",
+    "code-block",
+  ];
+
+  // Setup Quill image handler
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const timer = setTimeout(() => {
+      const quillContainer = document.querySelector(".ql-container");
+      if (quillContainer && (window as any).Quill) {
+        const editor = (window as any).Quill.find(quillContainer);
+        if (editor && !quillEditorRef.current) {
+          setupQuillImageHandler(editor, blog?.id);
+          quillEditorRef.current = editor;
+        }
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bodyValue]);
 
   const onSubmit = async (data: BlogFormData) => {
     const submitData = {
@@ -172,15 +233,106 @@ export function BlogForm({ blog, onSuccess }: BlogFormProps) {
 
   const selectedCategories =
     categoriesData?.categories.filter((cat) =>
-      selectedCategoryIds.includes(cat.id),
+      selectedCategoryIds.includes(cat.id)
     ) || [];
 
   const selectedTags =
     tagsData?.tags.filter((tag) => selectedTagIds.includes(tag.id)) || [];
 
+  // Handle AI blog generation
+  const handleGenerateWithAI = async () => {
+    const currentTitle = form.getValues("title");
+
+    try {
+      const generated = await generateBlog.mutateAsync({
+        title: currentTitle || undefined,
+      });
+
+      // Create new categories and tags if needed
+      const allCategoryIds = [...generated.categoryIds];
+      const allTagIds = [...generated.tagIds];
+
+      // Create new categories
+      for (const categoryName of generated.newCategories) {
+        try {
+          const newCat = await createCategory.mutateAsync({
+            title: categoryName,
+            slug: generateSlug(categoryName),
+          });
+          allCategoryIds.push(newCat.id);
+        } catch (error) {
+          console.error(`Failed to create category: ${categoryName}`, error);
+        }
+      }
+
+      // Create new tags
+      for (const tagName of generated.newTags) {
+        try {
+          const newTag = await createTag.mutateAsync({
+            title: tagName,
+            slug: generateSlug(tagName),
+          });
+          allTagIds.push(newTag.id);
+        } catch (error) {
+          console.error(`Failed to create tag: ${tagName}`, error);
+        }
+      }
+
+      // Fill the form with generated data
+      form.setValue("title", generated.title);
+      form.setValue("slug", generated.slug);
+      form.setValue("excerpt", generated.excerpt);
+      form.setValue("body", generated.body);
+      form.setValue("metaTitle", generated.metaTitle);
+      form.setValue("metaDescription", generated.metaDescription);
+      form.setValue("seoKeywords", generated.seoKeywords.join(", "));
+      form.setValue("featuredImageAlt", generated.featuredImageAlt);
+      form.setValue("categoryIds", allCategoryIds);
+      form.setValue("tagIds", allTagIds);
+    } catch (error) {
+      console.error("Failed to generate blog:", error);
+    }
+  };
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {/* AI Generation Button - Only show for new blogs */}
+        {!blog && (
+          <div className="flex flex-col sm:flex-row gap-4 p-4 rounded-xl border border-primary/20 bg-primary/5">
+            <div className="flex-1 space-y-1">
+              <h3 className="font-semibold flex items-center gap-2">
+                <Wand2 className="h-5 w-5 text-primary" />
+                Generate with AI
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                {form.watch("title")
+                  ? "Generate a blog post based on your title"
+                  : "Enter a title above or let AI create a unique blog post"}
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="default"
+              onClick={handleGenerateWithAI}
+              disabled={generateBlog.isPending}
+              className="shrink-0 shadow-lg shadow-primary/25"
+            >
+              {generateBlog.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Wand2 className="mr-2 h-4 w-4" />
+                  Generate Blog
+                </>
+              )}
+            </Button>
+          </div>
+        )}
+
         {/* Title and Slug */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
@@ -190,7 +342,10 @@ export function BlogForm({ blog, onSuccess }: BlogFormProps) {
               <FormItem>
                 <FormLabel>Title</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Enter blog title" />
+                  <Input
+                    {...field}
+                    placeholder="Enter blog title (optional for AI)"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -257,79 +412,30 @@ export function BlogForm({ blog, onSuccess }: BlogFormProps) {
         <FormField
           control={form.control}
           name="body"
-          render={({ field }) => {
-            const quillModules = {
-              toolbar: [
-                [{ header: [1, 2, 3, false] }],
-                ["bold", "italic", "underline", "strike", "blockquote"],
-                [
-                  { list: "ordered" },
-                  { list: "bullet" },
-                  { indent: "-1" },
-                  { indent: "+1" },
-                ],
-                ["link", "image", "code-block"],
-                ["clean"],
-              ],
-            };
-
-            const quillFormats = [
-              "header",
-              "bold",
-              "italic",
-              "underline",
-              "strike",
-              "blockquote",
-              "list",
-              "bullet",
-              "indent",
-              "link",
-              "image",
-              "code-block",
-            ];
-
-            useEffect(() => {
-              if (typeof window === "undefined") return;
-
-              const timer = setTimeout(() => {
-                const quillContainer = document.querySelector(".ql-container");
-                if (quillContainer && (window as any).Quill) {
-                  const editor = (window as any).Quill.find(quillContainer);
-                  if (editor && !quillEditorRef.current) {
-                    setupQuillImageHandler(editor, blog?.id);
-                    quillEditorRef.current = editor;
-                  }
-                }
-              }, 500);
-
-              return () => clearTimeout(timer);
-            }, [blog?.id, field.value]);
-
-            return (
-              <FormItem>
-                <FormLabel>Content</FormLabel>
-                <FormControl>
-                  <div className="min-h-[400px]">
-                    {typeof window !== "undefined" && (
-                      <ReactQuill
-                        theme="snow"
-                        value={field.value || ""}
-                        onChange={field.onChange}
-                        modules={quillModules}
-                        formats={quillFormats}
-                        placeholder="Write your blog content here..."
-                        className="bg-background"
-                      />
-                    )}
-                  </div>
-                </FormControl>
-                <FormDescription>
-                  Write your blog content using the rich text editor
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            );
-          }}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Content</FormLabel>
+              <FormControl>
+                <div className="min-h-[400px]">
+                  {typeof window !== "undefined" && (
+                    <ReactQuill
+                      theme="snow"
+                      value={field.value || ""}
+                      onChange={field.onChange}
+                      modules={quillModules}
+                      formats={quillFormats}
+                      placeholder="Write your blog content here..."
+                      className="bg-background"
+                    />
+                  )}
+                </div>
+              </FormControl>
+              <FormDescription>
+                Write your blog content using the rich text editor
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
         />
 
         {/* Featured Image */}
@@ -391,7 +497,7 @@ export function BlogForm({ blog, onSuccess }: BlogFormProps) {
                           type="button"
                           onClick={() => {
                             field.onChange(
-                              field.value.filter((id) => id !== category.id),
+                              field.value.filter((id) => id !== category.id)
                             );
                           }}
                           className="ml-1 hover:text-destructive"
@@ -442,7 +548,7 @@ export function BlogForm({ blog, onSuccess }: BlogFormProps) {
                                 const current = field.value;
                                 if (current.includes(category.id)) {
                                   field.onChange(
-                                    current.filter((id) => id !== category.id),
+                                    current.filter((id) => id !== category.id)
                                   );
                                 } else {
                                   field.onChange([...current, category.id]);
@@ -454,7 +560,7 @@ export function BlogForm({ blog, onSuccess }: BlogFormProps) {
                                   "mr-2 h-4 w-4",
                                   field.value.includes(category.id)
                                     ? "opacity-100"
-                                    : "opacity-0",
+                                    : "opacity-0"
                                 )}
                               />
                               {category.icon} {category.title}
@@ -488,7 +594,7 @@ export function BlogForm({ blog, onSuccess }: BlogFormProps) {
                           type="button"
                           onClick={() => {
                             field.onChange(
-                              field.value.filter((id) => id !== tag.id),
+                              field.value.filter((id) => id !== tag.id)
                             );
                           }}
                           className="ml-1 hover:text-destructive"
@@ -539,7 +645,7 @@ export function BlogForm({ blog, onSuccess }: BlogFormProps) {
                                 const current = field.value;
                                 if (current.includes(tag.id)) {
                                   field.onChange(
-                                    current.filter((id) => id !== tag.id),
+                                    current.filter((id) => id !== tag.id)
                                   );
                                 } else {
                                   field.onChange([...current, tag.id]);
@@ -551,7 +657,7 @@ export function BlogForm({ blog, onSuccess }: BlogFormProps) {
                                   "mr-2 h-4 w-4",
                                   field.value.includes(tag.id)
                                     ? "opacity-100"
-                                    : "opacity-0",
+                                    : "opacity-0"
                                 )}
                               />
                               {tag.title}
@@ -702,8 +808,8 @@ export function BlogForm({ blog, onSuccess }: BlogFormProps) {
             {createBlog.isPending || updateBlog.isPending
               ? "Saving..."
               : blog
-                ? "Update Blog"
-                : "Create Blog"}
+              ? "Update Blog"
+              : "Create Blog"}
           </Button>
         </div>
       </form>
