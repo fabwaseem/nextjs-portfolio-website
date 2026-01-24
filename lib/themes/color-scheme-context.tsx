@@ -14,6 +14,7 @@ import { useTheme } from "next-themes";
 import type { ColorScheme, ThemeColors } from "./theme-config";
 import type { ThemeMetadata, ThemeData, CachedTheme } from "./theme-types";
 import { DEFAULT_COLOR_SCHEME, STORAGE_KEY_COLOR_SCHEME } from "./theme-config";
+import { loadFont, preloadFont, applyThemeFont } from "./theme-fonts";
 
 // Cache duration in milliseconds (1 hour)
 const CACHE_DURATION = 60 * 60 * 1000;
@@ -191,7 +192,7 @@ export function ColorSchemeProvider({
     []
   );
 
-  // Apply theme colors
+  // Apply theme colors and font
   const applyTheme = useCallback(
     async (schemeId: ColorScheme) => {
       const theme = await fetchTheme(schemeId);
@@ -199,6 +200,16 @@ export function ColorSchemeProvider({
         const isDark = resolvedTheme === "dark";
         const colors = isDark ? theme.dark : theme.light;
         applyCSSVariablesFromColors(colors);
+        
+        // Load and apply theme font
+        try {
+          await loadFont(schemeId);
+          applyThemeFont(schemeId);
+        } catch (error) {
+          console.warn(`Failed to load font for theme ${schemeId}:`, error);
+          // Still apply fallback font
+          applyThemeFont(schemeId);
+        }
       }
     },
     [fetchTheme, resolvedTheme]
@@ -239,6 +250,12 @@ export function ColorSchemeProvider({
     (scheme: ColorScheme | null) => {
       previewSchemeRef.current = scheme;
       const schemeToApply = scheme || colorScheme;
+      
+      // Preload font when hovering (before fully applying)
+      if (scheme) {
+        preloadFont(scheme);
+      }
+      
       applyTheme(schemeToApply);
     },
     [colorScheme, applyTheme]

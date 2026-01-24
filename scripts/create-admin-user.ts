@@ -45,7 +45,7 @@ async function createAdminUser() {
         id: userId,
         email,
         name,
-        emailVerified: false,
+        emailVerified: true,
       },
     });
 

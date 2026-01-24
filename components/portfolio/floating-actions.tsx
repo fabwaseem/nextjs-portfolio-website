@@ -31,6 +31,7 @@ export function FloatingActions({
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isThemeDialogOpen, setIsThemeDialogOpen] = useState(false);
   const originalThemeRef = useRef<ColorScheme | null>(null);
+  const scrollViewportRef = useRef<HTMLDivElement>(null);
   const { setTheme, theme: themeMode } = useTheme();
   const {
     colorScheme,
@@ -64,11 +65,35 @@ export function FloatingActions({
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // Scroll to selected theme in the list
+  const scrollToSelectedTheme = useCallback(() => {
+    if (!scrollViewportRef.current) return;
+
+    // Find the selected theme item
+    const selectedItem = scrollViewportRef.current.querySelector(
+      `[data-theme-id="${colorScheme}"]`
+    );
+    
+    if (selectedItem) {
+      // Get the position relative to the scroll container
+      const container = scrollViewportRef.current;
+      const itemTop = (selectedItem as HTMLElement).offsetTop;
+      const containerHeight = container.clientHeight;
+      const itemHeight = (selectedItem as HTMLElement).offsetHeight;
+
+      // Scroll to center the selected item
+      const scrollTo = itemTop - containerHeight / 2 + itemHeight / 2;
+      container.scrollTop = Math.max(0, scrollTo);
+    }
+  }, [colorScheme]);
+
   // Handle dialog open/close
   const handleDialogOpen = (open: boolean) => {
     setIsThemeDialogOpen(open);
     if (open) {
       originalThemeRef.current = colorScheme;
+      // Scroll to selected theme after dialog opens and renders
+      setTimeout(scrollToSelectedTheme, 100);
     } else {
       // Reset to the saved theme when closing
       applyThemePreview(null);
@@ -119,90 +144,89 @@ export function FloatingActions({
           open={isThemeDialogOpen}
           onOpenChange={handleDialogOpen}
           title="Select Theme"
-          description="Choose a color scheme"
-          className="max-w-md"
+          description="Choose a color scheme for your experience"
+          className="w-[calc(100vw-2rem)] max-w-xl sm:w-full"
         >
-          <CommandInput placeholder="Search theme..." />
-          <ScrollArea className="h-[400px]">
+          <CommandInput placeholder="Search themes..." className="h-11 sm:h-12" />
+          <ScrollArea className="h-[60vh] max-h-[500px] sm:max-h-[600px]" viewportRef={scrollViewportRef}>
             <CommandList className="max-h-none">
               <CommandEmpty>No theme found.</CommandEmpty>
               {isLoadingThemes ? (
-                <div className="flex items-center justify-center py-8">
-                  <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
                 </div>
               ) : (
-                <CommandGroup heading="Color Schemes">
+                <CommandGroup heading="Color Schemes" className="p-1.5 sm:p-2">
                   {availableThemes.map((t) => {
                     const themeColors = getPreviewColors(t.id);
                     return (
                       <CommandItem
                         key={t.id}
+                        data-theme-id={t.id}
                         value={`${t.name} ${t.description} ${t.id}`}
                         onMouseEnter={() => handleThemeHover(t.id)}
                         onMouseLeave={handleThemeLeave}
                         onSelect={() => handleThemeClick(t.id)}
                         className={cn(
-                          "flex items-center justify-between gap-3 cursor-pointer",
+                          "flex items-center justify-between gap-2 sm:gap-4 cursor-pointer py-2.5 sm:py-3 px-2 sm:px-3 rounded-lg",
                           colorScheme === t.id && "bg-primary/10"
                         )}
                       >
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
                           {/* Color Palette Dots */}
-                          <div className="flex items-center gap-1 shrink-0">
+                          <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
                             {themeColors.map((color, idx) => (
                               <div
                                 key={idx}
-                                className="w-3 h-3 rounded-full border border-border/50"
+                                className="w-3 h-3 sm:w-4 sm:h-4 rounded-full border border-border/50 shadow-sm"
                                 style={{ backgroundColor: color }}
                               />
                             ))}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-sm truncate">
-                              {t.name}
-                            </p>
-                            <p className="text-xs text-muted-foreground truncate">
+                            <p className="font-medium text-sm sm:text-base truncate">{t.name}</p>
+                            <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 sm:truncate">
                               {t.description}
                             </p>
                           </div>
                         </div>
                         {colorScheme === t.id && (
-                          <Check className="w-4 h-4 shrink-0 text-primary" />
+                          <Check className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 text-primary" />
                         )}
                       </CommandItem>
                     );
                   })}
                 </CommandGroup>
               )}
-              <CommandGroup heading="Appearance">
+              <CommandGroup heading="Appearance" className="p-1.5 sm:p-2">
                 <CommandItem
                   onSelect={() => setTheme("light")}
                   className={cn(
-                    "flex items-center justify-between cursor-pointer",
+                    "flex items-center justify-between cursor-pointer py-2.5 sm:py-3 px-2 sm:px-3 rounded-lg",
                     themeMode === "light" && "bg-primary/10"
                   )}
                 >
-                  <div className="flex items-center gap-2">
-                    <Sun className="w-4 h-4" />
-                    <span>Light</span>
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <Sun className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="font-medium text-sm sm:text-base">Light Mode</span>
                   </div>
                   {themeMode === "light" && (
-                    <Check className="w-4 h-4 shrink-0 text-primary" />
+                    <Check className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 text-primary" />
                   )}
                 </CommandItem>
                 <CommandItem
                   onSelect={() => setTheme("dark")}
                   className={cn(
-                    "flex items-center justify-between cursor-pointer",
+                    "flex items-center justify-between cursor-pointer py-2.5 sm:py-3 px-2 sm:px-3 rounded-lg",
                     themeMode === "dark" && "bg-primary/10"
                   )}
                 >
-                  <div className="flex items-center gap-2">
-                    <Moon className="w-4 h-4" />
-                    <span>Dark</span>
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <Moon className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="font-medium text-sm sm:text-base">Dark Mode</span>
                   </div>
                   {themeMode === "dark" && (
-                    <Check className="w-4 h-4 shrink-0 text-primary" />
+                    <Check className="w-4 h-4 sm:w-5 sm:h-5 shrink-0 text-primary" />
                   )}
                 </CommandItem>
               </CommandGroup>
@@ -214,7 +238,7 @@ export function FloatingActions({
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => setIsThemeDialogOpen(true)}
+          onClick={() => handleDialogOpen(true)}
           className="relative w-12 h-12 rounded-full bg-card/90 backdrop-blur-xl border border-border shadow-lg hover:border-primary/50 transition-colors flex items-center justify-center group"
           aria-label="Change theme"
         >

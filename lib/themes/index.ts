@@ -24,3 +24,15 @@ export type {
   ThemeData,
   CachedTheme,
 } from "./theme-types";
+
+// Font system exports
+export {
+  themeFonts,
+  loadFont,
+  preloadFont,
+  applyThemeFont,
+  getFontFamily,
+  getFontUrl,
+  isFontLoaded,
+  type ThemeFontConfig,
+} from "./theme-fonts";

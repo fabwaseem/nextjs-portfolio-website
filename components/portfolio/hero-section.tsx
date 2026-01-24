@@ -219,7 +219,7 @@ export function HeroSection() {
               className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight mb-6"
             >
               <motion.span
-                className="block text-muted-foreground text-lg md:text-xl lg:text-2xl font-normal mb-2"
+                className="block text-muted-foreground text-lg md:text-xl lg:text-2xl font-normal mb-2 leading-normal"
                 initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: 0.1 }}
@@ -227,7 +227,7 @@ export function HeroSection() {
                 Hello, I&apos;m
               </motion.span>
               <motion.span
-                className="block bg-gradient-to-r from-foreground via-foreground to-primary bg-clip-text text-transparent"
+                className="block bg-linear-to-r from-foreground via-foreground to-primary bg-clip-text text-transparent py-1 leading-[1.15]"
                 initial={{ opacity: 0, y: 30 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.6, delay: 0.2 }}
@@ -290,7 +290,7 @@ export function HeroSection() {
                   <span className="relative z-10">View My Work</span>
                   <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1 relative z-10" />
                   <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute inset-0 bg-linear-to-r from-primary/20 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity"
                     initial={false}
                   />
                 </Button>
