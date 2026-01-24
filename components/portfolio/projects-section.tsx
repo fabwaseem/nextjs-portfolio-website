@@ -10,12 +10,12 @@ import {
   FolderGit2,
   Github,
   Star,
-  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useFeaturedProjects, Project } from "@/hooks/use-projects";
+import { ProjectCardSkeleton } from "./card-skeletons";
 
 function ProjectCard({ project, index }: { project: Project; index: number }) {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -154,7 +154,7 @@ export function ProjectsSection() {
           </div>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
             Featured{" "}
-            <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-primary to-primary/60 bg-clip-text text-transparent">
               Projects
             </span>
           </h2>
@@ -165,8 +165,10 @@ export function ProjectsSection() {
         </motion.div>
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <ProjectCardSkeleton key={i} />
+            ))}
           </div>
         ) : featuredProjects.length === 0 ? (
           <div className="text-center py-20">

@@ -19,6 +19,7 @@ import {
   List,
   Loader2,
 } from "lucide-react";
+import { ProjectCardSkeleton } from "@/components/portfolio/card-skeletons";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -444,8 +445,10 @@ export default function ProjectsPage() {
         </div>
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-8">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <ProjectCardSkeleton key={i} />
+            ))}
           </div>
         ) : isError ? (
           <div className="text-center py-20">

@@ -11,11 +11,11 @@ import {
   Clock,
   Eye,
   Calendar,
-  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useBlogs, Blog } from "@/hooks/use-blogs";
+import { BlogCardSkeleton } from "./card-skeletons";
 
 function BlogCard({ blog, index }: { blog: Blog; index: number }) {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -175,8 +175,10 @@ export function BlogsSection() {
         </motion.div>
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <BlogCardSkeleton key={i} />
+            ))}
           </div>
         ) : featuredBlogs.length === 0 ? (
           <div className="text-center py-20">

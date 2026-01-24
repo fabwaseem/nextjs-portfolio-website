@@ -1,3 +1,6 @@
+/** YouTube channel query for youtubei findOne (e.g. "open source coding") */
+export const youtubeChannelQuery = "open source coding";
+
 export const socialLinks = [
   {
     name: "Github",

@@ -4,6 +4,7 @@ import {
   SkillsSection,
   ProjectsSection,
   ExperienceSection,
+  VideosSection,
 } from "@/components/portfolio";
 import { BlogsSection } from "@/components/portfolio/blogs-section";
 
@@ -19,6 +20,8 @@ export default function HomePage() {
       <ProjectsSection />
       <div className="glow-line" />
       <ExperienceSection />
+      <div className="glow-line" />
+      <VideosSection />
       <div className="glow-line" />
       <BlogsSection />
     </>

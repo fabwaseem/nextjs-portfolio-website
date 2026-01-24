@@ -6,6 +6,7 @@ export { SkillsSection } from "./skills-section";
 export { ProjectsSection } from "./projects-section";
 export { BlogsSection } from "./blogs-section";
 export { ExperienceSection } from "./experience-section";
+export { VideosSection } from "./videos-section";
 export { Footer } from "./footer";
 export { Terminal } from "./terminal";
 export { FloatingActions } from "./floating-actions";

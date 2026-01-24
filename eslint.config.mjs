@@ -10,6 +10,6 @@ export default defineConfig([{
     extends: [...nextCoreWebVitals],
 
     rules: {
-        "react/no-unescaped-entities": false,
+        "react/no-unescaped-entities": "off",
     },
 }]);
