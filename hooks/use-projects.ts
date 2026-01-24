@@ -98,6 +98,15 @@ export function useProjects(params?: ProjectsParams) {
   });
 }
 
+/** Fetches only featured, published projects. Use for hero CodeEditor & projects section. */
+export function useFeaturedProjects(limit = 6) {
+  return useProjects({
+    status: "PUBLISHED",
+    featured: "true",
+    limit,
+  });
+}
+
 export function useProject(id: string | null) {
   return useQuery<Project>({
     queryKey: ["project", id],

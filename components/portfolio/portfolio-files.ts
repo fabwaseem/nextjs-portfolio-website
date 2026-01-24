@@ -1,4 +1,77 @@
+import type { CodeLine } from "./code-editor";
 import { FileNode, createCodeLines } from "./code-editor";
+import type { Project } from "@/hooks/use-projects";
+
+function esc(s: string): string {
+  return String(s).replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+}
+
+/** Build projects.tsx code lines from API projects. Used by hero CodeEditor. */
+export function createProjectsFileContent(projects: Project[]): CodeLine[] {
+  const lines: string[] = [
+    '<span class="syntax-comment">// Featured projects</span>',
+    ""];
+
+  projects.forEach((p, i) => {
+    const raw = (p.excerpt || p.description || "") as string;
+    const excerpt =
+      raw.length > 60 ? `${raw.slice(0, 57)}…` : raw;
+    const techStack = p.techStack || [];
+    const techStr =
+      techStack.length > 0
+        ? techStack
+            .map((t) => `<span class="syntax-string">"${esc(t)}"</span>`)
+            .join('<span class="syntax-operator">,</span> ')
+        : "";
+    lines.push('  <span class="syntax-operator">{</span>');
+    lines.push(
+      `    <span class="syntax-variable">title</span><span class="syntax-operator">:</span> <span class="syntax-string">"${esc(p.title)}"</span><span class="syntax-operator">,</span>`
+    );
+    lines.push(
+      `    <span class="syntax-variable">slug</span><span class="syntax-operator">:</span> <span class="syntax-string">"${esc(p.slug)}"</span><span class="syntax-operator">,</span>`
+    );
+    if (excerpt) {
+      lines.push(
+        `    <span class="syntax-variable">excerpt</span><span class="syntax-operator">:</span> <span class="syntax-string">"${esc(excerpt)}"</span><span class="syntax-operator">,</span>`
+      );
+    }
+    lines.push(
+      `    <span class="syntax-variable">techStack</span><span class="syntax-operator">:</span> <span class="syntax-operator">[</span>${techStr}<span class="syntax-operator">],</span>`
+    );
+    lines.push(
+      `    <span class="syntax-variable">featured</span><span class="syntax-operator">:</span> ${p.featured ? '<span class="syntax-keyword">true</span>' : '<span class="syntax-keyword">false</span>'}`
+    );
+    lines.push(
+      `  <span class="syntax-operator">}</span>${i < projects.length - 1 ? '<span class="syntax-operator">,</span>' : ""}`
+    );
+  });
+
+  lines.push('<span class="syntax-operator">];</span>');
+  return createCodeLines(lines);
+}
+
+function cloneTreeAndReplaceProjects(
+  nodes: FileNode[],
+  projects: Project[]
+): FileNode[] {
+  return nodes.map((node) => {
+    if (node.type === "folder" && node.children) {
+      return {
+        ...node,
+        children: cloneTreeAndReplaceProjects(node.children, projects),
+      };
+    }
+    if (node.type === "file" && node.id === "projects.tsx") {
+      return { ...node, content: createProjectsFileContent(projects) };
+    }
+    return { ...node };
+  });
+}
+
+/** Portfolio file tree with projects.tsx content built from API featured projects. */
+export function getPortfolioFilesWithProjects(projects: Project[]): FileNode[] {
+  return cloneTreeAndReplaceProjects(portfolioFiles, projects);
+}
 
 // Shared portfolio file structure for the CodeEditor component
 // Following Next.js App Router structure without src folder
@@ -209,23 +282,48 @@ export const portfolioFiles: FileNode[] = [
             name: "experience.tsx",
             type: "file",
             content: createCodeLines([
-              '<span class="syntax-keyword">const</span> <span class="syntax-variable">experience</span> <span class="syntax-operator">=</span> <span class="syntax-operator">[</span>',
+              '<span class="syntax-comment">// Experience data - git log --oneline</span>',
+              "",
+              '<span class="syntax-keyword">const</span> <span class="syntax-variable">experiences</span> <span class="syntax-operator">=</span> <span class="syntax-operator">[</span>',
               '  <span class="syntax-operator">{</span>',
-              '    <span class="syntax-variable">role</span><span class="syntax-operator">:</span> <span class="syntax-string">"Senior Full Stack Developer"</span><span class="syntax-operator">,</span>',
-              '    <span class="syntax-variable">company</span><span class="syntax-operator">:</span> <span class="syntax-string">"Tech Innovations Inc"</span><span class="syntax-operator">,</span>',
-              '    <span class="syntax-variable">period</span><span class="syntax-operator">:</span> <span class="syntax-string">"2022 - Present"</span><span class="syntax-operator">,</span>',
-              '    <span class="syntax-variable">highlights</span><span class="syntax-operator">:</span> <span class="syntax-operator">[</span>',
-              '      <span class="syntax-string">"Led development of scalable apps"</span><span class="syntax-operator">,</span>',
-              '      <span class="syntax-string">"Reduced load time by 60%"</span><span class="syntax-operator">,</span>',
-              '      <span class="syntax-string">"Mentored junior developers"</span>',
-              '    <span class="syntax-operator">]</span>',
+              '    <span class="syntax-variable">id</span><span class="syntax-operator">:</span> <span class="syntax-string">"1"</span><span class="syntax-operator">,</span>',
+              '    <span class="syntax-variable">role</span><span class="syntax-operator">:</span> <span class="syntax-string">"Full Stack Developer"</span><span class="syntax-operator">,</span>',
+              '    <span class="syntax-variable">company</span><span class="syntax-operator">:</span> <span class="syntax-string">"Nalikes"</span><span class="syntax-operator">,</span>',
+              '    <span class="syntax-variable">companyUrl</span><span class="syntax-operator">:</span> <span class="syntax-string">"https://nalikes.com/"</span><span class="syntax-operator">,</span>',
+              '    <span class="syntax-variable">location</span><span class="syntax-operator">:</span> <span class="syntax-string">"Remote"</span><span class="syntax-operator">,</span>',
+              '    <span class="syntax-variable">period</span><span class="syntax-operator">:</span> <span class="syntax-string">"2023 - Present"</span><span class="syntax-operator">,</span>',
+              '    <span class="syntax-variable">type</span><span class="syntax-operator">:</span> <span class="syntax-string">"Full-time"</span><span class="syntax-operator">,</span>',
+              '    <span class="syntax-variable">commitHash</span><span class="syntax-operator">:</span> <span class="syntax-string">"nal1k3s"</span><span class="syntax-operator">,</span>',
+              '    <span class="syntax-variable">description</span><span class="syntax-operator">:</span> <span class="syntax-string">"Building Web3 products in weeks, not months. DApps, smart contracts, full-stack for Web3 startups."</span><span class="syntax-operator">,</span>',
+              '    <span class="syntax-variable">achievements</span><span class="syntax-operator">:</span> <span class="syntax-operator">[</span>',
+              '      <span class="syntax-string">"Built 20+ production DApps and Web3 products"</span><span class="syntax-operator">,</span>',
+              '      <span class="syntax-string">"Developed smart contracts for NFT, DeFi, gaming"</span><span class="syntax-operator">,</span>',
+              '      <span class="syntax-string">"Delivered projects in 4-6 weeks consistently"</span><span class="syntax-operator">,</span>',
+              '      <span class="syntax-string">"Contributed to products generating $100M+ revenue"</span>',
+              '    <span class="syntax-operator">],</span>',
+              '    <span class="syntax-variable">technologies</span><span class="syntax-operator">:</span> <span class="syntax-operator">[</span><span class="syntax-string">"React"</span><span class="syntax-operator">,</span> <span class="syntax-string">"Next.js"</span><span class="syntax-operator">,</span> <span class="syntax-string">"TypeScript"</span><span class="syntax-operator">,</span> <span class="syntax-string">"Solidity"</span><span class="syntax-operator">,</span> <span class="syntax-string">"Web3.js"</span><span class="syntax-operator">,</span> <span class="syntax-string">"Ethereum"</span><span class="syntax-operator">,</span> <span class="syntax-string">"Node.js"</span><span class="syntax-operator">],</span>',
               '  <span class="syntax-operator">},</span>',
               '  <span class="syntax-operator">{</span>',
-              '    <span class="syntax-variable">role</span><span class="syntax-operator">:</span> <span class="syntax-string">"Full Stack Developer"</span><span class="syntax-operator">,</span>',
-              '    <span class="syntax-variable">company</span><span class="syntax-operator">:</span> <span class="syntax-string">"Digital Solutions Co"</span><span class="syntax-operator">,</span>',
-              '    <span class="syntax-variable">period</span><span class="syntax-operator">:</span> <span class="syntax-string">"2020 - 2022"</span>',
-              '  <span class="syntax-operator">}</span>',
+              '    <span class="syntax-variable">id</span><span class="syntax-operator">:</span> <span class="syntax-string">"2"</span><span class="syntax-operator">,</span>',
+              '    <span class="syntax-variable">role</span><span class="syntax-operator">:</span> <span class="syntax-string">"Full Stack & Web3 Developer"</span><span class="syntax-operator">,</span>',
+              '    <span class="syntax-variable">company</span><span class="syntax-operator">:</span> <span class="syntax-string">"Freelancer"</span><span class="syntax-operator">,</span>',
+              '    <span class="syntax-variable">companyUrl</span><span class="syntax-operator">:</span> <span class="syntax-string">"#"</span><span class="syntax-operator">,</span>',
+              '    <span class="syntax-variable">location</span><span class="syntax-operator">:</span> <span class="syntax-string">"Remote"</span><span class="syntax-operator">,</span>',
+              '    <span class="syntax-variable">period</span><span class="syntax-operator">:</span> <span class="syntax-string">"2021 - Present"</span><span class="syntax-operator">,</span>',
+              '    <span class="syntax-variable">type</span><span class="syntax-operator">:</span> <span class="syntax-string">"Freelance"</span><span class="syntax-operator">,</span>',
+              '    <span class="syntax-variable">commitHash</span><span class="syntax-operator">:</span> <span class="syntax-string">"fr33l4nc3"</span><span class="syntax-operator">,</span>',
+              '    <span class="syntax-variable">description</span><span class="syntax-operator">:</span> <span class="syntax-string">"Building scalable web apps and Web3 solutions. Rapid development, production-ready products."</span><span class="syntax-operator">,</span>',
+              '    <span class="syntax-variable">achievements</span><span class="syntax-operator">:</span> <span class="syntax-operator">[</span>',
+              '      <span class="syntax-string">"Completed 30+ freelance projects successfully"</span><span class="syntax-operator">,</span>',
+              '      <span class="syntax-string">"Built custom DApps and blockchain integrations"</span><span class="syntax-operator">,</span>',
+              '      <span class="syntax-string">"Delivered full-stack solutions for various industries"</span><span class="syntax-operator">,</span>',
+              '      <span class="syntax-string">"Maintained 100% client satisfaction rate"</span>',
+              '    <span class="syntax-operator">],</span>',
+              '    <span class="syntax-variable">technologies</span><span class="syntax-operator">:</span> <span class="syntax-operator">[</span><span class="syntax-string">"React"</span><span class="syntax-operator">,</span> <span class="syntax-string">"Next.js"</span><span class="syntax-operator">,</span> <span class="syntax-string">"TypeScript"</span><span class="syntax-operator">,</span> <span class="syntax-string">"Node.js"</span><span class="syntax-operator">,</span> <span class="syntax-string">"PostgreSQL"</span><span class="syntax-operator">,</span> <span class="syntax-string">"AWS"</span><span class="syntax-operator">,</span> <span class="syntax-string">"Web3"</span><span class="syntax-operator">],</span>',
+              '  <span class="syntax-operator">},</span>',
               '<span class="syntax-operator">];</span>',
+              "",
+              '<span class="syntax-comment">// initial commit — Started coding journey 🚀</span>',
             ]),
           },
         ],

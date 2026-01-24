@@ -1,5 +1,10 @@
 import React from "react";
-import { MouseFollower, Navbar, Footer, FloatingActions } from "@/components/portfolio";
+import {
+  MouseFollower,
+  Navbar,
+  Footer,
+  FloatingActions,
+} from "@/components/portfolio";
 
 const WebLayout = ({ children }: { children: React.ReactNode }) => {
   return (

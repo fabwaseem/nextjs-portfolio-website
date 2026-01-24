@@ -40,7 +40,23 @@ export async function GET(
       data: { views: { increment: 1 } },
     });
 
-    return NextResponse.json(blog);
+    // Serialize dates to ISO strings for client compatibility
+    const serializedBlog = {
+      ...blog,
+      createdAt: blog.createdAt.toISOString(),
+      updatedAt: blog.updatedAt.toISOString(),
+      publishedAt: blog.publishedAt?.toISOString() ?? null,
+      deletedAt: blog.deletedAt?.toISOString() ?? null,
+      relatedTo: blog.relatedTo.map((related) => ({
+        ...related,
+        createdAt: related.createdAt.toISOString(),
+        updatedAt: related.updatedAt.toISOString(),
+        publishedAt: related.publishedAt?.toISOString() ?? null,
+        deletedAt: related.deletedAt?.toISOString() ?? null,
+      })),
+    };
+
+    return NextResponse.json(serializedBlog);
   } catch (error) {
     console.error("Error fetching blog:", error);
     return NextResponse.json(

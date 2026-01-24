@@ -136,5 +136,14 @@ export default async function ProjectPage({
     notFound();
   }
 
-  return <ProjectContent project={project} />;
+  // Serialize dates to ISO strings for client component compatibility
+  const serializedProject = {
+    ...project,
+    createdAt: project.createdAt.toISOString(),
+    updatedAt: project.updatedAt.toISOString(),
+    publishedAt: project.publishedAt?.toISOString() ?? null,
+    deletedAt: project.deletedAt?.toISOString() ?? null,
+  };
+
+  return <ProjectContent project={serializedProject} />;
 }

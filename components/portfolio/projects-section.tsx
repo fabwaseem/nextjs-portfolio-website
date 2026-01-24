@@ -15,7 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { useProjects, Project } from "@/hooks/use-projects";
+import { useFeaturedProjects, Project } from "@/hooks/use-projects";
 
 function ProjectCard({ project, index }: { project: Project; index: number }) {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -127,13 +127,8 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 export function ProjectsSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
-  const { data, isLoading } = useProjects({
-    status: "PUBLISHED",
-    featured: "true",
-    limit: 6,
-  });
-
-  const featuredProjects = data?.projects || [];
+  const { data, isLoading } = useFeaturedProjects(6);
+  const featuredProjects = data?.projects ?? [];
 
   return (
     <section

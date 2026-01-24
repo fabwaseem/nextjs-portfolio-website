@@ -1,23 +1,20 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
-import Link from "next/link";
-import gsap from "gsap";
-import { useGSAP } from "@gsap/react";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import {
-  ChevronRight,
-  Terminal,
-  Code2,
-  Sparkles,
-  ArrowDown,
-  Mail,
-} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Typewriter } from "./text-effects";
+import { useGSAP } from "@gsap/react";
+import { AnimatePresence, motion, useInView } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ArrowDown, ChevronRight, Code2, Mail, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import { CodeEditor } from "./code-editor";
-import { portfolioFiles } from "./portfolio-files";
+import {
+  getPortfolioFilesWithProjects,
+  portfolioFiles,
+} from "./portfolio-files";
+import { Typewriter } from "./text-effects";
+import { useFeaturedProjects } from "@/hooks/use-projects";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -38,6 +35,11 @@ export function HeroSection() {
   const editorRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const isInView = useInView(sectionRef, { once: true });
+  const { data } = useFeaturedProjects(6);
+  const editorFiles =
+    (data?.projects?.length ?? 0) > 0
+      ? getPortfolioFilesWithProjects(data!.projects)
+      : portfolioFiles;
 
   // Terminal typing state
   const [terminalText, setTerminalText] = useState("");
@@ -325,9 +327,9 @@ export function HeroSection() {
             transition={{ duration: 0.8, delay: 0.3 }}
           >
             <CodeEditor
-              files={portfolioFiles}
-              defaultOpenFile="page.tsx"
-              defaultOpenFolders={["portfolio", "app"]}
+              files={editorFiles}
+              defaultOpenFile="about.tsx"
+              defaultOpenFolders={["portfolio", "components"]}
               showFileTree={true}
               showTabs={true}
               showTerminal={true}

@@ -4,7 +4,7 @@ import { useSignInMagicLink } from "@/hooks/use-auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSession } from "@/hooks/use-auth";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Mail, Sparkles, ArrowLeft, Loader2 } from "lucide-react";
@@ -17,6 +17,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Loader } from "@/components/ui/loader";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -24,7 +25,17 @@ const loginSchema = z.object({
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
-export default function AdminLoginPage() {
+function LoginPageFallback() {
+  return (
+    <Loader
+      isFullscreen
+      message="initializing..."
+      label="admin-login"
+    />
+  );
+}
+
+function AdminLoginContent() {
   const { isAuthenticated, isPending: sessionPending } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -59,12 +70,11 @@ export default function AdminLoginPage() {
 
   if (sessionPending) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-background via-background to-muted/30 p-4">
-        <div className="flex items-center gap-3 text-muted-foreground">
-          <Loader2 className="h-5 w-5 animate-spin" />
-          <span>Loading...</span>
-        </div>
-      </div>
+      <Loader
+        isFullscreen
+        message="checking session..."
+        label="admin-login"
+      />
     );
   }
 
@@ -173,5 +183,13 @@ export default function AdminLoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={<LoginPageFallback />}>
+      <AdminLoginContent />
+    </Suspense>
   );
 }

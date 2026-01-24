@@ -113,7 +113,9 @@ export async function generateMetadata({
       "article:modified_time": modifiedTime || "",
       "article:author": authors[0].name,
       "article:section": blog.categories[0]?.title || "Technology",
-      ...(blog.readingTime && { "article:reading_time": blog.readingTime.toString() }),
+      ...(blog.readingTime && {
+        "article:reading_time": blog.readingTime.toString(),
+      }),
     },
   };
 }
@@ -168,5 +170,21 @@ export default async function BlogPostPage({
     notFound();
   }
 
-  return <BlogContent blog={blog} />;
+  // Serialize dates to ISO strings for client component compatibility
+  const serializedBlog = {
+    ...blog,
+    createdAt: blog.createdAt.toISOString(),
+    updatedAt: blog.updatedAt.toISOString(),
+    publishedAt: blog.publishedAt?.toISOString() ?? null,
+    deletedAt: blog.deletedAt?.toISOString() ?? null,
+    relatedTo: blog.relatedTo.map((related) => ({
+      ...related,
+      createdAt: related.createdAt.toISOString(),
+      updatedAt: related.updatedAt.toISOString(),
+      publishedAt: related.publishedAt?.toISOString() ?? null,
+      deletedAt: related.deletedAt?.toISOString() ?? null,
+    })),
+  };
+
+  return <BlogContent blog={serializedBlog} />;
 }
