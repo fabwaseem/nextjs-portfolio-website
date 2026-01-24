@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,24 +22,23 @@ import {
 } from "lucide-react";
 
 const navItems = [
-  { name: "About", href: "#about", icon: User },
-  { name: "Skills", href: "#skills", icon: Code2 },
-  { name: "Projects", href: "#projects", icon: FolderGit2 },
-  { name: "Experience", href: "#experience", icon: Briefcase },
-  { name: "Blog", href: "#blog", icon: BookOpen },
+  { name: "About", href: "/#about", icon: User },
+  { name: "Skills", href: "/#skills", icon: Code2 },
+  { name: "Projects", href: "/#projects", icon: FolderGit2 },
+  { name: "Experience", href: "/#experience", icon: Briefcase },
+  { name: "Blog", href: "/#blog", icon: BookOpen },
 ];
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("");
-  const [mounted, setMounted] = useState(false);
+  const [scrollActiveSection, setScrollActiveSection] = useState("");
   const pathname = usePathname();
-  const { setTheme, resolvedTheme } = useTheme();
+  const prevPathnameRef = useRef(pathname);
+  const { setTheme, resolvedTheme, theme } = useTheme();
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  // Derive mounted state from theme being resolved (next-themes handles hydration)
+  const mounted = theme !== undefined;
 
   const toggleTheme = () => {
     setTheme(resolvedTheme === "dark" ? "light" : "dark");
@@ -47,68 +46,45 @@ export function Navbar() {
 
   const isDark = resolvedTheme === "dark";
 
-  const handleNavigation = (href: string) => {
-    if (href.startsWith("#")) {
-      const isOnHomePage = window.location.pathname === "/";
-      const sectionId = href.substring(1);
-
-      if (isOnHomePage) {
-        const element = document.getElementById(sectionId);
-        if (element) {
-          element.scrollIntoView({ behavior: "smooth" });
-        }
-      } else {
-        window.location.href = `/${href}`;
-      }
-    }
-  };
-
-  // Handle route-based active section
-  useEffect(() => {
-    if (pathname === "/") {
-      // On home page, active section is determined by scroll
-      // Don't set anything here, let scroll handler do it
-    } else if (pathname.startsWith("/projects")) {
-      setActiveSection("#projects");
-    } else if (pathname.startsWith("/blog")) {
-      setActiveSection("#blog");
-    } else {
-      // Reset active section on other pages
-      setActiveSection("");
-    }
+  // Derive route-based active section from pathname
+  const routeActiveSection = useMemo(() => {
+    if (pathname === "/") return "";
+    if (pathname.startsWith("/projects")) return "/#projects";
+    if (pathname.startsWith("/blog")) return "/#blog";
+    return "";
   }, [pathname]);
 
+  // Use scroll-based section on home page, route-based otherwise
+  const activeSection = pathname === "/" ? scrollActiveSection : routeActiveSection;
+
+  // Handle scroll-based active section detection on home page
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
 
       // Only track scroll-based active sections on home page
       if (pathname === "/") {
-        const sections = ["about", "skills", "projects", "blog", "experience"];
+        const sections = ["about", "skills", "projects", "experience", "blog"];
+        let currentSection = "";
+
         for (const section of sections) {
           const element = document.getElementById(section);
           if (element) {
             const rect = element.getBoundingClientRect();
-            if (rect.top <= 100 && rect.bottom >= 100) {
-              setActiveSection(`#${section}`);
+            // Check if section is in viewport (with some offset for navbar)
+            if (rect.top <= 150 && rect.bottom >= 150) {
+              currentSection = `/#${section}`;
               break;
             }
           }
         }
+
+        setScrollActiveSection(currentSection);
       }
     };
 
-    const hash = window.location.hash;
-    if (hash && pathname === "/") {
-      setTimeout(() => {
-        const element = document.querySelector(hash);
-        if (element) {
-          element.scrollIntoView({ behavior: "smooth" });
-        }
-      }, 100);
-    }
-
-    window.addEventListener("scroll", handleScroll);
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [pathname]);
 
@@ -135,6 +111,15 @@ export function Navbar() {
       document.body.style.overflow = "";
     };
   }, [isMobileMenuOpen]);
+
+  // Close mobile menu on pathname change
+  useEffect(() => {
+    if (prevPathnameRef.current !== pathname) {
+      prevPathnameRef.current = pathname;
+      // Defer setState to avoid synchronous call in effect body
+      queueMicrotask(() => setIsMobileMenuOpen(false));
+    }
+  }, [pathname]);
 
   return (
     <>
@@ -177,12 +162,6 @@ export function Navbar() {
                       ? "text-primary bg-primary/10"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   )}
-                  onClick={(e) => {
-                    if (item.href.startsWith("#")) {
-                      e.preventDefault();
-                      handleNavigation(item.href);
-                    }
-                  }}
                 >
                   {item.name}
                 </Link>
@@ -290,15 +269,7 @@ export function Navbar() {
                             ? "text-primary bg-primary/10"
                             : "text-muted-foreground hover:text-foreground hover:bg-muted"
                         )}
-                        onClick={(e) => {
-                          setIsMobileMenuOpen(false);
-                          if (item.href.startsWith("#")) {
-                            e.preventDefault();
-                            setTimeout(() => {
-                              handleNavigation(item.href);
-                            }, 300);
-                          }
-                        }}
+                        onClick={() => setIsMobileMenuOpen(false)}
                       >
                         <item.icon className="w-5 h-5" />
                         {item.name}
