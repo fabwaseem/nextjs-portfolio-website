@@ -98,7 +98,9 @@ function BlogCard({
                           : undefined
                       }
                     >
-                      {category.icon && <span className="mr-1">{category.icon}</span>}
+                      {category.icon && (
+                        <span className="mr-1">{category.icon}</span>
+                      )}
                       {category.title}
                     </Badge>
                   ))}
@@ -205,7 +207,9 @@ function BlogCard({
                       : undefined
                   }
                 >
-                  {category.icon && <span className="mr-1">{category.icon}</span>}
+                  {category.icon && (
+                    <span className="mr-1">{category.icon}</span>
+                  )}
                   {category.title}
                 </Badge>
               ))}
@@ -302,7 +306,8 @@ export default function BlogPage() {
         limit: "12",
       });
 
-      if (debouncedSearchQuery) searchParams.set("search", debouncedSearchQuery);
+      if (debouncedSearchQuery)
+        searchParams.set("search", debouncedSearchQuery);
       if (showFeaturedOnly) searchParams.set("featured", "true");
       if (selectedCategory) searchParams.set("categoryId", selectedCategory);
       if (selectedTags.length > 0) {
@@ -332,7 +337,9 @@ export default function BlogPage() {
 
   const toggleTag = useCallback((tagId: string) => {
     setSelectedTags((prev) =>
-      prev.includes(tagId) ? prev.filter((id) => id !== tagId) : [...prev, tagId]
+      prev.includes(tagId)
+        ? prev.filter((id) => id !== tagId)
+        : [...prev, tagId]
     );
   }, []);
 
@@ -387,9 +394,7 @@ export default function BlogPage() {
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
             <BookOpen className="w-4 h-4 text-primary" />
-            <span className="text-sm font-mono text-primary">
-              ~/blog --all
-            </span>
+            <span className="text-sm font-mono text-primary">~/blog --all</span>
           </div>
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
             Blog{" "}
@@ -450,7 +455,9 @@ export default function BlogPage() {
             {categories.map((category) => (
               <Button
                 key={category.id}
-                variant={selectedCategory === category.id ? "default" : "outline"}
+                variant={
+                  selectedCategory === category.id ? "default" : "outline"
+                }
                 size="sm"
                 onClick={() =>
                   setSelectedCategory(

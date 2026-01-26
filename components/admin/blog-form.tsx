@@ -53,10 +53,13 @@ import {
   Plus,
   Wand2,
   Loader2,
+  Copy,
+  ImageIcon,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import "react-quill-new/dist/quill.snow.css";
 import { ImageUpload } from "./image-upload";
 import { setupQuillImageHandler } from "./quill-image-handler";
@@ -116,6 +119,7 @@ export function BlogForm({ blog, onSuccess }: BlogFormProps) {
   const [tagsOpen, setTagsOpen] = useState(false);
   const [categoryInput, setCategoryInput] = useState("");
   const [tagInput, setTagInput] = useState("");
+  const [generatedImagePrompt, setGeneratedImagePrompt] = useState("");
   const selectedCategoryIds = form.watch("categoryIds");
   const selectedTagIds = form.watch("tagIds");
   const bodyValue = form.watch("body");
@@ -168,7 +172,7 @@ export function BlogForm({ blog, onSuccess }: BlogFormProps) {
     }, 500);
 
     return () => clearTimeout(timer);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [bodyValue]);
 
   const onSubmit = async (data: BlogFormData) => {
@@ -289,6 +293,11 @@ export function BlogForm({ blog, onSuccess }: BlogFormProps) {
       form.setValue("featuredImageAlt", generated.featuredImageAlt);
       form.setValue("categoryIds", allCategoryIds);
       form.setValue("tagIds", allTagIds);
+
+      // Store the generated image prompt
+      if (generated.featuredImagePrompt) {
+        setGeneratedImagePrompt(generated.featuredImagePrompt);
+      }
     } catch (error) {
       console.error("Failed to generate blog:", error);
     }
@@ -475,6 +484,38 @@ export function BlogForm({ blog, onSuccess }: BlogFormProps) {
             </FormItem>
           )}
         />
+
+        {/* AI Generated Image Prompt */}
+        {generatedImagePrompt && (
+          <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ImageIcon className="h-5 w-5 text-primary" />
+                <h4 className="font-semibold text-sm">AI Image Prompt</h4>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => {
+                  navigator.clipboard.writeText(generatedImagePrompt);
+                  toast.success("Image prompt copied to clipboard!");
+                }}
+              >
+                <Copy className="h-3.5 w-3.5" />
+                Copy
+              </Button>
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {generatedImagePrompt}
+            </p>
+            <p className="text-xs text-muted-foreground/70">
+              Use this prompt with DALL-E, Midjourney, or other AI image
+              generators to create a featured image.
+            </p>
+          </div>
+        )}
 
         {/* Categories */}
         <FormField

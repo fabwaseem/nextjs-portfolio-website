@@ -35,7 +35,11 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useCreateProjectTag, useProjectTags } from "@/hooks/use-project-tags";
-import { useCreateProject, useUpdateProject, type Project } from "@/hooks/use-projects";
+import {
+  useCreateProject,
+  useUpdateProject,
+  type Project,
+} from "@/hooks/use-projects";
 import { cn } from "@/lib/utils";
 import { projectFormSchema, type ProjectFormInput } from "@/lib/validations";
 import { generateSlug } from "@/utils/slug";
@@ -48,10 +52,7 @@ import "react-quill-new/dist/quill.snow.css";
 import { ImageUpload } from "./image-upload";
 import { setupQuillImageHandler } from "./quill-image-handler";
 
-const ReactQuill = dynamic(
-  () => import("react-quill-new"),
-  { ssr: false }
-);
+const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
 type ProjectFormData = ProjectFormInput;
 
@@ -119,7 +120,10 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
       ...data,
       body: data.body || null,
       seoKeywords: data.seoKeywords
-        ? data.seoKeywords.split(",").map((k) => k.trim()).filter(Boolean)
+        ? data.seoKeywords
+            .split(",")
+            .map((k) => k.trim())
+            .filter(Boolean)
         : [],
     };
 
@@ -141,12 +145,20 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
 
   const removeTechStack = (tech: string) => {
     const current = form.getValues("techStack");
-    form.setValue("techStack", current.filter((t) => t !== tech));
+    form.setValue(
+      "techStack",
+      current.filter((t) => t !== tech)
+    );
 
-    const techAsTag = tagsData?.tags.find((tag) => tag.title.toLowerCase() === tech.toLowerCase());
+    const techAsTag = tagsData?.tags.find(
+      (tag) => tag.title.toLowerCase() === tech.toLowerCase()
+    );
     if (techAsTag) {
       const currentTagIds = form.getValues("tagIds");
-      form.setValue("tagIds", currentTagIds.filter((id) => id !== techAsTag.id));
+      form.setValue(
+        "tagIds",
+        currentTagIds.filter((id) => id !== techAsTag.id)
+      );
     }
   };
 
@@ -156,7 +168,9 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
       if (!current.includes(tech.trim())) {
         form.setValue("techStack", [...current, tech.trim()]);
 
-        const techAsTag = tagsData?.tags.find((tag) => tag.title.toLowerCase() === tech.trim().toLowerCase());
+        const techAsTag = tagsData?.tags.find(
+          (tag) => tag.title.toLowerCase() === tech.trim().toLowerCase()
+        );
         if (techAsTag) {
           const currentTagIds = form.getValues("tagIds");
           if (!currentTagIds.includes(techAsTag.id)) {
@@ -185,7 +199,10 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
   const handleTagSelect = async (tagId: string) => {
     const current = form.getValues("tagIds");
     if (current.includes(tagId)) {
-      form.setValue("tagIds", current.filter((id) => id !== tagId));
+      form.setValue(
+        "tagIds",
+        current.filter((id) => id !== tagId)
+      );
     } else {
       form.setValue("tagIds", [...current, tagId]);
     }
@@ -210,7 +227,8 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
     }
   };
 
-  const selectedTags = tagsData?.tags.filter((tag) => selectedTagIds.includes(tag.id)) || [];
+  const selectedTags =
+    tagsData?.tags.filter((tag) => selectedTagIds.includes(tag.id)) || [];
 
   return (
     <Form {...form}>
@@ -238,7 +256,11 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
                 <FormLabel>Slug</FormLabel>
                 <FormControl>
                   <div className="flex gap-2">
-                    <Input {...field} placeholder="my-awesome-project" className="flex-1" />
+                    <Input
+                      {...field}
+                      placeholder="my-awesome-project"
+                      className="flex-1"
+                    />
                     <Button
                       type="button"
                       variant="outline"
@@ -297,7 +319,12 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
               toolbar: [
                 [{ header: [1, 2, 3, false] }],
                 ["bold", "italic", "underline", "strike", "blockquote"],
-                [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
+                [
+                  { list: "ordered" },
+                  { list: "bullet" },
+                  { indent: "-1" },
+                  { indent: "+1" },
+                ],
                 ["link", "image", "code-block"],
                 ["clean"],
               ],
@@ -354,7 +381,8 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
                   </div>
                 </FormControl>
                 <FormDescription>
-                  Write your project content using the rich text editor. Content is stored as HTML.
+                  Write your project content using the rich text editor. Content
+                  is stored as HTML.
                 </FormDescription>
                 <FormMessage />
               </FormItem>
@@ -511,10 +539,7 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Status</FormLabel>
-                <Select
-                  onValueChange={field.onChange}
-                  value={field.value}
-                >
+                <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue />
@@ -541,7 +566,9 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
                   <Input
                     {...field}
                     type="number"
-                    onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                    onChange={(e) =>
+                      field.onChange(parseInt(e.target.value) || 0)
+                    }
                   />
                 </FormControl>
                 <FormDescription>Display order (lower = first)</FormDescription>
@@ -558,9 +585,7 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
                 <FormLabel>Featured</FormLabel>
-                <FormDescription>
-                  Show this project prominently
-                </FormDescription>
+                <FormDescription>Show this project prominently</FormDescription>
               </div>
               <FormControl>
                 <Switch
@@ -591,7 +616,9 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
                       )}
                     >
                       {selectedTagIds.length > 0
-                        ? `${selectedTagIds.length} tag${selectedTagIds.length > 1 ? "s" : ""} selected`
+                        ? `${selectedTagIds.length} tag${
+                            selectedTagIds.length > 1 ? "s" : ""
+                          } selected`
                         : "Select tags..."}
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
@@ -609,7 +636,9 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
                         {tagsData?.tags
                           .filter((tag) =>
                             tagInput.trim()
-                              ? tag.title.toLowerCase().includes(tagInput.toLowerCase())
+                              ? tag.title
+                                  .toLowerCase()
+                                  .includes(tagInput.toLowerCase())
                               : true
                           )
                           .map((tag) => {
@@ -632,7 +661,8 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
                           })}
                         {tagInput.trim() &&
                           !tagsData?.tags.some(
-                            (tag) => tag.title.toLowerCase() === tagInput.toLowerCase()
+                            (tag) =>
+                              tag.title.toLowerCase() === tagInput.toLowerCase()
                           ) && (
                             <CommandItem
                               value={`create-${tagInput}`}
@@ -645,7 +675,9 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
                           )}
                       </CommandGroup>
                       {!tagInput.trim() && tagsData?.tags.length === 0 && (
-                        <CommandEmpty>No tags available. Type to create a new tag.</CommandEmpty>
+                        <CommandEmpty>
+                          No tags available. Type to create a new tag.
+                        </CommandEmpty>
                       )}
                     </CommandList>
                   </Command>
@@ -668,7 +700,8 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
                 </div>
               )}
               <FormDescription>
-                Select existing tags or create new ones. Tech stack items are automatically added as tags.
+                Select existing tags or create new ones. Tech stack items are
+                automatically added as tags.
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -723,11 +756,7 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
         />
 
         <div className="flex justify-end gap-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onSuccess}
-          >
+          <Button type="button" variant="outline" onClick={onSuccess}>
             Cancel
           </Button>
           <Button

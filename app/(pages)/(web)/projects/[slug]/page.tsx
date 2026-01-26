@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { ProjectContent } from "@/components/portfolio/project-content";
+import { BASE_URL } from "@/config/config";
 
 export async function generateMetadata({
   params,
@@ -93,7 +94,7 @@ export async function generateMetadata({
       images: image ? [image] : [],
     },
     alternates: {
-      canonical: `/projects/${slug}`,
+      canonical: `${BASE_URL}/projects/${slug}`,
     },
   };
 }
@@ -145,5 +146,51 @@ export default async function ProjectPage({
     deletedAt: project.deletedAt?.toISOString() ?? null,
   };
 
-  return <ProjectContent project={serializedProject} />;
+  // Generate CreativeWork schema for project
+  const projectSchema = {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    name: project.title,
+    description: project.metaDescription || project.excerpt || project.description || project.title,
+    image: project.cover || project.thumbnail
+      ? [
+          {
+            "@type": "ImageObject",
+            url: project.cover || project.thumbnail,
+            alt: project.title,
+          },
+        ]
+      : undefined,
+    dateCreated: project.publishedAt?.toISOString() || project.createdAt.toISOString(),
+    dateModified: project.updatedAt.toISOString(),
+    creator: {
+      "@type": "Person",
+      name: "Waseem Anjum",
+      url: BASE_URL,
+    },
+    url: `${BASE_URL}/projects/${slug}`,
+    keywords: [
+      ...(project.seoKeywords || []),
+      ...project.tags.map((tag) => tag.title),
+    ].join(", "),
+    ...(project.demoLink && {
+      mainEntity: {
+        "@type": "WebApplication",
+        url: project.demoLink,
+      },
+    }),
+    ...(project.githubLink && {
+      codeRepository: project.githubLink,
+    }),
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(projectSchema) }}
+      />
+      <ProjectContent project={serializedProject} />
+    </>
+  );
 }

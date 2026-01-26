@@ -16,17 +16,19 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useBlogs, Blog } from "@/hooks/use-blogs";
 import { BlogCardSkeleton } from "./card-skeletons";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 function BlogCard({ blog, index }: { blog: Blog; index: number }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(cardRef, { once: true, margin: "-50px" });
+  const prefersReducedMotion = useReducedMotion();
 
   return (
     <motion.div
       ref={cardRef}
       initial={{ opacity: 0, y: 30 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
+      transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: index * 0.1 }}
       className="group relative"
     >
       <Link href={`/blog/${blog.slug}`}>
@@ -35,13 +37,14 @@ function BlogCard({ blog, index }: { blog: Blog; index: number }) {
             {blog.featuredImage ? (
               <Image
                 src={blog.featuredImage}
-                alt={blog.featuredImageAlt || blog.title}
+                alt={blog.featuredImageAlt || (blog.excerpt ? `${blog.title} - ${blog.excerpt}` : blog.title)}
                 fill
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
+                loading={index < 3 ? "eager" : "lazy"}
               />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5">
-                <BookOpen className="w-16 h-16 text-primary/30" />
+                <BookOpen className="w-16 h-16 text-primary/30" aria-hidden="true" />
               </div>
             )}
 
@@ -57,13 +60,13 @@ function BlogCard({ blog, index }: { blog: Blog; index: number }) {
               <div className="flex items-center gap-3">
                 {blog.readingTime && (
                   <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-background/80 backdrop-blur-sm">
-                    <Clock className="w-3 h-3" />
+                    <Clock className="w-3 h-3" aria-hidden="true" />
                     {blog.readingTime} min
                   </span>
                 )}
                 {blog.views > 0 && (
                   <span className="flex items-center gap-1 px-2 py-1 rounded-full bg-background/80 backdrop-blur-sm">
-                    <Eye className="w-3 h-3" />
+                    <Eye className="w-3 h-3" aria-hidden="true" />
                     {blog.views.toLocaleString()}
                   </span>
                 )}
@@ -110,7 +113,7 @@ function BlogCard({ blog, index }: { blog: Blog; index: number }) {
               <div className="flex items-center gap-4 text-xs text-muted-foreground">
                 {blog.publishedAt && (
                   <span className="flex items-center gap-1">
-                    <Calendar className="w-3 h-3" />
+                    <Calendar className="w-3 h-3" aria-hidden="true" />
                     {formatDistanceToNow(new Date(blog.publishedAt), {
                       addSuffix: true,
                     })}
@@ -132,6 +135,7 @@ function BlogCard({ blog, index }: { blog: Blog; index: number }) {
 export function BlogsSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+  const prefersReducedMotion = useReducedMotion();
   const { data, isLoading } = useBlogs({
     status: "PUBLISHED",
     featured: "true",
@@ -146,18 +150,18 @@ export function BlogsSection() {
       id="blog"
       className="relative py-24 md:py-32 overflow-hidden"
     >
-      <div className="absolute inset-0 bg-code-dots" />
-      <div className="absolute inset-0 bg-mesh opacity-60" />
+      <div className="absolute inset-0 bg-code-dots" aria-hidden="true" />
+      <div className="absolute inset-0 bg-mesh opacity-60" aria-hidden="true" />
 
       <div className="container mx-auto px-4 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
+          transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
           className="text-center mb-16"
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
-            <BookOpen className="w-4 h-4 text-primary" />
+            <BookOpen className="w-4 h-4 text-primary" aria-hidden="true" />
             <span className="text-sm font-mono text-primary">
               ~/blog --featured
             </span>
@@ -198,7 +202,7 @@ export function BlogsSection() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.4 }}
+              transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.4 }}
               className="text-center mt-12"
             >
               <Button asChild variant="outline" size="lg" className="gap-2">

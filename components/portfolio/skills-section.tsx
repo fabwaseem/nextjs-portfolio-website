@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -111,6 +112,7 @@ export function SkillsSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const [activeCategory, setActiveCategory] = useState<string>("frontend");
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+  const prefersReducedMotion = useReducedMotion();
 
   const activeSkills =
     skillCategories.find((cat) => cat.id === activeCategory)?.skills || [];
@@ -145,19 +147,19 @@ export function SkillsSection() {
       className="relative py-24 md:py-32 overflow-hidden"
     >
       {/* Background */}
-      <div className="absolute inset-0 bg-code-dots" />
-      <div className="absolute inset-0 bg-mesh opacity-60" />
+      <div className="absolute inset-0 bg-code-dots" aria-hidden="true" />
+      <div className="absolute inset-0 bg-mesh opacity-60" aria-hidden="true" />
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
+          transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
           className="text-center mb-16"
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
-            <Braces className="w-4 h-4 text-primary" />
+            <Braces className="w-4 h-4 text-primary" aria-hidden="true" />
             <span className="text-sm font-mono text-primary">skills.json</span>
           </div>
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
@@ -175,21 +177,27 @@ export function SkillsSection() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.1 }}
+          transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.1 }}
           className="flex flex-wrap justify-center gap-3 mb-12"
         >
           {skillCategories.map((category) => (
             <button
               key={category.id}
               onClick={() => setActiveCategory(category.id)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setActiveCategory(category.id);
+                }
+              }}
               className={cn(
-                "flex items-center gap-2 px-5 py-3 rounded-lg font-medium transition-all duration-300",
+                "flex items-center gap-2 px-5 py-3 rounded-lg font-medium transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary/50",
                 activeCategory === category.id
                   ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105"
                   : "bg-card/5 backdrop-blur-[2px] text-muted-foreground hover:bg-card hover:text-foreground border border-border hover:border-primary/30"
               )}
             >
-              <category.icon className="w-4 h-4" />
+              <category.icon className="w-4 h-4" aria-hidden="true" />
               {category.name}
             </button>
           ))}
@@ -199,7 +207,7 @@ export function SkillsSection() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.2 }}
+          transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.2 }}
           className="max-w-5xl mx-auto"
         >
           <AnimatePresence mode="wait">
@@ -208,7 +216,7 @@ export function SkillsSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
+              transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3 }}
               className="skills-container"
             >
               <div className="grid md:grid-cols-2 gap-6 mb-12">
@@ -221,7 +229,7 @@ export function SkillsSection() {
                       key={skill.name}
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.4, delay: idx * 0.05 }}
+                      transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.4, delay: idx * 0.05 }}
                       className="p-6 rounded-xl bg-card/5 backdrop-blur-[2px] border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5"
                     >
                       <div className="flex justify-between items-center mb-3">
@@ -257,7 +265,7 @@ export function SkillsSection() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.4 }}
           className="max-w-4xl mx-auto"
         >
           <div className="text-center mb-6">
@@ -271,14 +279,14 @@ export function SkillsSection() {
                 key={skill.name}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={isInView ? { opacity: 1, scale: 1 } : {}}
-                transition={{ duration: 0.3, delay: 0.4 + idx * 0.05 }}
-                whileHover={{ scale: 1.05 }}
+                transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3, delay: 0.4 + idx * 0.05 }}
+                whileHover={prefersReducedMotion ? {} : { scale: 1.05 }}
               >
                 <Badge
                   variant="secondary"
                   className="px-4 py-2 text-sm font-medium cursor-default group"
                 >
-                  <skill.icon className="w-4 h-4 mr-2 text-primary" />
+                  <skill.icon className="w-4 h-4 mr-2 text-primary" aria-hidden="true" />
                   {skill.name}
                 </Badge>
               </motion.div>

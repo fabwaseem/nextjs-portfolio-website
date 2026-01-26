@@ -279,7 +279,8 @@ export default function ProjectsPage() {
         limit: "12",
       });
 
-      if (debouncedSearchQuery) searchParams.set("search", debouncedSearchQuery);
+      if (debouncedSearchQuery)
+        searchParams.set("search", debouncedSearchQuery);
       if (showFeaturedOnly) searchParams.set("featured", "true");
       if (selectedTags.length > 0) {
         selectedTags.forEach((tag) => searchParams.append("tags", tag));
@@ -308,7 +309,9 @@ export default function ProjectsPage() {
 
   const toggleTag = useCallback((tagId: string) => {
     setSelectedTags((prev) =>
-      prev.includes(tagId) ? prev.filter((id) => id !== tagId) : [...prev, tagId]
+      prev.includes(tagId)
+        ? prev.filter((id) => id !== tagId)
+        : [...prev, tagId]
     );
   }, []);
 

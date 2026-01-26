@@ -47,7 +47,9 @@ export function ProjectContent({ project }: ProjectContentProps) {
         return (
           <div
             className="prose prose-invert max-w-none"
-            dangerouslySetInnerHTML={{ __html: (project.body as { html: string }).html }}
+            dangerouslySetInnerHTML={{
+              __html: (project.body as { html: string }).html,
+            }}
           />
         );
       }
@@ -71,11 +73,7 @@ export function ProjectContent({ project }: ProjectContentProps) {
           transition={{ duration: 0.6 }}
           className="mb-8"
         >
-          <Button
-            asChild
-            variant="ghost"
-            className="mb-6 group"
-          >
+          <Button asChild variant="ghost" className="mb-6 group">
             <Link href="/projects">
               <ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
               Back to Projects
@@ -139,7 +137,11 @@ export function ProjectContent({ project }: ProjectContentProps) {
             <div className="flex flex-wrap gap-4 mb-8">
               {project.demoLink && (
                 <Button asChild size="lg" className="gap-2">
-                  <Link href={project.demoLink} target="_blank" rel="noopener noreferrer">
+                  <Link
+                    href={project.demoLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     <ExternalLink className="w-4 h-4" />
                     View Live Demo
                   </Link>
@@ -147,7 +149,11 @@ export function ProjectContent({ project }: ProjectContentProps) {
               )}
               {project.githubLink && (
                 <Button asChild variant="outline" size="lg" className="gap-2">
-                  <Link href={project.githubLink} target="_blank" rel="noopener noreferrer">
+                  <Link
+                    href={project.githubLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     <Github className="w-4 h-4" />
                     View on GitHub
                   </Link>
@@ -203,7 +209,9 @@ export function ProjectContent({ project }: ProjectContentProps) {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="mb-12"
             >
-              <h2 className="text-2xl font-semibold mb-4">About This Project</h2>
+              <h2 className="text-2xl font-semibold mb-4">
+                About This Project
+              </h2>
               <p className="text-lg text-muted-foreground leading-relaxed">
                 {project.description}
               </p>

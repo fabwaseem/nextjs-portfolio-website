@@ -87,18 +87,23 @@ export async function PUT(
 
     const imagesToDelete: string[] = [];
 
-    if (thumbnail && existingProject.thumbnail !== thumbnail) {
+    if (thumbnail !== undefined && existingProject.thumbnail && existingProject.thumbnail !== thumbnail) {
       imagesToDelete.push(existingProject.thumbnail);
     }
-
-    if (cover && existingProject.cover !== cover) {
+    if (cover !== undefined && existingProject.cover && existingProject.cover !== cover) {
       imagesToDelete.push(existingProject.cover);
     }
 
     if (bodyContent && typeof bodyContent === "string") {
+      let oldBodyHtml: string | null = null;
       const oldBody = existingProject.body;
       if (oldBody && typeof oldBody === "string") {
-        const oldImages = extractImagesFromHtml(oldBody);
+        oldBodyHtml = oldBody;
+      } else if (oldBody && typeof oldBody === "object" && oldBody !== null && "html" in oldBody) {
+        oldBodyHtml = (oldBody as { html: string }).html;
+      }
+      if (oldBodyHtml) {
+        const oldImages = extractImagesFromHtml(oldBodyHtml);
         const newImages = extractImagesFromHtml(bodyContent);
         const removedImages = oldImages.filter((img) => !newImages.includes(img));
         imagesToDelete.push(...removedImages);

@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { BlogContent } from "@/components/portfolio/blog-content";
+import { BASE_URL } from "@/config/config";
 
 export async function generateMetadata({
   params,
@@ -106,7 +107,7 @@ export async function generateMetadata({
       creator: "@waseemdev",
     },
     alternates: {
-      canonical: `/blog/${slug}`,
+      canonical: `${BASE_URL}/blog/${slug}`,
     },
     other: {
       "article:published_time": publishedTime || "",
@@ -186,5 +187,58 @@ export default async function BlogPostPage({
     })),
   };
 
-  return <BlogContent blog={serializedBlog} />;
+  // Generate BlogPosting schema
+  const blogSchema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: blog.title,
+    description: blog.metaDescription || blog.excerpt || blog.title,
+    image: blog.featuredImage
+      ? [
+          {
+            "@type": "ImageObject",
+            url: blog.featuredImage,
+            alt: blog.featuredImageAlt || blog.title,
+          },
+        ]
+      : undefined,
+    datePublished: blog.publishedAt?.toISOString(),
+    dateModified: blog.updatedAt.toISOString(),
+    author: {
+      "@type": "Person",
+      name: "Waseem Anjum",
+      url: BASE_URL,
+    },
+    publisher: {
+      "@type": "Person",
+      name: "Waseem Anjum",
+      url: BASE_URL,
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${BASE_URL}/blog/${slug}`,
+    },
+    articleSection: blog.categories[0]?.title || "Technology",
+    keywords: [
+      ...(blog.seoKeywords || []),
+      ...blog.categories.map((cat) => cat.title),
+      ...blog.tags.map((tag) => tag.title),
+    ].join(", "),
+    ...(blog.readingTime && {
+      timeRequired: `PT${blog.readingTime}M`,
+    }),
+    ...(blog.wordCount && {
+      wordCount: blog.wordCount,
+    }),
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
+      />
+      <BlogContent blog={serializedBlog} />
+    </>
+  );
 }

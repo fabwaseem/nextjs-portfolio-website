@@ -16,17 +16,19 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useFeaturedProjects, Project } from "@/hooks/use-projects";
 import { ProjectCardSkeleton } from "./card-skeletons";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 function ProjectCard({ project, index }: { project: Project; index: number }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(cardRef, { once: true, margin: "-50px" });
+  const prefersReducedMotion = useReducedMotion();
 
   return (
     <motion.div
       ref={cardRef}
       initial={{ opacity: 0, y: 30 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
+      transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: index * 0.1 }}
       className="group relative"
     >
       <Link href={`/projects/${project.slug}`}>
@@ -35,13 +37,14 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
             {project.thumbnail ? (
               <Image
                 src={project.thumbnail}
-                alt={project.title}
+                alt={project.excerpt || project.description ? `${project.title} - ${project.excerpt || project.description}` : project.title}
                 fill
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
+                loading={index < 3 ? "eager" : "lazy"}
               />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5">
-                <FolderGit2 className="w-16 h-16 text-primary/30" />
+                <FolderGit2 className="w-16 h-16 text-primary/30" aria-hidden="true" />
               </div>
             )}
 
@@ -54,9 +57,10 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  className="p-3 rounded-full bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+                  className="p-3 rounded-full bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground transition-colors focus-visible:ring-2 focus-visible:ring-primary/50"
+                  aria-label={`View ${project.title} source code on GitHub`}
                 >
-                  <Github className="w-5 h-5" />
+                  <Github className="w-5 h-5" aria-hidden="true" />
                 </Link>
               )}
               {project.demoLink && (
@@ -65,9 +69,10 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  className="p-3 rounded-full bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+                  className="p-3 rounded-full bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground transition-colors focus-visible:ring-2 focus-visible:ring-primary/50"
+                  aria-label={`View ${project.title} live demo`}
                 >
-                  <ExternalLink className="w-5 h-5" />
+                  <ExternalLink className="w-5 h-5" aria-hidden="true" />
                 </Link>
               )}
             </div>
@@ -127,6 +132,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
 export function ProjectsSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+  const prefersReducedMotion = useReducedMotion();
   const { data, isLoading } = useFeaturedProjects(6);
   const featuredProjects = data?.projects ?? [];
 
@@ -136,18 +142,18 @@ export function ProjectsSection() {
       id="projects"
       className="relative py-24 md:py-32 overflow-hidden"
     >
-      <div className="absolute inset-0 bg-code-dots" />
-      <div className="absolute inset-0 bg-mesh opacity-60" />
+      <div className="absolute inset-0 bg-code-dots" aria-hidden="true" />
+      <div className="absolute inset-0 bg-mesh opacity-60" aria-hidden="true" />
 
       <div className="container mx-auto px-4 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
+          transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
           className="text-center mb-16"
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
-            <FolderGit2 className="w-4 h-4 text-primary" />
+            <FolderGit2 className="w-4 h-4 text-primary" aria-hidden="true" />
             <span className="text-sm font-mono text-primary">
               ~/projects --featured
             </span>
@@ -188,7 +194,7 @@ export function ProjectsSection() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.4 }}
+              transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.4 }}
               className="text-center mt-12"
             >
               <Button asChild variant="outline" size="lg" className="gap-2">

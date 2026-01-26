@@ -15,6 +15,7 @@ import {
 } from "./portfolio-files";
 import { Typewriter } from "./text-effects";
 import { useFeaturedProjects } from "@/hooks/use-projects";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -35,6 +36,7 @@ export function HeroSection() {
   const editorRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const isInView = useInView(sectionRef, { once: true });
+  const prefersReducedMotion = useReducedMotion();
   const { data } = useFeaturedProjects(6);
   const editorFiles =
     (data?.projects?.length ?? 0) > 0
@@ -165,38 +167,44 @@ export function HeroSection() {
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
       {/* Background Effects */}
-      <div className="absolute inset-0 bg-dots opacity-60" />
-      <div className="absolute inset-0 bg-spotlight" />
-      <div className="absolute inset-0 bg-mesh" />
-      <div className="absolute bottom-0 left-0 right-0 h-40 gradient-fade-down" />
+      <div className="absolute inset-0 bg-dots opacity-60" aria-hidden="true" />
+      <div className="absolute inset-0 bg-spotlight" aria-hidden="true" />
+      <div className="absolute inset-0 bg-mesh" aria-hidden="true" />
+      <div className="absolute bottom-0 left-0 right-0 h-40 gradient-fade-down" aria-hidden="true" />
 
       {/* Floating orbs */}
-      <motion.div
-        className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl"
-        style={{ background: "oklch(from var(--primary) l c h / 8%)" }}
-        animate={{
-          x: [0, 30, 0],
-          y: [0, -20, 0],
-        }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-      <motion.div
-        className="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full blur-3xl"
-        style={{ background: "oklch(from var(--primary) l c h / 6%)" }}
-        animate={{
-          x: [0, -20, 0],
-          y: [0, 30, 0],
-        }}
-        transition={{
-          duration: 10,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
+      {!prefersReducedMotion && (
+        <>
+          <motion.div
+            className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full blur-3xl"
+            style={{ background: "oklch(from var(--primary) l c h / 8%)" }}
+            animate={{
+              x: [0, 30, 0],
+              y: [0, -20, 0],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            aria-hidden="true"
+          />
+          <motion.div
+            className="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full blur-3xl"
+            style={{ background: "oklch(from var(--primary) l c h / 6%)" }}
+            animate={{
+              x: [0, -20, 0],
+              y: [0, 30, 0],
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+            aria-hidden="true"
+          />
+        </>
+      )}
 
       <div className="container mx-auto px-4 py-20 pb-32 md:pb-40 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
@@ -205,10 +213,10 @@ export function HeroSection() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6 }}
+              transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6"
             >
-              <Sparkles className="w-4 h-4 text-primary" />
+              <Sparkles className="w-4 h-4 text-primary" aria-hidden="true" />
               <span className="text-sm font-medium text-primary">
                 Available for new projects
               </span>
@@ -222,7 +230,7 @@ export function HeroSection() {
                 className="block text-muted-foreground text-lg md:text-xl lg:text-2xl font-normal mb-2 leading-normal"
                 initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.5, delay: 0.1 }}
+                transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.5, delay: 0.1 }}
               >
                 Hello, I&apos;m
               </motion.span>
@@ -230,7 +238,7 @@ export function HeroSection() {
                 className="block bg-linear-to-r from-foreground via-foreground to-primary bg-clip-text text-transparent py-1 leading-[1.15]"
                 initial={{ opacity: 0, y: 30 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: 0.2 }}
+                transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.2 }}
               >
                 Waseem Anjum
               </motion.span>
@@ -238,7 +246,7 @@ export function HeroSection() {
                 className="block text-2xl md:text-3xl lg:text-4xl mt-2 font-normal h-[1.3em]"
                 initial={{ opacity: 0 }}
                 animate={isInView ? { opacity: 1 } : {}}
-                transition={{ duration: 0.5, delay: 0.5 }}
+                transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.5, delay: 0.5 }}
               >
                 <Typewriter
                   words={roles}
@@ -253,7 +261,7 @@ export function HeroSection() {
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.3 }}
+              transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.3 }}
               className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-8"
             >
               I craft modern, high-performance applications and decentralized
@@ -264,31 +272,45 @@ export function HeroSection() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.6, delay: 0.4 }}
+              transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.4 }}
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
             >
               <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={prefersReducedMotion ? {} : { scale: 1.05 }}
+                whileTap={prefersReducedMotion ? {} : { scale: 0.95 }}
               >
                 <Button
                   size="lg"
-                  className="group gap-2 glow-primary relative overflow-hidden"
+                  className="group gap-2 glow-primary relative overflow-hidden focus-visible:ring-2 focus-visible:ring-primary/50"
                   onClick={() => {
                     const isOnHomePage = window.location.pathname === "/";
                     if (isOnHomePage) {
                       const element = document.getElementById("projects");
                       if (element) {
-                        element.scrollIntoView({ behavior: "smooth" });
+                        element.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth" });
                       }
                     } else {
                       window.location.href = "/#projects";
                     }
                   }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      const isOnHomePage = window.location.pathname === "/";
+                      if (isOnHomePage) {
+                        const element = document.getElementById("projects");
+                        if (element) {
+                          element.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth" });
+                        }
+                      } else {
+                        window.location.href = "/#projects";
+                      }
+                    }
+                  }}
                 >
-                  <Code2 className="w-5 h-5 relative z-10" />
+                  <Code2 className="w-5 h-5 relative z-10" aria-hidden="true" />
                   <span className="relative z-10">View My Work</span>
-                  <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1 relative z-10" />
+                  <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1 relative z-10" aria-hidden="true" />
                   <motion.div
                     className="absolute inset-0 bg-linear-to-r from-primary/20 to-primary/0 opacity-0 group-hover:opacity-100 transition-opacity"
                     initial={false}
@@ -296,17 +318,17 @@ export function HeroSection() {
                 </Button>
               </motion.div>
               <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={prefersReducedMotion ? {} : { scale: 1.05 }}
+                whileTap={prefersReducedMotion ? {} : { scale: 0.95 }}
               >
                 <Button
                   asChild
                   variant="outline"
                   size="lg"
-                  className="group gap-2 relative overflow-hidden border-2 hover:border-primary/50 transition-all"
+                  className="group gap-2 relative overflow-hidden border-2 hover:border-primary/50 transition-all focus-visible:ring-2 focus-visible:ring-primary/50"
                 >
                   <Link href="/contact">
-                    <Mail className="w-5 h-5 relative z-10 group-hover:text-primary transition-colors" />
+                    <Mail className="w-5 h-5 relative z-10 group-hover:text-primary transition-colors" aria-hidden="true" />
                     <span className="relative z-10">Get in Touch</span>
                     <motion.div
                       className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -324,7 +346,7 @@ export function HeroSection() {
             className="order-1 lg:order-2"
             initial={{ opacity: 0, y: 30, scale: 0.95 }}
             animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
-            transition={{ duration: 0.8, delay: 0.3 }}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.8, delay: 0.3 }}
           >
             <CodeEditor
               files={editorFiles}
@@ -347,62 +369,81 @@ export function HeroSection() {
         className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-20 w-full flex justify-center pointer-events-none"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 2, duration: 0.6, ease: "easeOut" }}
+        transition={prefersReducedMotion ? { duration: 0 } : { delay: 2, duration: 0.6, ease: "easeOut" }}
       >
         <motion.button
-          className="flex flex-col items-center gap-3 group cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/50 rounded-lg p-2 -m-2 transition-all pointer-events-auto"
+          className="flex flex-col items-center gap-3 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-lg p-2 -m-2 transition-all pointer-events-auto touch-action: manipulation"
           onClick={() => {
             window.scrollTo({
               top: window.innerHeight,
-              behavior: "smooth",
+              behavior: prefersReducedMotion ? "auto" : "smooth",
             });
           }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              window.scrollTo({
+                top: window.innerHeight,
+                behavior: prefersReducedMotion ? "auto" : "smooth",
+              });
+            }
+          }}
+          whileHover={prefersReducedMotion ? {} : { scale: 1.05 }}
+          whileTap={prefersReducedMotion ? {} : { scale: 0.95 }}
+          aria-label="Scroll to next section"
         >
           <span className="text-xs font-medium text-muted-foreground/70 uppercase tracking-wider group-hover:text-foreground transition-colors">
-            Scroll to explore
+            Scroll to explore…
           </span>
           <div className="relative flex flex-col items-center gap-2">
             <div className="relative w-6 h-10">
+              {!prefersReducedMotion && (
+                <>
+                  <motion.div
+                    className="absolute inset-0 rounded-full border-2 border-primary/30 group-hover:border-primary/50 transition-colors"
+                    animate={{
+                      scale: [1, 1.1, 1],
+                      opacity: [0.3, 0.5, 0.3],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                    }}
+                  />
+                  <motion.div className="absolute inset-0 rounded-full border-2 border-primary/40 flex items-start justify-center p-1.5 group-hover:border-primary transition-colors">
+                    <motion.div
+                      className="w-1.5 h-1.5 rounded-full bg-primary"
+                      animate={{ y: [0, 16, 0] }}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                      }}
+                    />
+                  </motion.div>
+                </>
+              )}
+            </div>
+            {!prefersReducedMotion ? (
               <motion.div
-                className="absolute inset-0 rounded-full border-2 border-primary/30 group-hover:border-primary/50 transition-colors"
-                animate={{
-                  scale: [1, 1.1, 1],
-                  opacity: [0.3, 0.5, 0.3],
-                }}
+                animate={{ y: [0, 3, 0] }}
                 transition={{
-                  duration: 2,
+                  duration: 1.5,
                   repeat: Infinity,
                   ease: "easeInOut",
+                  delay: 0.3,
                 }}
-              />
-              <motion.div className="absolute inset-0 rounded-full border-2 border-primary/40 flex items-start justify-center p-1.5 group-hover:border-primary transition-colors">
-                <motion.div
-                  className="w-1.5 h-1.5 rounded-full bg-primary"
-                  animate={{ y: [0, 16, 0] }}
-                  transition={{
-                    duration: 1.5,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                />
+              >
+                <ArrowDown className="w-4 h-4 text-primary/50 group-hover:text-primary transition-colors" aria-hidden="true" />
               </motion.div>
-            </div>
-            <motion.div
-              animate={{ y: [0, 3, 0] }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: 0.3,
-              }}
-            >
-              <ArrowDown className="w-4 h-4 text-primary/50 group-hover:text-primary transition-colors" />
-            </motion.div>
+            ) : (
+              <ArrowDown className="w-4 h-4 text-primary/50 group-hover:text-primary transition-colors" aria-hidden="true" />
+            )}
           </div>
         </motion.button>
       </motion.div>
     </section>
   );
 }
+

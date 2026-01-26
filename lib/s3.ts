@@ -27,6 +27,24 @@ export function getS3Key(
   return `projects/${projectId}/${type}-${timestamp}.${extension}`;
 }
 
+/**
+ * Upload a buffer directly to S3. Used by import script.
+ */
+export async function uploadBufferToS3(
+  buffer: Buffer,
+  key: string,
+  contentType: string
+): Promise<string> {
+  const command = new PutObjectCommand({
+    Bucket: BUCKET_NAME,
+    Key: key,
+    Body: buffer,
+    ContentType: contentType,
+  });
+  await s3Client.send(command);
+  return getS3Url(key);
+}
+
 export function getS3Url(key: string): string {
   return `https://${BUCKET_NAME}.s3.${BUCKET_REGION}.amazonaws.com/${key}`;
 }
@@ -80,16 +98,21 @@ export async function deleteS3Objects(keys: string[]): Promise<void> {
   await Promise.allSettled(keys.map((key) => deleteS3Object(key)));
 }
 
+/**
+ * Delete from S3 only URLs that are actually S3 objects (amazonaws.com).
+ * Ignores placeholders, /imported/, or other non-S3 URLs. Dedupes keys.
+ */
 export async function extractAndDeleteS3Images(
   urls: (string | null | undefined)[]
 ): Promise<void> {
-  const keys = urls
-    .filter((url): url is string => Boolean(url))
-    .map((url) => {
-      const key = extractS3Key(url);
-      return key || url;
-    })
-    .filter((key): key is string => Boolean(key));
+  const keys = [
+    ...new Set(
+      urls
+        .filter((url): url is string => Boolean(url?.trim()))
+        .map((url) => extractS3Key(url))
+        .filter((key): key is string => Boolean(key))
+    ),
+  ];
 
   if (keys.length > 0) {
     await deleteS3Objects(keys);

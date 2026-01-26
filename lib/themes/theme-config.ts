@@ -32,6 +32,159 @@ import {
   vesperTheme,
   watermelonTheme,
   witchGirlTheme,
+  oceanBreezeTheme,
+  forestFloorTheme,
+  desertDuneTheme,
+  cherryBlossomTheme,
+  midnightOilTheme,
+  lavenderFieldTheme,
+  sunriseGlowTheme,
+  arcticFrostTheme,
+  emeraldCityTheme,
+  coralGardenTheme,
+  pumpkinPatchTheme,
+  sakuraPinkTheme,
+  obsidianTheme,
+  mintChipTheme,
+  strawberryTheme,
+  plumHarvestTheme,
+  apricotTheme,
+  glacierBlueTheme,
+  sunflowerTheme,
+  slateGrayTheme,
+  roseGoldTheme,
+  sageGreenTheme,
+  tangerineTheme,
+  lagoonTheme,
+  violetDreamTheme,
+  ivoryTheme,
+  espressoTheme,
+  peachSorbetTheme,
+  cobaltTheme,
+  jadeStoneTheme,
+  crimsonTheme,
+  amberGlowTheme,
+  mistyGrayTheme,
+  orchidTheme,
+  bambooTheme,
+  saffronTheme,
+  graphiteTheme,
+  aquamarineTheme,
+  blushPinkTheme,
+  denimBlueTheme,
+  mossGardenTheme,
+  papayaTheme,
+  periwinkleTheme,
+  rustTheme,
+  seafoamTheme,
+  terracottaTheme,
+  wineDarkTheme,
+  honeydewTheme,
+  midnightPurpleTheme,
+  coastalTheme,
+  berrySmoothieTheme,
+  goldenHourTheme,
+  twilightTheme,
+  fernTheme,
+  frostTheme,
+  inkTheme,
+  mangoTheme,
+  stormTheme,
+  willowTheme,
+  ashTheme,
+  blushWineTheme,
+  charcoalTheme,
+  cloverTheme,
+  duskTheme,
+  fireflyTheme,
+  frostbiteTheme,
+  gingerTheme,
+  hazeTheme,
+  irisTheme,
+  jasmineTheme,
+  kelpTheme,
+  lavenderTheme,
+  lichenTheme,
+  mercuryTheme,
+  nectarTheme,
+  oliveTheme,
+  pearlTheme,
+  quartzTheme,
+  rainTheme,
+  sandTheme,
+  shadowTheme,
+  silverTheme,
+  smokeTheme,
+  snowTheme,
+  steelTheme,
+  stoneTheme,
+  sulfurTheme,
+  titaniumTheme,
+  tulipTheme,
+  umberTheme,
+  vanillaTheme,
+  wheatTheme,
+  whiskeyTheme,
+  zincTheme,
+  auroraBorealisTheme,
+  bluebellTheme,
+  cactusTheme,
+  daffodilTheme,
+  eclipseTheme,
+  flamingoTheme,
+  garnetTheme,
+  skylineTheme,
+  iceFieldTheme,
+  emberTheme,
+  polarTheme,
+  mossTheme,
+  neonTheme,
+  clayPotTheme,
+  fogTheme,
+  spiceTheme,
+  abyssTheme,
+  meadowTheme,
+  slateMistTheme,
+  mustardTheme,
+  velvetTheme,
+  chalkTheme,
+  siennaTheme,
+  tealSeaTheme,
+  blushDarkTheme,
+  mintLeafTheme,
+  indigoTheme,
+  ochreGoldTheme,
+  cobaltDeepTheme,
+  maroonDeepTheme,
+  sageBrushTheme,
+  navyBlueTheme,
+  roseDustTheme,
+  limeZestTheme,
+  denimWashTheme,
+  coralSoftTheme,
+  forestDeepTheme,
+  lavenderMistTheme,
+  umberRawTheme,
+  cyanTheme,
+  scarletTheme,
+  goldTheme,
+  plumDarkTheme,
+  algaeTheme,
+  sunsetTheme,
+  mulberryTheme,
+  peatTheme,
+  azureTheme,
+  brickTheme,
+  celadonTheme,
+  orchidPaleTheme,
+  taupeTheme,
+  viridianTheme,
+  rustedTheme,
+  violetBlueTheme,
+  khakiTheme,
+  magentaTheme,
+  sepiaTheme,
+  turquoiseTheme,
 } from "./definitions";
 
 // Theme color interface for type safety
@@ -185,7 +338,160 @@ export type ColorScheme =
   | "terra"
   | "vesper"
   | "watermelon"
-  | "witchGirl";
+  | "witchGirl"
+  | "oceanBreeze"
+  | "forestFloor"
+  | "desertDune"
+  | "cherryBlossom"
+  | "midnightOil"
+  | "lavenderField"
+  | "sunriseGlow"
+  | "arcticFrost"
+  | "emeraldCity"
+  | "coralGarden"
+  | "pumpkinPatch"
+  | "sakuraPink"
+  | "obsidian"
+  | "mintChip"
+  | "strawberry"
+  | "plumHarvest"
+  | "apricot"
+  | "glacierBlue"
+  | "sunflower"
+  | "slateGray"
+  | "roseGold"
+  | "sageGreen"
+  | "tangerine"
+  | "lagoon"
+  | "violetDream"
+  | "ivory"
+  | "espresso"
+  | "peachSorbet"
+  | "cobalt"
+  | "jadeStone"
+  | "crimson"
+  | "amberGlow"
+  | "mistyGray"
+  | "orchid"
+  | "bamboo"
+  | "saffron"
+  | "graphite"
+  | "aquamarine"
+  | "blushPink"
+  | "denimBlue"
+  | "mossGarden"
+  | "papaya"
+  | "periwinkle"
+  | "rust"
+  | "seafoam"
+  | "terracotta"
+  | "wineDark"
+  | "honeydew"
+  | "midnightPurple"
+  | "coastal"
+  | "berrySmoothie"
+  | "goldenHour"
+  | "twilight"
+  | "fern"
+  | "frost"
+  | "ink"
+  | "mango"
+  | "storm"
+  | "willow"
+  | "ash"
+  | "blushWine"
+  | "charcoal"
+  | "clover"
+  | "dusk"
+  | "firefly"
+  | "frostbite"
+  | "ginger"
+  | "haze"
+  | "iris"
+  | "jasmine"
+  | "kelp"
+  | "lavender"
+  | "lichen"
+  | "mercury"
+  | "nectar"
+  | "olive"
+  | "pearl"
+  | "quartz"
+  | "rain"
+  | "sand"
+  | "shadow"
+  | "silver"
+  | "smoke"
+  | "snow"
+  | "steel"
+  | "stone"
+  | "sulfur"
+  | "titanium"
+  | "tulip"
+  | "umber"
+  | "vanilla"
+  | "wheat"
+  | "whiskey"
+  | "zinc"
+  | "auroraBorealis"
+  | "bluebell"
+  | "cactus"
+  | "daffodil"
+  | "eclipse"
+  | "flamingo"
+  | "garnet"
+  | "skyline"
+  | "iceField"
+  | "ember"
+  | "polar"
+  | "moss"
+  | "neon"
+  | "clayPot"
+  | "fog"
+  | "spice"
+  | "abyss"
+  | "meadow"
+  | "slateMist"
+  | "mustard"
+  | "velvet"
+  | "chalk"
+  | "sienna"
+  | "tealSea"
+  | "blushDark"
+  | "mintLeaf"
+  | "indigo"
+  | "ochreGold"
+  | "cobaltDeep"
+  | "maroonDeep"
+  | "sageBrush"
+  | "navyBlue"
+  | "roseDust"
+  | "limeZest"
+  | "denimWash"
+  | "coralSoft"
+  | "forestDeep"
+  | "lavenderMist"
+  | "umberRaw"
+  | "cyan"
+  | "scarlet"
+  | "gold"
+  | "plumDark"
+  | "algae"
+  | "sunset"
+  | "mulberry"
+  | "peat"
+  | "azure"
+  | "brick"
+  | "celadon"
+  | "orchidPale"
+  | "taupe"
+  | "viridian"
+  | "rusted"
+  | "violetBlue"
+  | "khaki"
+  | "magenta"
+  | "sepia"
+  | "turquoise";
 
 // Theme definition interface
 export interface ThemeDefinition {
@@ -5242,4 +5548,157 @@ export const themes: Record<ColorScheme, ThemeDefinition> = {
   vesper: vesperTheme,
   watermelon: watermelonTheme,
   witchGirl: witchGirlTheme,
+  oceanBreeze: oceanBreezeTheme,
+  forestFloor: forestFloorTheme,
+  desertDune: desertDuneTheme,
+  cherryBlossom: cherryBlossomTheme,
+  midnightOil: midnightOilTheme,
+  lavenderField: lavenderFieldTheme,
+  sunriseGlow: sunriseGlowTheme,
+  arcticFrost: arcticFrostTheme,
+  emeraldCity: emeraldCityTheme,
+  coralGarden: coralGardenTheme,
+  pumpkinPatch: pumpkinPatchTheme,
+  sakuraPink: sakuraPinkTheme,
+  obsidian: obsidianTheme,
+  mintChip: mintChipTheme,
+  strawberry: strawberryTheme,
+  plumHarvest: plumHarvestTheme,
+  apricot: apricotTheme,
+  glacierBlue: glacierBlueTheme,
+  sunflower: sunflowerTheme,
+  slateGray: slateGrayTheme,
+  roseGold: roseGoldTheme,
+  sageGreen: sageGreenTheme,
+  tangerine: tangerineTheme,
+  lagoon: lagoonTheme,
+  violetDream: violetDreamTheme,
+  ivory: ivoryTheme,
+  espresso: espressoTheme,
+  peachSorbet: peachSorbetTheme,
+  cobalt: cobaltTheme,
+  jadeStone: jadeStoneTheme,
+  crimson: crimsonTheme,
+  amberGlow: amberGlowTheme,
+  mistyGray: mistyGrayTheme,
+  orchid: orchidTheme,
+  bamboo: bambooTheme,
+  saffron: saffronTheme,
+  graphite: graphiteTheme,
+  aquamarine: aquamarineTheme,
+  blushPink: blushPinkTheme,
+  denimBlue: denimBlueTheme,
+  mossGarden: mossGardenTheme,
+  papaya: papayaTheme,
+  periwinkle: periwinkleTheme,
+  rust: rustTheme,
+  seafoam: seafoamTheme,
+  terracotta: terracottaTheme,
+  wineDark: wineDarkTheme,
+  honeydew: honeydewTheme,
+  midnightPurple: midnightPurpleTheme,
+  coastal: coastalTheme,
+  berrySmoothie: berrySmoothieTheme,
+  goldenHour: goldenHourTheme,
+  twilight: twilightTheme,
+  fern: fernTheme,
+  frost: frostTheme,
+  ink: inkTheme,
+  mango: mangoTheme,
+  storm: stormTheme,
+  willow: willowTheme,
+  ash: ashTheme,
+  blushWine: blushWineTheme,
+  charcoal: charcoalTheme,
+  clover: cloverTheme,
+  dusk: duskTheme,
+  firefly: fireflyTheme,
+  frostbite: frostbiteTheme,
+  ginger: gingerTheme,
+  haze: hazeTheme,
+  iris: irisTheme,
+  jasmine: jasmineTheme,
+  kelp: kelpTheme,
+  lavender: lavenderTheme,
+  lichen: lichenTheme,
+  mercury: mercuryTheme,
+  nectar: nectarTheme,
+  olive: oliveTheme,
+  pearl: pearlTheme,
+  quartz: quartzTheme,
+  rain: rainTheme,
+  sand: sandTheme,
+  shadow: shadowTheme,
+  silver: silverTheme,
+  smoke: smokeTheme,
+  snow: snowTheme,
+  steel: steelTheme,
+  stone: stoneTheme,
+  sulfur: sulfurTheme,
+  titanium: titaniumTheme,
+  tulip: tulipTheme,
+  umber: umberTheme,
+  vanilla: vanillaTheme,
+  wheat: wheatTheme,
+  whiskey: whiskeyTheme,
+  zinc: zincTheme,
+  auroraBorealis: auroraBorealisTheme,
+  bluebell: bluebellTheme,
+  cactus: cactusTheme,
+  daffodil: daffodilTheme,
+  eclipse: eclipseTheme,
+  flamingo: flamingoTheme,
+  garnet: garnetTheme,
+  skyline: skylineTheme,
+  iceField: iceFieldTheme,
+  ember: emberTheme,
+  polar: polarTheme,
+  moss: mossTheme,
+  neon: neonTheme,
+  clayPot: clayPotTheme,
+  fog: fogTheme,
+  spice: spiceTheme,
+  abyss: abyssTheme,
+  meadow: meadowTheme,
+  slateMist: slateMistTheme,
+  mustard: mustardTheme,
+  velvet: velvetTheme,
+  chalk: chalkTheme,
+  sienna: siennaTheme,
+  tealSea: tealSeaTheme,
+  blushDark: blushDarkTheme,
+  mintLeaf: mintLeafTheme,
+  indigo: indigoTheme,
+  ochreGold: ochreGoldTheme,
+  cobaltDeep: cobaltDeepTheme,
+  maroonDeep: maroonDeepTheme,
+  sageBrush: sageBrushTheme,
+  navyBlue: navyBlueTheme,
+  roseDust: roseDustTheme,
+  limeZest: limeZestTheme,
+  denimWash: denimWashTheme,
+  coralSoft: coralSoftTheme,
+  forestDeep: forestDeepTheme,
+  lavenderMist: lavenderMistTheme,
+  umberRaw: umberRawTheme,
+  cyan: cyanTheme,
+  scarlet: scarletTheme,
+  gold: goldTheme,
+  plumDark: plumDarkTheme,
+  algae: algaeTheme,
+  sunset: sunsetTheme,
+  mulberry: mulberryTheme,
+  peat: peatTheme,
+  azure: azureTheme,
+  brick: brickTheme,
+  celadon: celadonTheme,
+  orchidPale: orchidPaleTheme,
+  taupe: taupeTheme,
+  viridian: viridianTheme,
+  rusted: rustedTheme,
+  violetBlue: violetBlueTheme,
+  khaki: khakiTheme,
+  magenta: magentaTheme,
+  sepia: sepiaTheme,
+  turquoise: turquoiseTheme,
 };

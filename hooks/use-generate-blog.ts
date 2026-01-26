@@ -10,6 +10,7 @@ export interface GeneratedBlog {
   metaDescription: string;
   seoKeywords: string[];
   featuredImageAlt: string;
+  featuredImagePrompt: string;
   categoryIds: string[];
   tagIds: string[];
   newCategories: string[];

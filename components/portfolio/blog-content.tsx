@@ -96,7 +96,9 @@ export function BlogContent({ blog }: BlogContentProps) {
         if (blog.markdownContent) {
           const { remark } = await import("remark");
           const remarkHtml = (await import("remark-html")).default;
-          const result = await remark().use(remarkHtml).process(blog.markdownContent);
+          const result = await remark()
+            .use(remarkHtml)
+            .process(blog.markdownContent);
           setRenderedContent(String(result));
         } else if (blog.body) {
           if (typeof blog.body === "string") {
@@ -183,7 +185,9 @@ export function BlogContent({ blog }: BlogContentProps) {
                         : undefined
                     }
                   >
-                    {category.icon && <span className="mr-1">{category.icon}</span>}
+                    {category.icon && (
+                      <span className="mr-1">{category.icon}</span>
+                    )}
                     {category.title}
                   </Badge>
                 ))}
@@ -198,7 +202,9 @@ export function BlogContent({ blog }: BlogContentProps) {
                 {blog.title}
               </h1>
 
-              <p className="text-xl text-muted-foreground mb-6">{blog.excerpt}</p>
+              <p className="text-xl text-muted-foreground mb-6">
+                {blog.excerpt}
+              </p>
 
               <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground mb-6">
                 {blog.publishedAt && (
@@ -329,7 +335,11 @@ export function BlogContent({ blog }: BlogContentProps) {
                 <h2 className="text-2xl font-semibold mb-6">Related Posts</h2>
                 <div className="grid md:grid-cols-3 gap-6">
                   {blog.relatedTo.map((relatedBlog, idx) => (
-                    <RelatedPostCard key={relatedBlog.id} blog={relatedBlog} index={idx} />
+                    <RelatedPostCard
+                      key={relatedBlog.id}
+                      blog={relatedBlog}
+                      index={idx}
+                    />
                   ))}
                 </div>
               </motion.div>

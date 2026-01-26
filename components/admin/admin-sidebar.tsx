@@ -8,6 +8,7 @@ import {
   Settings,
   LogOut,
   Sparkles,
+  ExternalLink,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -143,6 +144,16 @@ export function AdminSidebar() {
             </span>
           </div>
         </div>
+        {/* View Website Link */}
+        <SidebarMenuButton
+          asChild
+          className="w-full justify-start gap-3 h-10 mb-2 rounded-xl font-medium hover:bg-primary/10 hover:text-primary"
+        >
+          <Link href="/" target="_blank">
+            <ExternalLink className="h-4 w-4" />
+            <span>View Website</span>
+          </Link>
+        </SidebarMenuButton>
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <SidebarMenuButton

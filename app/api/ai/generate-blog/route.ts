@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+import { getRandomBlogPrompt } from "@/lib/ai/blog-prompts";
 import { prisma } from "@/lib/prisma";
 import OpenAI from "openai";
 import { z } from "zod";
@@ -59,8 +60,8 @@ export async function POST(request: NextRequest) {
       .join("\n");
     const tagList = tags.map((t) => t.title).join(", ");
 
-    const systemPrompt = `You are an expert technical blog writer specializing in web development, Web3, blockchain, and modern software engineering.
-Your task is to generate a complete, high-quality blog post.
+    const systemPrompt = `You are an expert technical blog writer. You cover web development, AI, machine learning, robotics, Web3/blockchain, and other latest tech—plus tutorials using specific languages (TypeScript, Python, Rust, Go, etc.).
+Your task is to generate a complete, high-quality blog post that reads like it was written by a thoughtful human developer—conversational, relatable, and genuinely helpful.
 
 Available Categories:
 ${categoryList || "No categories available yet"}
@@ -82,28 +83,35 @@ Generate a blog post in the following JSON format:
   "title": "Engaging and SEO-friendly title",
   "slug": "url-friendly-slug-with-dashes",
   "excerpt": "A compelling 2-3 sentence summary that hooks readers (150-200 characters)",
-  "body": "Full HTML blog content with proper formatting, code examples if relevant, at least 800-1200 words. Use <h2>, <h3>, <p>, <ul>, <li>, <pre><code>, <strong>, <em> tags appropriately.",
+  "body": "Full HTML blog content. See BODY GUIDELINES below.",
   "metaTitle": "SEO-optimized title (50-60 characters)",
   "metaDescription": "SEO-optimized description (150-160 characters)",
   "seoKeywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"],
   "featuredImageAlt": "Descriptive alt text for the featured image",
+  "featuredImagePrompt": "Detailed AI image generation prompt for the featured image",
   "suggestedCategories": ["Category Name 1"],
   "suggestedTags": ["Tag 1", "Tag 2", "Tag 3"]
 }
 
-Important guidelines:
-1. Content should be informative, practical, and engaging
-2. Include code examples where relevant (use proper HTML code blocks)
-3. Make it valuable for developers and tech enthusiasts
-4. Ensure the slug is URL-friendly (lowercase, dashes, no special characters)
-5. For suggestedCategories and suggestedTags, use existing ones from the lists above when they match, or suggest new relevant ones
-6. The body should be well-structured with clear sections and headings
-7. Include a brief introduction and conclusion
-8. Add practical examples, tips, or best practices where applicable`;
+BODY GUIDELINES (critical):
+1. LENGTH: Aim for 1,800–2,500 words. Give full context—explain the "why" behind decisions, share real-world gotchas, and walk readers through a complete narrative. Do not summarize or skip steps.
+2. TONE: Write like a human. Use "you" and "we," occasional humor or empathy, short paragraphs, and a conversational flow. Avoid stiff, robotic, or overly formal language. Share opinions and practical advice.
+3. STRUCTURE: Use <h2> for main sections, <h3> for subsections, <p>, <ul>, <li>, <strong>, <em>. Include a clear intro that sets context, a main body that teaches step-by-step, and a conclusion with takeaways and next steps.
+4. CODE: Provide FULL, runnable code examples—not snippets or "... rest of code." Include complete files or meaningful blocks (imports, setup, main logic) so readers can copy-paste and run. Use <pre><code> with proper escaping. Add brief comments where helpful. If multiple files are needed, show each fully.
+5. CONTEXT: Explain what each example does, why it works, and when to use it. Cover edge cases, common mistakes, and alternatives. Make the blog a one-stop resource for the topic.
+6. PRACTICAL VALUE: Include tips, best practices, links to docs or tools where relevant, and "what I wish I'd known" style insights. End with actionable next steps or further reading.
 
-    const userPrompt = title
-      ? `Generate a comprehensive blog post about: "${title}". You may refine or improve the title if needed for better SEO and engagement.`
-      : `Generate a fresh, unique blog post about web development, Web3, blockchain, or modern software engineering. Choose an interesting topic that would be valuable for developers.`;
+Other rules:
+7. Ensure the slug is URL-friendly (lowercase, dashes, no special characters).
+8. For suggestedCategories and suggestedTags, use existing ones from the lists above when they match, or suggest new relevant ones.
+
+IMPORTANT - Featured Image Prompt Guidelines:
+9. The "featuredImagePrompt" must be a detailed, high-quality prompt for AI image generators (DALL-E, Midjourney, Stable Diffusion).
+10. ALWAYS include instruction to display the blog title as stylized text on the image, write actual title in the prompt.
+11. Describe visual style, colors, composition, mood, and tech-related elements. Use 16:9 aspect ratio.`;
+
+
+    const userPrompt = getRandomBlogPrompt(title);
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o",
@@ -175,6 +183,7 @@ Important guidelines:
       metaDescription: generatedBlog.metaDescription,
       seoKeywords: generatedBlog.seoKeywords || [],
       featuredImageAlt: generatedBlog.featuredImageAlt,
+      featuredImagePrompt: generatedBlog.featuredImagePrompt || "",
       categoryIds: matchedCategoryIds,
       tagIds: matchedTagIds,
       newCategories,

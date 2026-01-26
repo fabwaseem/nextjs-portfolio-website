@@ -11,7 +11,8 @@ import { useYouTubeVideos, YouTubeVideo } from "@/hooks/use-youtube-videos";
 import { socialLinks } from "@/config/constants";
 import { VideoCardSkeleton } from "./card-skeletons";
 
-const YOUTUBE_CHANNEL_URL = socialLinks.find((l) => l.name === "Youtube")?.url ?? "https://youtube.com";
+const YOUTUBE_CHANNEL_URL =
+  socialLinks.find((l) => l.name === "Youtube")?.url ?? "https://youtube.com";
 
 function formatDuration(seconds: number | null): string {
   if (seconds == null || seconds < 0) return "";
@@ -90,10 +91,7 @@ export function VideosSection() {
     <section
       ref={sectionRef}
       id="videos"
-      className={cn(
-        "relative py-24 md:py-32 overflow-hidden",
-        "scroll-mt-20"
-      )}
+      className={cn("relative py-24 md:py-32 overflow-hidden", "scroll-mt-20")}
     >
       <div className="absolute inset-0 bg-code-dots" aria-hidden />
       <div className="absolute inset-0 bg-mesh opacity-60" aria-hidden />
@@ -136,7 +134,11 @@ export function VideosSection() {
               No videos available right now. Check the channel for updates.
             </p>
             <Button asChild variant="outline" size="lg" className="mt-6 gap-2">
-              <Link href={YOUTUBE_CHANNEL_URL} target="_blank" rel="noopener noreferrer">
+              <Link
+                href={YOUTUBE_CHANNEL_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 Open YouTube Channel
                 <ArrowUpRight className="w-4 h-4" />
               </Link>
@@ -156,7 +158,11 @@ export function VideosSection() {
               className="text-center mt-12"
             >
               <Button asChild variant="outline" size="lg" className="gap-2">
-                <Link href={YOUTUBE_CHANNEL_URL} target="_blank" rel="noopener noreferrer">
+                <Link
+                  href={YOUTUBE_CHANNEL_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   View All Videos
                   <ArrowUpRight className="w-4 h-4" />
                 </Link>

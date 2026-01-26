@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: "Projects | Web Development Portfolio - React, Next.js, Web3 DApps",
   description:
     "Explore Waseem Anjum's complete portfolio of web development projects. From React & Next.js applications to Web3 DApps, smart contracts, and full-stack solutions. View live demos and source code.",
+  alternates: {
+    canonical: `${BASE_URL}/projects`,
+  },
   openGraph: {
     title: "Projects | Waseem Anjum - Full Stack & Web3 Developer",
     description:

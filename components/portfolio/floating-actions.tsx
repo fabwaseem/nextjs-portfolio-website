@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUp, Moon, Sun, Palette, Check, Loader2 } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -14,6 +14,7 @@ import {
   CommandItem,
 } from "@/components/ui/command";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import type { ColorScheme } from "@/lib/themes/theme-config";
 import { cn } from "@/lib/utils";
 
@@ -30,6 +31,7 @@ export function FloatingActions({
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isThemeDialogOpen, setIsThemeDialogOpen] = useState(false);
+  const [highlightedValue, setHighlightedValue] = useState<string>("");
   const originalThemeRef = useRef<ColorScheme | null>(null);
   const scrollViewportRef = useRef<HTMLDivElement>(null);
   const { setTheme, theme: themeMode } = useTheme();
@@ -87,18 +89,69 @@ export function FloatingActions({
     }
   }, [colorScheme]);
 
+  // Build value string for a theme (used for cmdk value and map)
+  const themeValue = (id: ColorScheme, name: string, desc: string) =>
+    `${name} ${desc} ${id}`;
+
+  // Build map from theme value to theme ID (memoized to avoid ref access during render)
+  const valueToThemeIdMap = useMemo(() => {
+    const map = new Map<string, ColorScheme>();
+    availableThemes.forEach((t) => {
+      const val = themeValue(t.id, t.name, t.description);
+      map.set(val, t.id);
+    });
+    return map;
+  }, [availableThemes]);
+
   // Handle dialog open/close
-  const handleDialogOpen = (open: boolean) => {
-    setIsThemeDialogOpen(open);
-    if (open) {
-      originalThemeRef.current = colorScheme;
-      // Scroll to selected theme after dialog opens and renders
-      setTimeout(scrollToSelectedTheme, 100);
-    } else {
-      // Reset to the saved theme when closing
-      applyThemePreview(null);
-    }
-  };
+  const handleDialogOpen = useCallback(
+    (open: boolean) => {
+      setIsThemeDialogOpen(open);
+      if (open) {
+        originalThemeRef.current = colorScheme;
+        const current = availableThemes.find((t) => t.id === colorScheme);
+        setHighlightedValue(
+          current ? themeValue(current.id, current.name, current.description) : ""
+        );
+        setTimeout(scrollToSelectedTheme, 100);
+      } else {
+        setHighlightedValue("");
+        applyThemePreview(null);
+      }
+    },
+    [colorScheme, availableThemes, scrollToSelectedTheme, applyThemePreview]
+  );
+
+  // Keyboard shortcut to open theme dialog (Ctrl+Shift+U / Cmd+Shift+U)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Check for Ctrl+Shift+U (Windows/Linux) or Cmd+Shift+U (Mac)
+      // Using 'U' to avoid browser conflicts (T is used for reopening tabs)
+      if (
+        (e.ctrlKey || e.metaKey) &&
+        e.shiftKey &&
+        e.key.toLowerCase() === "u"
+      ) {
+        e.preventDefault();
+        if (!isThemeDialogOpen) {
+          handleDialogOpen(true);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isThemeDialogOpen, handleDialogOpen]);
+
+  // Keyboard: preview theme when highlighting via arrow up/down
+  const handleValueChange = useCallback(
+    (value: string) => {
+      setHighlightedValue(value);
+      const themeId = valueToThemeIdMap.get(value);
+      applyThemePreview(themeId ?? null);
+    },
+    [applyThemePreview, valueToThemeIdMap]
+  );
 
   // Handle theme hover - apply preview
   const handleThemeHover = (themeId: ColorScheme) => {
@@ -144,8 +197,13 @@ export function FloatingActions({
           open={isThemeDialogOpen}
           onOpenChange={handleDialogOpen}
           title="Select Theme"
-          description="Choose a color scheme for your experience"
+          description="↑↓ preview · Enter to select"
           className="w-[calc(100vw-2rem)] max-w-xl sm:w-full"
+          commandProps={{
+            value: highlightedValue,
+            onValueChange: handleValueChange,
+            loop: true,
+          }}
         >
           <CommandInput placeholder="Search themes..." className="h-11 sm:h-12" />
           <ScrollArea className="h-[60vh] max-h-[500px] sm:max-h-[600px]" viewportRef={scrollViewportRef}>
@@ -158,12 +216,13 @@ export function FloatingActions({
               ) : (
                 <CommandGroup heading="Color Schemes" className="p-1.5 sm:p-2">
                   {availableThemes.map((t) => {
+                    const val = themeValue(t.id, t.name, t.description);
                     const themeColors = getPreviewColors(t.id);
                     return (
                       <CommandItem
                         key={t.id}
                         data-theme-id={t.id}
-                        value={`${t.name} ${t.description} ${t.id}`}
+                        value={val}
                         onMouseEnter={() => handleThemeHover(t.id)}
                         onMouseLeave={handleThemeLeave}
                         onSelect={() => handleThemeClick(t.id)}
@@ -200,6 +259,7 @@ export function FloatingActions({
               )}
               <CommandGroup heading="Appearance" className="p-1.5 sm:p-2">
                 <CommandItem
+                  value="appearance:light"
                   onSelect={() => setTheme("light")}
                   className={cn(
                     "flex items-center justify-between cursor-pointer py-2.5 sm:py-3 px-2 sm:px-3 rounded-lg",
@@ -215,6 +275,7 @@ export function FloatingActions({
                   )}
                 </CommandItem>
                 <CommandItem
+                  value="appearance:dark"
                   onSelect={() => setTheme("dark")}
                   className={cn(
                     "flex items-center justify-between cursor-pointer py-2.5 sm:py-3 px-2 sm:px-3 rounded-lg",
@@ -235,15 +296,35 @@ export function FloatingActions({
           </ScrollArea>
         </CommandDialog>
 
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => handleDialogOpen(true)}
-          className="relative w-12 h-12 rounded-full bg-card/90 backdrop-blur-xl border border-border shadow-lg hover:border-primary/50 transition-colors flex items-center justify-center group"
-          aria-label="Change theme"
-        >
-          <Palette className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
-        </motion.button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => handleDialogOpen(true)}
+              className="relative w-12 h-12 rounded-full bg-card/90 backdrop-blur-xl border border-border shadow-lg hover:border-primary/50 transition-colors flex items-center justify-center group"
+              aria-label="Change theme"
+            >
+              <Palette className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+            </motion.button>
+          </TooltipTrigger>
+          <TooltipContent side="left">
+            <div className="flex items-center gap-2">
+              <span>Change theme</span>
+              <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                <span className="text-xs">
+                  {typeof window !== "undefined" && /Mac|iPhone|iPod|iPad/i.test(navigator.userAgent)
+                    ? "⌘"
+                    : "Ctrl"}
+                </span>
+                <span>+</span>
+                <span>Shift</span>
+                <span>+</span>
+                <span>U</span>
+              </kbd>
+            </div>
+          </TooltipContent>
+        </Tooltip>
       </motion.div>
 
       {/* Scroll to Top with Progress Ring - Shows after scroll */}
