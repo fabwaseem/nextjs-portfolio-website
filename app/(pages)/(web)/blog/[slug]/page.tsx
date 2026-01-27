@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { BlogContent } from "@/components/portfolio/blog-content";
+import { BlogContent } from "@/components/layouts/vscode/blog/blog-content";
 import { BASE_URL } from "@/config/config";
 
 export async function generateMetadata({

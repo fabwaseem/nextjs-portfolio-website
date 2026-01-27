@@ -1,5 +1,8 @@
 import type { CodeLine } from "./code-editor";
-import { FileNode, createCodeLines } from "./code-editor";
+import {
+  FileNode,
+  createCodeLines,
+} from "./code-editor";
 import type { Project } from "@/hooks/use-projects";
 
 function esc(s: string): string {
@@ -10,12 +13,12 @@ function esc(s: string): string {
 export function createProjectsFileContent(projects: Project[]): CodeLine[] {
   const lines: string[] = [
     '<span class="syntax-comment">// Featured projects</span>',
-    ""];
+    "",
+  ];
 
   projects.forEach((p, i) => {
     const raw = (p.excerpt || p.description || "") as string;
-    const excerpt =
-      raw.length > 60 ? `${raw.slice(0, 57)}…` : raw;
+    const excerpt = raw.length > 60 ? `${raw.slice(0, 57)}…` : raw;
     const techStack = p.techStack || [];
     const techStr =
       techStack.length > 0
@@ -25,24 +28,36 @@ export function createProjectsFileContent(projects: Project[]): CodeLine[] {
         : "";
     lines.push('  <span class="syntax-operator">{</span>');
     lines.push(
-      `    <span class="syntax-variable">title</span><span class="syntax-operator">:</span> <span class="syntax-string">"${esc(p.title)}"</span><span class="syntax-operator">,</span>`
+      `    <span class="syntax-variable">title</span><span class="syntax-operator">:</span> <span class="syntax-string">"${esc(
+        p.title
+      )}"</span><span class="syntax-operator">,</span>`
     );
     lines.push(
-      `    <span class="syntax-variable">slug</span><span class="syntax-operator">:</span> <span class="syntax-string">"${esc(p.slug)}"</span><span class="syntax-operator">,</span>`
+      `    <span class="syntax-variable">slug</span><span class="syntax-operator">:</span> <span class="syntax-string">"${esc(
+        p.slug
+      )}"</span><span class="syntax-operator">,</span>`
     );
     if (excerpt) {
       lines.push(
-        `    <span class="syntax-variable">excerpt</span><span class="syntax-operator">:</span> <span class="syntax-string">"${esc(excerpt)}"</span><span class="syntax-operator">,</span>`
+        `    <span class="syntax-variable">excerpt</span><span class="syntax-operator">:</span> <span class="syntax-string">"${esc(
+          excerpt
+        )}"</span><span class="syntax-operator">,</span>`
       );
     }
     lines.push(
       `    <span class="syntax-variable">techStack</span><span class="syntax-operator">:</span> <span class="syntax-operator">[</span>${techStr}<span class="syntax-operator">],</span>`
     );
     lines.push(
-      `    <span class="syntax-variable">featured</span><span class="syntax-operator">:</span> ${p.featured ? '<span class="syntax-keyword">true</span>' : '<span class="syntax-keyword">false</span>'}`
+      `    <span class="syntax-variable">featured</span><span class="syntax-operator">:</span> ${
+        p.featured
+          ? '<span class="syntax-keyword">true</span>'
+          : '<span class="syntax-keyword">false</span>'
+      }`
     );
     lines.push(
-      `  <span class="syntax-operator">}</span>${i < projects.length - 1 ? '<span class="syntax-operator">,</span>' : ""}`
+      `  <span class="syntax-operator">}</span>${
+        i < projects.length - 1 ? '<span class="syntax-operator">,</span>' : ""
+      }`
     );
   });
 

@@ -21,7 +21,7 @@ import {
   Calendar,
   Tag,
 } from "lucide-react";
-import { BlogCardSkeleton } from "@/components/portfolio/card-skeletons";
+import { BlogCardSkeleton } from "@/components/layouts/vscode/common/card-skeletons";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";

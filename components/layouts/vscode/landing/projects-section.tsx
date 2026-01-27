@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useFeaturedProjects, Project } from "@/hooks/use-projects";
-import { ProjectCardSkeleton } from "./card-skeletons";
+import { ProjectCardSkeleton } from "../common/card-skeletons";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 function ProjectCard({ project, index }: { project: Project; index: number }) {
@@ -28,7 +28,11 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
       ref={cardRef}
       initial={{ opacity: 0, y: 30 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: index * 0.1 }}
+      transition={
+        prefersReducedMotion
+          ? { duration: 0 }
+          : { duration: 0.6, delay: index * 0.1 }
+      }
       className="group relative"
     >
       <Link href={`/projects/${project.slug}`}>
@@ -37,14 +41,23 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
             {project.thumbnail ? (
               <Image
                 src={project.thumbnail}
-                alt={project.excerpt || project.description ? `${project.title} - ${project.excerpt || project.description}` : project.title}
+                alt={
+                  project.excerpt || project.description
+                    ? `${project.title} - ${
+                        project.excerpt || project.description
+                      }`
+                    : project.title
+                }
                 fill
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
                 loading={index < 3 ? "eager" : "lazy"}
               />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5">
-                <FolderGit2 className="w-16 h-16 text-primary/30" aria-hidden="true" />
+                <FolderGit2
+                  className="w-16 h-16 text-primary/30"
+                  aria-hidden="true"
+                />
               </div>
             )}
 
@@ -149,7 +162,9 @@ export function ProjectsSection() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
+          transition={
+            prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }
+          }
           className="text-center mb-16"
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
@@ -194,7 +209,11 @@ export function ProjectsSection() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.4 }}
+              transition={
+                prefersReducedMotion
+                  ? { duration: 0 }
+                  : { duration: 0.6, delay: 0.4 }
+              }
               className="text-center mt-12"
             >
               <Button asChild variant="outline" size="lg" className="gap-2">

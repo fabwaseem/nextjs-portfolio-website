@@ -1,12 +1,11 @@
 import React from "react";
-import {
-  MouseFollower,
-  Navbar,
-  Footer,
-  FloatingActions,
-} from "@/components/portfolio";
+
 import GoogleAnalytics from "@/components/GoogleAnalytics";
 import MicrosoftClarity from "@/components/MicrosoftClarity";
+import { Navbar } from "@/components/layouts/vscode/common/navbar";
+import { Footer } from "@/components/layouts/vscode/common/footer";
+import { FloatingActions } from "@/components/layouts/common/floating-actions";
+import { MouseFollower } from "@/components/layouts/common/mouse-follower";
 
 const WebLayout = ({ children }: { children: React.ReactNode }) => {
   return (

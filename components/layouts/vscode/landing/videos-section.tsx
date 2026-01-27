@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useYouTubeVideos, YouTubeVideo } from "@/hooks/use-youtube-videos";
 import { socialLinks } from "@/config/constants";
-import { VideoCardSkeleton } from "./card-skeletons";
+import { VideoCardSkeleton } from "../common/card-skeletons";
 
 const YOUTUBE_CHANNEL_URL =
   socialLinks.find((l) => l.name === "Youtube")?.url ?? "https://youtube.com";

@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { ProjectContent } from "@/components/portfolio/project-content";
+import { ProjectContent } from "@/components/layouts/vscode/project/project-content";
 import { BASE_URL } from "@/config/config";
 
 export async function generateMetadata({

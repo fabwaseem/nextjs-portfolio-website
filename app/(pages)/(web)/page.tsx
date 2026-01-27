@@ -1,12 +1,10 @@
-import {
-  HeroSection,
-  AboutSection,
-  SkillsSection,
-  ProjectsSection,
-  ExperienceSection,
-  VideosSection,
-} from "@/components/portfolio";
-import { BlogsSection } from "@/components/portfolio/blogs-section";
+import { BlogsSection } from "@/components/layouts/vscode/landing/blogs-section";
+import { HeroSection } from "@/components/layouts/vscode/landing/hero-section";
+import { AboutSection } from "@/components/layouts/vscode/landing/about-section";
+import { SkillsSection } from "@/components/layouts/vscode/landing/skills-section";
+import { ProjectsSection } from "@/components/layouts/vscode/landing/projects-section";
+import { ExperienceSection } from "@/components/layouts/vscode/landing/experience-section";
+import { VideosSection } from "@/components/layouts/vscode/landing/videos-section";
 
 export default function HomePage() {
   return (

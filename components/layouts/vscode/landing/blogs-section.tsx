@@ -5,17 +5,11 @@ import { motion, useInView } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import {
-  ArrowUpRight,
-  BookOpen,
-  Clock,
-  Eye,
-  Calendar,
-} from "lucide-react";
+import { ArrowUpRight, BookOpen, Clock, Eye, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useBlogs, Blog } from "@/hooks/use-blogs";
-import { BlogCardSkeleton } from "./card-skeletons";
+import { BlogCardSkeleton } from "../common/card-skeletons";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 function BlogCard({ blog, index }: { blog: Blog; index: number }) {
@@ -28,7 +22,11 @@ function BlogCard({ blog, index }: { blog: Blog; index: number }) {
       ref={cardRef}
       initial={{ opacity: 0, y: 30 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: index * 0.1 }}
+      transition={
+        prefersReducedMotion
+          ? { duration: 0 }
+          : { duration: 0.6, delay: index * 0.1 }
+      }
       className="group relative"
     >
       <Link href={`/blog/${blog.slug}`}>
@@ -37,14 +35,22 @@ function BlogCard({ blog, index }: { blog: Blog; index: number }) {
             {blog.featuredImage ? (
               <Image
                 src={blog.featuredImage}
-                alt={blog.featuredImageAlt || (blog.excerpt ? `${blog.title} - ${blog.excerpt}` : blog.title)}
+                alt={
+                  blog.featuredImageAlt ||
+                  (blog.excerpt
+                    ? `${blog.title} - ${blog.excerpt}`
+                    : blog.title)
+                }
                 fill
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
                 loading={index < 3 ? "eager" : "lazy"}
               />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5">
-                <BookOpen className="w-16 h-16 text-primary/30" aria-hidden="true" />
+                <BookOpen
+                  className="w-16 h-16 text-primary/30"
+                  aria-hidden="true"
+                />
               </div>
             )}
 
@@ -91,7 +97,9 @@ function BlogCard({ blog, index }: { blog: Blog; index: number }) {
                       : undefined
                   }
                 >
-                  {category.icon && <span className="mr-1">{category.icon}</span>}
+                  {category.icon && (
+                    <span className="mr-1">{category.icon}</span>
+                  )}
                   {category.title}
                 </Badge>
               ))}
@@ -157,7 +165,9 @@ export function BlogsSection() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
+          transition={
+            prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }
+          }
           className="text-center mb-16"
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
@@ -202,7 +212,11 @@ export function BlogsSection() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.4 }}
+              transition={
+                prefersReducedMotion
+                  ? { duration: 0 }
+                  : { duration: 0.6, delay: 0.4 }
+              }
               className="text-center mt-12"
             >
               <Button asChild variant="outline" size="lg" className="gap-2">
