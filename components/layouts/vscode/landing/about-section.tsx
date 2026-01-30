@@ -86,8 +86,8 @@ export function AboutSection() {
       className="relative py-24 md:py-32 overflow-hidden"
     >
       {/* Background */}
-      <div className="absolute inset-0 bg-code-dots" aria-hidden="true" />
-      <div className="absolute inset-0 bg-mesh opacity-60" aria-hidden="true" />
+      <div className="absolute inset-0 bg-code-block" aria-hidden="true" />
+      <div className="absolute inset-0 bg-mesh opacity-40" aria-hidden="true" />
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Section Header */}
@@ -95,7 +95,9 @@ export function AboutSection() {
           ref={headingRef}
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }}
+          transition={
+            prefersReducedMotion ? { duration: 0 } : { duration: 0.6 }
+          }
           className="text-center mb-16"
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
@@ -121,7 +123,11 @@ export function AboutSection() {
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.2 }}
+            transition={
+              prefersReducedMotion
+                ? { duration: 0 }
+                : { duration: 0.6, delay: 0.2 }
+            }
           >
             <div className="space-y-6 text-lg text-muted-foreground">
               <p>
@@ -167,7 +173,11 @@ export function AboutSection() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.3 }}
+              transition={
+                prefersReducedMotion
+                  ? { duration: 0 }
+                  : { duration: 0.6, delay: 0.3 }
+              }
               className="stats-container mt-10"
             >
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -175,9 +185,14 @@ export function AboutSection() {
                   <motion.div
                     key={stat.label}
                     className="stat-item text-center p-4 rounded-xl bg-card/5 backdrop-blur-[2px] border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10"
-                    whileHover={prefersReducedMotion ? {} : { y: -4, scale: 1.02 }}
+                    whileHover={
+                      prefersReducedMotion ? {} : { y: -4, scale: 1.02 }
+                    }
                   >
-                    <stat.icon className="w-4 h-4 text-primary mx-auto mb-2" aria-hidden="true" />
+                    <stat.icon
+                      className="w-4 h-4 text-primary mx-auto mb-2"
+                      aria-hidden="true"
+                    />
                     <div className="text-xl md:text-2xl font-bold text-foreground mb-1">
                       {stat.value}
                     </div>
@@ -194,7 +209,11 @@ export function AboutSection() {
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             animate={isInView ? { opacity: 1, x: 0 } : {}}
-            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.3 }}
+            transition={
+              prefersReducedMotion
+                ? { duration: 0 }
+                : { duration: 0.6, delay: 0.3 }
+            }
             className="sticky top-24"
           >
             <h3 className="text-2xl font-bold mb-6">What I Focus On</h3>
@@ -204,14 +223,23 @@ export function AboutSection() {
                   key={area.title}
                   initial={{ opacity: 0, y: 20 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: 0.3 + idx * 0.1 }}
+                  transition={
+                    prefersReducedMotion
+                      ? { duration: 0 }
+                      : { duration: 0.6, delay: 0.3 + idx * 0.1 }
+                  }
                   className="group relative p-6 rounded-xl bg-card/5 backdrop-blur-[2px] border border-border hover:border-primary/30 transition-all duration-300 overflow-hidden"
-                  whileHover={prefersReducedMotion ? {} : { y: -2, scale: 1.02 }}
+                  whileHover={
+                    prefersReducedMotion ? {} : { y: -2, scale: 1.02 }
+                  }
                 >
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/0 to-primary/0 group-hover:from-primary/10 group-hover:to-primary/5 transition-all duration-300" />
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shrink-0">
-                      <area.icon className="w-6 h-6 text-primary-foreground" aria-hidden="true" />
+                      <area.icon
+                        className="w-6 h-6 text-primary-foreground"
+                        aria-hidden="true"
+                      />
                     </div>
                     <div className="flex-1">
                       <h4 className="text-lg font-semibold mb-1">

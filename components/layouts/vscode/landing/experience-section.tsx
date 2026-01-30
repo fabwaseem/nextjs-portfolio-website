@@ -181,7 +181,8 @@ export function ExperienceSection() {
       className="relative py-24 md:py-32 overflow-hidden"
     >
       {/* Background */}
-      <div className="absolute inset-0 bg-dots-dense opacity-40" />
+      <div className="absolute inset-0 bg-code-block" aria-hidden="true" />
+      <div className="absolute inset-0 bg-mesh opacity-40" aria-hidden="true" />
       <div className="absolute inset-0 bg-aurora opacity-30" />
 
       <div className="container mx-auto px-4 relative z-10">

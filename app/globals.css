@@ -602,13 +602,66 @@
   background-size: 40px 40px;
 }
 
-/* Code Rain / Matrix style dots */
+/* Code Syntax Pattern - Coding symbols background */
 .bg-code-dots {
   background-image:
-    radial-gradient(oklch(from var(--primary) l c h / 20%) 1px, transparent 1px),
-    radial-gradient(oklch(from var(--primary) l c h / 10%) 1px, transparent 1px);
-  background-size: 40px 40px, 80px 80px;
-  background-position: 0 0, 20px 20px;
+    /* Grid lines */
+    linear-gradient(90deg, oklch(from var(--primary) l c h / 4%) 1px, transparent 1px),
+    linear-gradient(0deg, oklch(from var(--primary) l c h / 4%) 1px, transparent 1px),
+    /* Code symbols - brackets, braces, operators */
+    radial-gradient(circle at 25% 25%, oklch(from var(--primary) l c h / 8%) 1px, transparent 1px),
+    radial-gradient(circle at 75% 75%, oklch(from var(--primary) l c h / 8%) 1px, transparent 1px),
+    radial-gradient(circle at 50% 50%, oklch(from var(--primary) l c h / 6%) 0.5px, transparent 0.5px);
+  background-size:
+    60px 60px,
+    60px 60px,
+    120px 120px,
+    120px 120px,
+    80px 80px;
+  opacity: 0.35;
+}
+
+/* Terminal Grid Pattern - Console/terminal style */
+.bg-terminal-grid {
+  background-image:
+    /* Horizontal lines (like terminal output) */
+    repeating-linear-gradient(0deg,
+      transparent,
+      transparent 22px,
+      oklch(from var(--primary) l c h / 5%) 22px,
+      oklch(from var(--primary) l c h / 5%) 23px),
+    /* Vertical grid lines */
+    linear-gradient(90deg, oklch(from var(--primary) l c h / 4%) 1px, transparent 1px),
+    /* Terminal prompt symbols */
+    radial-gradient(circle at 5% 5%, oklch(from var(--primary) l c h / 10%) 1.5px, transparent 1.5px),
+    radial-gradient(circle at 95% 95%, oklch(from var(--primary) l c h / 10%) 1.5px, transparent 1.5px);
+  background-size:
+    100% 24px,
+    80px 100%,
+    200px 200px,
+    200px 200px;
+  opacity: 0.3;
+}
+
+/* Code Block Pattern - Like code editor with line numbers */
+.bg-code-block {
+  background-image:
+    
+    /* Code lines (horizontal) */
+    repeating-linear-gradient(0deg,
+      transparent,
+      transparent 20px,
+      oklch(from var(--primary) l c h / 4%) 20px,
+      oklch(from var(--primary) l c h / 4%) 21px),
+    /* Syntax highlighting dots */
+    radial-gradient(circle at 15% 15%, oklch(from var(--primary) l c h / 8%) 1px, transparent 1px),
+    radial-gradient(circle at 85% 85%, oklch(from var(--primary) l c h / 8%) 1px, transparent 1px);
+  background-size:
+    100% 100%,
+    100% 21px,
+    150px 150px,
+    150px 150px;
+  opacity: 0.3;
 }
 
 /* Circuit Board Pattern */

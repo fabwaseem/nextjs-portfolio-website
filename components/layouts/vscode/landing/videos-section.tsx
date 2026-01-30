@@ -93,8 +93,8 @@ export function VideosSection() {
       id="videos"
       className={cn("relative py-24 md:py-32 overflow-hidden", "scroll-mt-20")}
     >
-      <div className="absolute inset-0 bg-code-dots" aria-hidden />
-      <div className="absolute inset-0 bg-mesh opacity-60" aria-hidden />
+      <div className="absolute inset-0 bg-code-block" aria-hidden />
+      <div className="absolute inset-0 bg-mesh opacity-40" aria-hidden />
 
       <div className="container mx-auto px-4 relative z-10">
         <motion.div

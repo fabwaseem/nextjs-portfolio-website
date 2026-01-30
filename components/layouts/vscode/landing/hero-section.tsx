@@ -13,7 +13,10 @@ import { CodeEditor } from "../common/code-editor";
 import { Typewriter } from "../common/text-effects";
 import { useFeaturedProjects } from "@/hooks/use-projects";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import { getPortfolioFilesWithProjects, portfolioFiles } from "../common/portfolio-files";
+import {
+  getPortfolioFilesWithProjects,
+  portfolioFiles,
+} from "../common/portfolio-files";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -153,9 +156,9 @@ export function HeroSection() {
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
       {/* Background Effects */}
-      <div className="absolute inset-0 bg-dots opacity-60" aria-hidden="true" />
+      <div className="absolute inset-0 bg-terminal-grid" aria-hidden="true" />
       <div className="absolute inset-0 bg-spotlight" aria-hidden="true" />
-      <div className="absolute inset-0 bg-mesh" aria-hidden="true" />
+      <div className="absolute inset-0 bg-mesh opacity-40" aria-hidden="true" />
       <div
         className="absolute bottom-0 left-0 right-0 h-40 gradient-fade-down"
         aria-hidden="true"
