@@ -1,10 +1,8 @@
-import { config } from "dotenv";
-import { Pool } from "pg";
-import { PrismaPg } from "@prisma/adapter-pg";
-import { resolve } from "path";
 import { PrismaClient } from "@/lib/generated/prisma/client";
-import { remark } from "remark";
-import remarkHtml from "remark-html";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { config } from "dotenv";
+import { resolve } from "path";
+import { Pool } from "pg";
 
 config({ path: resolve(process.cwd(), ".env") });
 
@@ -14,11 +12,6 @@ const pg = new Pool({
 
 const adapter = new PrismaPg(pg);
 const prisma = new PrismaClient({ adapter });
-
-async function markdownToHtml(markdown: string): Promise<string> {
-  const result = await remark().use(remarkHtml).process(markdown);
-  return String(result);
-}
 
 async function createTestProject() {
   const title = process.argv[2] || "Test Project";
@@ -71,24 +64,22 @@ This project demonstrates the capabilities of the portfolio management system. I
 
 This test project serves as a template for creating new portfolio projects.`;
 
-    const htmlContent = await markdownToHtml(markdownContent);
-
     const project = await prisma.project.create({
       data: {
         title,
         slug,
-        description: "This is a test project created for development and testing purposes.",
+        description:
+          "This is a test project created for development and testing purposes.",
         excerpt: "A sample project to test the admin panel functionality.",
         demoLink: "https://example.com/demo",
         githubLink: "https://github.com/example/test-project",
         videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-        thumbnail: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800",
-        cover: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=1600",
+        thumbnail:
+          "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800",
+        cover:
+          "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=1600",
         youtubeId: "dQw4w9WgXcQ",
-        body: {
-          markdown: markdownContent,
-          html: htmlContent,
-        },
+        body: markdownContent,
         techStack: ["React", "TypeScript", "Next.js", "Tailwind CSS"],
         featured: false,
         status: "DRAFT",

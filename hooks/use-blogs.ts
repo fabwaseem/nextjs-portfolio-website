@@ -27,8 +27,7 @@ export interface Blog {
   featuredImage: string;
   featuredImageAlt?: string | null;
   publishedAt?: string | null;
-  markdownContent?: string | null;
-  body?: any;
+  body?: string | null;
   readingTime?: number | null;
   wordCount?: number | null;
   views: number;
@@ -72,7 +71,7 @@ interface CreateBlogData {
   featuredImageAlt?: string;
   publishedAt?: string | null;
   markdownContent?: string;
-  body?: any;
+  body?: string | null;
   featured?: boolean;
   status?: "DRAFT" | "PUBLISHED" | "ARCHIVED";
   seoKeywords?: string[];

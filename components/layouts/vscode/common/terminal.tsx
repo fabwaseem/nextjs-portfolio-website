@@ -26,7 +26,7 @@ export function Terminal({
   delay = 0,
 }: TerminalProps) {
   return (
-    <div className="terminal-window">
+    <div className="terminal-window ">
       <div className="terminal-header">
         <div className="editor-dots">
           <div className="editor-dot editor-dot-red" />

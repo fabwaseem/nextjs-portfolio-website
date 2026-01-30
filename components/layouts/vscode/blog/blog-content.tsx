@@ -1,24 +1,27 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
-import Image from "next/image";
-import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Blog } from "@/hooks/use-blogs";
+import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
+import { motion, useInView } from "framer-motion";
 import {
   ArrowLeft,
-  Calendar,
-  Eye,
-  Clock,
   BookOpen,
-  Tag,
+  Calendar,
+  Clock,
+  Eye,
   Share2,
+  Tag,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import { Blog } from "@/hooks/use-blogs";
+import { useTheme } from "next-themes";
+import Image from "next/image";
+import Link from "next/link";
+import { useRef } from "react";
+import ReactMarkdown from "react-markdown";
+import rehypeHighlight from "rehype-highlight";
+import { CodeBlockWithActions } from "@/components/ui/code-block-with-actions";
 
 interface BlogContentProps {
   blog: Blog & {
@@ -83,44 +86,21 @@ function RelatedPostCard({ blog, index }: { blog: Blog; index: number }) {
   );
 }
 
+function getBodyString(body: Blog["body"]): string {
+  if (!body) return "";
+  if (typeof body === "string") return body;
+  if (typeof body === "object" && body !== null && "html" in body) {
+    return (body as { html: string }).html;
+  }
+  return "";
+}
+
 export function BlogContent({ blog }: BlogContentProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
-  const [renderedContent, setRenderedContent] = useState<string>("");
-  const [isRendering, setIsRendering] = useState(true);
-
-  useEffect(() => {
-    const renderContent = async () => {
-      setIsRendering(true);
-      try {
-        if (blog.markdownContent) {
-          const { remark } = await import("remark");
-          const remarkHtml = (await import("remark-html")).default;
-          const result = await remark()
-            .use(remarkHtml)
-            .process(blog.markdownContent);
-          setRenderedContent(String(result));
-        } else if (blog.body) {
-          if (typeof blog.body === "string") {
-            setRenderedContent(blog.body);
-          } else if (
-            typeof blog.body === "object" &&
-            blog.body !== null &&
-            "html" in blog.body
-          ) {
-            setRenderedContent((blog.body as { html: string }).html);
-          }
-        }
-      } catch (error) {
-        console.error("Error rendering content:", error);
-        setRenderedContent("");
-      } finally {
-        setIsRendering(false);
-      }
-    };
-
-    renderContent();
-  }, [blog.markdownContent, blog.body]);
+  const { resolvedTheme } = useTheme();
+  const hljsHref =
+    resolvedTheme === "light" ? "/hljs-light.css" : "/hljs-dark.css";
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -143,6 +123,7 @@ export function BlogContent({ blog }: BlogContentProps) {
       ref={sectionRef}
       className="relative py-24 md:py-32 overflow-hidden min-h-screen"
     >
+      <link rel="stylesheet" href={hljsHref} data-hljs-theme={resolvedTheme} />
       <div className="absolute inset-0 bg-code-dots" />
       <div className="absolute inset-0 bg-mesh opacity-60" />
 
@@ -165,9 +146,9 @@ export function BlogContent({ blog }: BlogContentProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="max-w-4xl mx-auto"
+          className="max-w-4xl mx-auto min-w-0 w-full"
         >
-          <article>
+          <article className="min-w-0">
             <div className="mb-8">
               <div className="flex flex-wrap items-center gap-2 mb-4">
                 {blog.categories.map((category) => (
@@ -262,45 +243,49 @@ export function BlogContent({ blog }: BlogContentProps) {
                   priority
                 />
               ) : (
-                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-primary/20 to-primary/5">
+                <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-primary/20 to-primary/5">
                   <BookOpen className="w-24 h-24 text-primary/30" />
                 </div>
               )}
             </motion.div>
 
-            {isRendering ? (
-              <div className="mb-12">
-                <div className="animate-pulse space-y-4">
-                  <div className="h-4 bg-muted rounded w-3/4" />
-                  <div className="h-4 bg-muted rounded w-full" />
-                  <div className="h-4 bg-muted rounded w-5/6" />
-                </div>
-              </div>
-            ) : renderedContent ? (
+            {blog.body?.trim() && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.6, delay: 0.3 }}
-                className="mb-12"
+                className="mb-12 min-w-0 overflow-x-auto"
               >
                 <div
                   className={cn(
-                    "prose prose-invert prose-lg max-w-none",
+                    "prose prose-invert prose-lg max-w-none min-w-0 wrap-break-word",
                     "prose-headings:font-bold prose-headings:text-foreground",
-                    "prose-p:text-muted-foreground prose-p:leading-relaxed",
-                    "prose-a:text-primary prose-a:no-underline hover:prose-a:underline",
+                    "prose-p:text-muted-foreground prose-p:leading-relaxed prose-p:wrap-break-word",
+                    "prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-a:wrap-break-word",
                     "prose-strong:text-foreground",
-                    "prose-code:text-primary prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded",
-                    "prose-pre:bg-muted prose-pre:border prose-pre:border-border",
-                    "prose-blockquote:border-l-primary prose-blockquote:bg-muted/50",
-                    "prose-img:rounded-lg prose-img:border prose-img:border-border",
+                    "prose-code:text-primary prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:break-all prose-code:before:content-none prose-code:after:content-none",
+                    "prose-pre:bg-muted prose-pre:border prose-pre:border-border prose-pre:overflow-x-auto prose-pre:max-w-full prose-pre:rounded-lg [&>pre]:p-4",
+                    "prose-blockquote:border-l-primary prose-blockquote:bg-muted/50 prose-blockquote:wrap-break-word",
+                    "prose-img:rounded-lg prose-img:border prose-img:border-border prose-img:max-w-full prose-img:h-auto",
                     "prose-ul:list-disc prose-ol:list-decimal",
-                    "prose-li:text-muted-foreground"
+                    "prose-li:text-muted-foreground prose-li:wrap-break-word"
                   )}
-                  dangerouslySetInnerHTML={{ __html: renderedContent }}
-                />
+                  style={{
+                    overflowWrap: "break-word",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  <ReactMarkdown
+                    rehypePlugins={[rehypeHighlight]}
+                    components={{
+                      pre: (props) => <CodeBlockWithActions {...props} />,
+                    }}
+                  >
+                    {blog.body?.trim() || ""}
+                  </ReactMarkdown>
+                </div>
               </motion.div>
-            ) : null}
+            )}
 
             {blog.tags && blog.tags.length > 0 && (
               <motion.div

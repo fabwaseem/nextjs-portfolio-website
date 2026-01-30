@@ -46,13 +46,14 @@ import { generateSlug } from "@/utils/slug";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, ChevronsUpDown, Sparkles, X } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import "react-quill-new/dist/quill.snow.css";
 import { ImageUpload } from "./image-upload";
-import { setupQuillImageHandler } from "./quill-image-handler";
 
-const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
+const MDEditor = dynamic(
+  () => import("@uiw/react-md-editor").then((mod) => mod.default),
+  { ssr: false }
+);
 
 type ProjectFormData = ProjectFormInput;
 
@@ -67,20 +68,6 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
   const { data: tagsData } = useProjectTags();
   const createTag = useCreateProjectTag();
 
-  const getBodyHtml = () => {
-    if (!project?.body) return "";
-    if (typeof project.body === "string") return project.body;
-    if (typeof project.body === "object" && project.body !== null) {
-      if ("html" in project.body) {
-        return (project.body as { html: string }).html;
-      }
-      if ("markdown" in project.body) {
-        return "";
-      }
-    }
-    return "";
-  };
-
   const form = useForm<ProjectFormData>({
     resolver: zodResolver(projectFormSchema),
     defaultValues: {
@@ -94,7 +81,7 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
       thumbnail: project?.thumbnail || "",
       cover: project?.cover || "",
       youtubeId: project?.youtubeId || "",
-      body: getBodyHtml(),
+      body: project?.body || "",
       techStack: project?.techStack || [],
       featured: project?.featured || false,
       status: project?.status || "DRAFT",
@@ -113,7 +100,6 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
   const [tagsOpen, setTagsOpen] = useState(false);
   const [tagInput, setTagInput] = useState("");
   const selectedTagIds = form.watch("tagIds");
-  const quillEditorRef = useRef<any>(null);
 
   const onSubmit = async (data: ProjectFormData) => {
     const submitData = {
@@ -314,80 +300,33 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
         <FormField
           control={form.control}
           name="body"
-          render={({ field }) => {
-            const quillModules = {
-              toolbar: [
-                [{ header: [1, 2, 3, false] }],
-                ["bold", "italic", "underline", "strike", "blockquote"],
-                [
-                  { list: "ordered" },
-                  { list: "bullet" },
-                  { indent: "-1" },
-                  { indent: "+1" },
-                ],
-                ["link", "image", "code-block"],
-                ["clean"],
-              ],
-            };
-
-            const quillFormats = [
-              "header",
-              "bold",
-              "italic",
-              "underline",
-              "strike",
-              "blockquote",
-              "list",
-              "bullet",
-              "indent",
-              "link",
-              "image",
-              "code-block",
-            ];
-
-            useEffect(() => {
-              if (typeof window === "undefined") return;
-
-              const timer = setTimeout(() => {
-                const quillContainer = document.querySelector(".ql-container");
-                if (quillContainer && (window as any).Quill) {
-                  const editor = (window as any).Quill.find(quillContainer);
-                  if (editor && !quillEditorRef.current) {
-                    setupQuillImageHandler(editor, project?.id);
-                    quillEditorRef.current = editor;
-                  }
-                }
-              }, 500);
-
-              return () => clearTimeout(timer);
-            }, [project?.id, field.value]);
-
-            return (
-              <FormItem>
-                <FormLabel>Body Content</FormLabel>
-                <FormControl>
-                  <div className="min-h-[400px]">
-                    {typeof window !== "undefined" && (
-                      <ReactQuill
-                        theme="snow"
-                        value={field.value || ""}
-                        onChange={field.onChange}
-                        modules={quillModules}
-                        formats={quillFormats}
-                        placeholder="Write your project content here..."
-                        className="bg-background"
-                      />
-                    )}
-                  </div>
-                </FormControl>
-                <FormDescription>
-                  Write your project content using the rich text editor. Content
-                  is stored as HTML.
-                </FormDescription>
-                <FormMessage />
-              </FormItem>
-            );
-          }}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Body (Markdown)</FormLabel>
+              <FormControl>
+                <div className="min-h-[400px]" data-color-mode="light">
+                  {typeof window !== "undefined" && (
+                    <MDEditor
+                      value={field.value || ""}
+                      onChange={(v) => field.onChange(v ?? "")}
+                      height={400}
+                      preview="live"
+                      visibleDragbar={false}
+                      textareaProps={{
+                        placeholder:
+                          "Write your project in Markdown. Use ```language for code blocks.",
+                      }}
+                    />
+                  )}
+                </div>
+              </FormControl>
+              <FormDescription>
+                Markdown with code blocks: use ```javascript, ```typescript,
+                etc.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

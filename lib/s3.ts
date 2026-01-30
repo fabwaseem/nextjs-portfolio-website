@@ -130,3 +130,24 @@ export function extractImagesFromHtml(html: string): string[] {
 
   return imageUrls;
 }
+
+export function extractImagesFromMarkdown(md: string): string[] {
+  const imageUrls: string[] = [];
+  const mdImageRegex = /!\[[^\]]*\]\(([^)]+)\)/g;
+  let match;
+  while ((match = mdImageRegex.exec(md)) !== null) {
+    imageUrls.push(match[1]);
+  }
+  return imageUrls;
+}
+
+export function extractImagesFromContent(content: string): string[] {
+  if (!content || typeof content !== "string") return [];
+  const trimmed = content.trim();
+  if (trimmed.startsWith("<")) {
+    return extractImagesFromHtml(content);
+  }
+  const fromMd = extractImagesFromMarkdown(content);
+  const fromHtml = extractImagesFromHtml(content);
+  return [...new Set([...fromMd, ...fromHtml])];
+}

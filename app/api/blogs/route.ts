@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { createBlogSchema } from "@/lib/validations";
 import { z } from "zod";
+import removeMd from "remove-markdown";
 
 export async function GET(request: NextRequest) {
   try {
@@ -86,7 +87,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching blogs:", error);
     return NextResponse.json(
       { error: "Failed to fetch blogs" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
@@ -111,7 +112,7 @@ export async function POST(request: NextRequest) {
     if (existingBlog) {
       return NextResponse.json(
         { error: "Blog with this slug already exists" },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -123,13 +124,16 @@ export async function POST(request: NextRequest) {
       ...blogData
     } = validatedData;
 
-    // Calculate reading time and word count if body content exists
     let readingTime = 0;
     let wordCount = 0;
     if (bodyContent && typeof bodyContent === "string") {
-      const text = bodyContent.replace(/<[^>]*>/g, ""); // Strip HTML
-      wordCount = text.split(/\s+/).filter(Boolean).length;
-      readingTime = Math.ceil(wordCount / 200); // ~200 words per minute
+      const text = removeMd(bodyContent, {
+        stripListLeaders: true,
+        gfm: true,
+        useImgAltText: true,
+      });
+      wordCount = text.split(/\s+/).filter(Boolean).length; 
+      readingTime = Math.ceil(wordCount / 200);
     }
 
     const blog = await prisma.blog.create({
@@ -158,12 +162,12 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: "Validation error", details: error.issues },
-        { status: 400 },
+        { status: 400 }
       );
     }
     return NextResponse.json(
       { error: "Failed to create blog" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

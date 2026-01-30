@@ -20,11 +20,11 @@ export async function cleanupOrphanedImages(
   }
 
   if (newBody && currentBody) {
-    const { extractImagesFromHtml } = await import("./s3");
-    const oldImages = extractImagesFromHtml(
+    const { extractImagesFromContent } = await import("./s3");
+    const oldImages = extractImagesFromContent(
       typeof currentBody === "string" ? currentBody : ""
     );
-    const newImages = extractImagesFromHtml(newBody);
+    const newImages = extractImagesFromContent(newBody);
     const removedImages = oldImages.filter((img) => !newImages.includes(img));
     imagesToDelete.push(...removedImages);
   }

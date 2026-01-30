@@ -4,10 +4,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { updateProjectSchema } from "@/lib/validations";
-import {
-  extractAndDeleteS3Images,
-  extractImagesFromHtml,
-} from "@/lib/s3";
+import { extractAndDeleteS3Images, extractImagesFromContent } from "@/lib/s3";
 
 export async function GET(
   request: NextRequest,
@@ -83,29 +80,40 @@ export async function PUT(
       }
     }
 
-    const { tagIds, publishedAt, body: bodyContent, thumbnail, cover, ...updateData } = validatedData;
+    const {
+      tagIds,
+      publishedAt,
+      body: bodyContent,
+      thumbnail,
+      cover,
+      ...updateData
+    } = validatedData;
 
     const imagesToDelete: string[] = [];
 
-    if (thumbnail !== undefined && existingProject.thumbnail && existingProject.thumbnail !== thumbnail) {
+    if (
+      thumbnail !== undefined &&
+      existingProject.thumbnail &&
+      existingProject.thumbnail !== thumbnail
+    ) {
       imagesToDelete.push(existingProject.thumbnail);
     }
-    if (cover !== undefined && existingProject.cover && existingProject.cover !== cover) {
+    if (
+      cover !== undefined &&
+      existingProject.cover &&
+      existingProject.cover !== cover
+    ) {
       imagesToDelete.push(existingProject.cover);
     }
 
     if (bodyContent && typeof bodyContent === "string") {
-      let oldBodyHtml: string | null = null;
-      const oldBody = existingProject.body;
-      if (oldBody && typeof oldBody === "string") {
-        oldBodyHtml = oldBody;
-      } else if (oldBody && typeof oldBody === "object" && oldBody !== null && "html" in oldBody) {
-        oldBodyHtml = (oldBody as { html: string }).html;
-      }
-      if (oldBodyHtml) {
-        const oldImages = extractImagesFromHtml(oldBodyHtml);
-        const newImages = extractImagesFromHtml(bodyContent);
-        const removedImages = oldImages.filter((img) => !newImages.includes(img));
+      const oldBodyStr = existingProject.body ? existingProject.body : "";
+      if (oldBodyStr) {
+        const oldImages = extractImagesFromContent(oldBodyStr);
+        const newImages = extractImagesFromContent(bodyContent);
+        const removedImages = oldImages.filter(
+          (img) => !newImages.includes(img)
+        );
         imagesToDelete.push(...removedImages);
       }
     }
@@ -121,15 +129,16 @@ export async function PUT(
         thumbnail: thumbnail !== undefined ? thumbnail : undefined,
         cover: cover !== undefined ? cover : undefined,
         body: bodyContent !== undefined ? bodyContent : undefined,
-        publishedAt: publishedAt !== undefined
-          ? publishedAt
-            ? new Date(publishedAt)
-            : null
-          : undefined,
+        publishedAt:
+          publishedAt !== undefined
+            ? publishedAt
+              ? new Date(publishedAt)
+              : null
+            : undefined,
         tags: tagIds
           ? {
-            set: tagIds.map((tagId) => ({ id: tagId })),
-          }
+              set: tagIds.map((tagId) => ({ id: tagId })),
+            }
           : undefined,
       },
       include: {
@@ -188,18 +197,9 @@ export async function DELETE(
       imagesToDelete.push(project.cover);
     }
 
-    if (project.body) {
-      let bodyHtml = "";
-      if (typeof project.body === "string") {
-        bodyHtml = project.body;
-      } else if (typeof project.body === "object" && project.body !== null && "html" in project.body) {
-        bodyHtml = (project.body as { html: string }).html;
-      }
-
-      if (bodyHtml) {
-        const bodyImages = extractImagesFromHtml(bodyHtml);
-        imagesToDelete.push(...bodyImages);
-      }
+    if (project.body && typeof project.body === "string") {
+      const bodyImages = extractImagesFromContent(project.body);
+      imagesToDelete.push(...bodyImages);
     }
 
     if (imagesToDelete.length > 0) {

@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRef } from "react";
+import { useState, useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
+import { useTheme } from "next-themes";
 import { formatDistanceToNow } from "date-fns";
 import {
   ArrowLeft,
@@ -15,6 +15,9 @@ import {
   FolderGit2,
   Play,
 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import rehypeHighlight from "rehype-highlight";
+import { CodeBlockWithActions } from "@/components/ui/code-block-with-actions";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -27,42 +30,18 @@ interface ProjectContentProps {
 export function ProjectContent({ project }: ProjectContentProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
-
+  const { resolvedTheme } = useTheme();
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
-  const renderBody = () => {
-    if (!project.body) return null;
-
-    if (typeof project.body === "string") {
-      return (
-        <div
-          className="prose prose-invert max-w-none"
-          dangerouslySetInnerHTML={{ __html: project.body }}
-        />
-      );
-    }
-
-    if (typeof project.body === "object" && project.body !== null) {
-      if ("html" in project.body) {
-        return (
-          <div
-            className="prose prose-invert max-w-none"
-            dangerouslySetInnerHTML={{
-              __html: (project.body as { html: string }).html,
-            }}
-          />
-        );
-      }
-    }
-
-    return null;
-  };
+  const hljsHref =
+    resolvedTheme === "light" ? "/hljs-light.css" : "/hljs-dark.css";
 
   return (
     <section
       ref={sectionRef}
       className="relative py-24 md:py-32 overflow-hidden min-h-screen"
     >
+      <link rel="stylesheet" href={hljsHref} data-hljs-theme={resolvedTheme} />
       <div className="absolute inset-0 bg-code-dots" />
       <div className="absolute inset-0 bg-mesh opacity-60" />
 
@@ -240,15 +219,40 @@ export function ProjectContent({ project }: ProjectContentProps) {
             </motion.div>
           )}
 
-          {project.body && (
+          {project.body?.trim() && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.6, delay: 0.5 }}
-              className="mb-12"
+              className="mb-12 min-w-0 overflow-x-auto"
             >
-              <div className="prose prose-invert prose-lg max-w-none">
-                {renderBody()}
+              <div
+                className={cn(
+                  "prose prose-invert prose-lg max-w-none min-w-0 wrap-break-word",
+                  "prose-headings:font-bold prose-headings:text-foreground",
+                  "prose-p:text-muted-foreground prose-p:leading-relaxed prose-p:wrap-break-word",
+                  "prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-a:wrap-break-word",
+                  "prose-strong:text-foreground",
+                  "prose-code:text-primary prose-code:bg-muted prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:break-all prose-code:before:content-none prose-code:after:content-none",
+                  "prose-pre:bg-muted prose-pre:border prose-pre:border-border prose-pre:overflow-x-auto prose-pre:max-w-full prose-pre:rounded-lg [&>pre]:p-4",
+                  "prose-blockquote:border-l-primary prose-blockquote:bg-muted/50 prose-blockquote:wrap-break-word",
+                  "prose-img:rounded-lg prose-img:border prose-img:border-border prose-img:max-w-full prose-img:h-auto",
+                  "prose-ul:list-disc prose-ol:list-decimal",
+                  "prose-li:text-muted-foreground prose-li:wrap-break-word"
+                )}
+                style={{
+                  overflowWrap: "break-word",
+                  wordBreak: "break-word",
+                }}
+              >
+                <ReactMarkdown
+                  rehypePlugins={[rehypeHighlight]}
+                  components={{
+                    pre: (props) => <CodeBlockWithActions {...props} />,
+                  }}
+                >
+                  {project.body?.trim() || ""}
+                </ReactMarkdown>
               </div>
             </motion.div>
           )}

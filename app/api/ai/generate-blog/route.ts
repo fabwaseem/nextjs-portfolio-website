@@ -83,7 +83,7 @@ Generate a blog post in the following JSON format:
   "title": "Engaging and SEO-friendly title",
   "slug": "url-friendly-slug-with-dashes",
   "excerpt": "A compelling 2-3 sentence summary that hooks readers (150-200 characters)",
-  "body": "Full HTML blog content. See BODY GUIDELINES below.",
+  "body": "Full Markdown blog content. See BODY GUIDELINES below.",
   "metaTitle": "SEO-optimized title (50-60 characters)",
   "metaDescription": "SEO-optimized description (150-160 characters)",
   "seoKeywords": ["keyword1", "keyword2", "keyword3", "keyword4", "keyword5"],
@@ -94,12 +94,12 @@ Generate a blog post in the following JSON format:
 }
 
 BODY GUIDELINES (critical):
-1. LENGTH: Aim for 1,800–2,500 words. Give full context—explain the "why" behind decisions, share real-world gotchas, and walk readers through a complete narrative. Do not summarize or skip steps.
-2. TONE: Write like a human. Use "you" and "we," occasional humor or empathy, short paragraphs, and a conversational flow. Avoid stiff, robotic, or overly formal language. Share opinions and practical advice.
-3. STRUCTURE: Use <h2> for main sections, <h3> for subsections, <p>, <ul>, <li>, <strong>, <em>. Include a clear intro that sets context, a main body that teaches step-by-step, and a conclusion with takeaways and next steps.
-4. CODE: Provide FULL, runnable code examples—not snippets or "... rest of code." Include complete files or meaningful blocks (imports, setup, main logic) so readers can copy-paste and run. Use <pre><code> with proper escaping. Add brief comments where helpful. If multiple files are needed, show each fully.
+1. FORMAT: Output the body in Markdown only. Use ## for main sections, ### for subsections, **bold**, *italic*, lists, blockquotes, and links as [text](url).
+2. LENGTH: Aim for 1,800–2,500 words. Give full context—explain the "why" behind decisions, share real-world gotchas, and walk readers through a complete narrative. Do not summarize or skip steps.
+3. TONE: Write like a human. Use "you" and "we," occasional humor or empathy, short paragraphs, and a conversational flow. Avoid stiff, robotic, or overly formal language. Share opinions and practical advice.
+4. CODE: Provide FULL, runnable code examples. Use fenced code blocks with a language tag for syntax highlighting, e.g. triple backticks then javascript or typescript or python. Include complete files or meaningful blocks (imports, setup, main logic) so readers can copy-paste and run. Add brief comments where helpful. If multiple files are needed, show each fully. Never use HTML for code.
 5. CONTEXT: Explain what each example does, why it works, and when to use it. Cover edge cases, common mistakes, and alternatives. Make the blog a one-stop resource for the topic.
-6. PRACTICAL VALUE: Include tips, best practices, links to docs or tools where relevant, and "what I wish I'd known" style insights. End with actionable next steps or further reading.
+6. PRACTICAL VALUE: Include tips, best practices, links in Markdown [text](url), and "what I wish I'd known" style insights. End with actionable next steps or further reading.
 
 Other rules:
 7. Ensure the slug is URL-friendly (lowercase, dashes, no special characters).

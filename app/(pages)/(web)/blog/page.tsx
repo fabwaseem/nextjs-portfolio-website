@@ -20,14 +20,19 @@ import {
   Eye,
   Calendar,
   Tag,
+  ChevronDown,
+  FolderTree,
 } from "lucide-react";
 import { BlogCardSkeleton } from "@/components/layouts/vscode/common/card-skeletons";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useBlogs, Blog } from "@/hooks/use-blogs";
-import { useBlogTags } from "@/hooks/use-blog-tags";
 import { useBlogCategories } from "@/hooks/use-blog-categories";
 
 function BlogCard({
@@ -263,15 +268,19 @@ export default function BlogPage() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [categorySearchQuery, setCategorySearchQuery] = useState("");
   const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  const { data: tagsData } = useBlogTags();
   const { data: categoriesData } = useBlogCategories();
-  const tags = tagsData?.tags || [];
   const categories = categoriesData?.categories || [];
+
+  const filteredCategoriesForPopover = useMemo(() => {
+    if (!categorySearchQuery.trim()) return categories;
+    const q = categorySearchQuery.trim().toLowerCase();
+    return categories.filter((c) => c.title.toLowerCase().includes(q));
+  }, [categories, categorySearchQuery]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -296,7 +305,6 @@ export default function BlogPage() {
         search: debouncedSearchQuery || undefined,
         featured: showFeaturedOnly ? "true" : undefined,
         categoryId: selectedCategory || undefined,
-        tags: selectedTags.length > 0 ? selectedTags : undefined,
       },
     ],
     queryFn: async ({ pageParam = 1 }) => {
@@ -310,9 +318,6 @@ export default function BlogPage() {
         searchParams.set("search", debouncedSearchQuery);
       if (showFeaturedOnly) searchParams.set("featured", "true");
       if (selectedCategory) searchParams.set("categoryId", selectedCategory);
-      if (selectedTags.length > 0) {
-        selectedTags.forEach((tag) => searchParams.append("tags", tag));
-      }
 
       const response = await fetch(`/api/blogs?${searchParams.toString()}`);
       if (!response.ok) {
@@ -335,17 +340,8 @@ export default function BlogPage() {
     return data?.pages.flatMap((page) => page.blogs) || [];
   }, [data]);
 
-  const toggleTag = useCallback((tagId: string) => {
-    setSelectedTags((prev) =>
-      prev.includes(tagId)
-        ? prev.filter((id) => id !== tagId)
-        : [...prev, tagId]
-    );
-  }, []);
-
   const clearFilters = useCallback(() => {
     setSearchQuery("");
-    setSelectedTags([]);
     setSelectedCategory(null);
     setShowFeaturedOnly(false);
   }, []);
@@ -372,10 +368,7 @@ export default function BlogPage() {
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const hasActiveFilters =
-    debouncedSearchQuery ||
-    selectedTags.length > 0 ||
-    selectedCategory ||
-    showFeaturedOnly;
+    debouncedSearchQuery || selectedCategory || showFeaturedOnly;
 
   return (
     <section
@@ -408,109 +401,196 @@ export default function BlogPage() {
           </p>
         </motion.div>
 
-        <div className="mb-8 space-y-4">
-          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder="Search blog posts..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
+        {/* Search + filters – same modern minimal UI as projects */}
+        <div className="mb-10 rounded-2xl border border-border/60 bg-card/30 backdrop-blur-sm px-4 py-4  ">
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-wrap gap-3 sm:items-center sm:justify-between">
+              <div className="relative flex-1 max-w-xl min-w-60">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                <Input
+                  placeholder="Search blog posts..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="h-10 pl-10 rounded-xl border-border/80 bg-background/50 text-sm placeholder:text-muted-foreground focus-visible:ring-primary/20 focus-visible:border-primary/40 transition-colors"
+                />
+              </div>
+              <div className="flex items-center gap-1 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setViewMode("grid")}
+                  className={cn(
+                    "flex h-9 w-9 items-center justify-center rounded-lg border text-muted-foreground transition-colors hover:text-foreground hover:border-border",
+                    viewMode === "grid"
+                      ? "border-primary/50 bg-primary/10 text-primary"
+                      : "border-border/80 bg-transparent"
+                  )}
+                  aria-label="Grid view"
+                >
+                  <Grid3x3 className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("list")}
+                  className={cn(
+                    "flex h-9 w-9 items-center justify-center rounded-lg border text-muted-foreground transition-colors hover:text-foreground hover:border-border",
+                    viewMode === "list"
+                      ? "border-primary/50 bg-primary/10 text-primary"
+                      : "border-border/80 bg-transparent"
+                  )}
+                  aria-label="List view"
+                >
+                  <List className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <Button
-                variant={viewMode === "grid" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setViewMode("grid")}
-              >
-                <Grid3x3 className="w-4 h-4" />
-              </Button>
-              <Button
-                variant={viewMode === "list" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setViewMode("list")}
-              >
-                <List className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm font-medium">Filters:</span>
-            </div>
-
-            <Button
-              variant={showFeaturedOnly ? "default" : "outline"}
-              size="sm"
-              onClick={() => setShowFeaturedOnly(!showFeaturedOnly)}
-            >
-              Featured
-            </Button>
-
-            {categories.map((category) => (
-              <Button
-                key={category.id}
-                variant={
-                  selectedCategory === category.id ? "default" : "outline"
-                }
-                size="sm"
-                onClick={() =>
-                  setSelectedCategory(
-                    selectedCategory === category.id ? null : category.id
-                  )
-                }
-                style={
-                  category.color && selectedCategory === category.id
-                    ? {
-                        backgroundColor: `${category.color}20`,
-                        borderColor: category.color,
-                        color: category.color,
-                      }
-                    : undefined
-                }
-              >
-                {category.icon && <span className="mr-1">{category.icon}</span>}
-                {category.title}
-                {category._count && category._count.blogs > 0 && (
-                  <Badge variant="secondary" className="ml-2 text-xs">
-                    {category._count.blogs}
-                  </Badge>
+            <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-border/40">
+              <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wider mr-1">
+                <Filter className="w-3.5 h-3.5" />
+                Filters
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowFeaturedOnly(!showFeaturedOnly)}
+                className={cn(
+                  "rounded-full px-3 py-1.5 text-xs font-medium transition-colors border",
+                  showFeaturedOnly
+                    ? "border-primary/50 bg-primary/10 text-primary"
+                    : "border-border/80 bg-transparent text-muted-foreground hover:text-foreground hover:border-border"
                 )}
-              </Button>
-            ))}
-
-            {tags.map((tag) => (
-              <Button
-                key={tag.id}
-                variant={selectedTags.includes(tag.id) ? "default" : "outline"}
-                size="sm"
-                onClick={() => toggleTag(tag.id)}
               >
-                {tag.title}
-                {tag._count && tag._count.blogs > 0 && (
-                  <Badge variant="secondary" className="ml-2 text-xs">
-                    {tag._count.blogs}
-                  </Badge>
-                )}
-              </Button>
-            ))}
-
-            {hasActiveFilters && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={clearFilters}
-                className="ml-auto"
+                Featured
+              </button>
+              <Popover
+                onOpenChange={(open) => !open && setCategorySearchQuery("")}
               >
-                <X className="w-4 h-4 mr-1" />
-                Clear Filters
-              </Button>
-            )}
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    className={cn(
+                      "rounded-full px-3 py-1.5 text-xs font-medium transition-colors border inline-flex items-center gap-1.5",
+                      selectedCategory
+                        ? "border-primary/50 bg-primary/10 text-primary"
+                        : "border-border/80 bg-transparent text-muted-foreground hover:text-foreground hover:border-border"
+                    )}
+                  >
+                    <FolderTree className="w-3.5 h-3.5" />
+                    {selectedCategory
+                      ? categories.find((c) => c.id === selectedCategory)
+                          ?.title ?? "Category"
+                      : "Categories"}
+                    <ChevronDown className="w-3.5 h-3.5 opacity-60" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="start"
+                  className="w-72 p-0"
+                  sideOffset={8}
+                >
+                  <div className="p-2 border-b border-border/50">
+                    <div className="relative">
+                      <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                      <Input
+                        placeholder="Search categories..."
+                        value={categorySearchQuery}
+                        onChange={(e) =>
+                          setCategorySearchQuery(e.target.value)
+                        }
+                        className="h-8 pl-8 text-xs border-0 bg-muted/50 focus-visible:ring-1"
+                      />
+                    </div>
+                  </div>
+                  <div className="max-h-60 overflow-y-auto p-1">
+                    {filteredCategoriesForPopover.length === 0 ? (
+                      <p className="py-4 text-center text-xs text-muted-foreground">
+                        No categories match
+                      </p>
+                    ) : (
+                      filteredCategoriesForPopover.map((category) => (
+                        <button
+                          key={category.id}
+                          type="button"
+                          onClick={() =>
+                            setSelectedCategory(
+                              selectedCategory === category.id
+                                ? null
+                                : category.id
+                            )
+                          }
+                          className={cn(
+                            "flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-xs transition-colors hover:bg-muted/60",
+                            selectedCategory === category.id
+                              ? "bg-primary/10 text-primary font-medium"
+                              : "text-foreground"
+                          )}
+                          style={
+                            category.color && selectedCategory === category.id
+                              ? {
+                                  backgroundColor: `${category.color}20`,
+                                  color: category.color,
+                                }
+                              : undefined
+                          }
+                        >
+                          <span
+                            className={cn(
+                              "flex h-4 w-4 shrink-0 items-center justify-center rounded-full border",
+                              selectedCategory === category.id
+                                ? "border-primary bg-primary text-primary-foreground"
+                                : "border-border"
+                            )}
+                            style={
+                              category.color && selectedCategory === category.id
+                                ? {
+                                    borderColor: category.color,
+                                    backgroundColor: category.color,
+                                  }
+                                : undefined
+                            }
+                          >
+                            {selectedCategory === category.id ? (
+                              <span className="text-[10px] leading-none text-white">
+                                ✓
+                              </span>
+                            ) : null}
+                          </span>
+                          {category.icon && (
+                            <span className="opacity-70">{category.icon}</span>
+                          )}
+                          {category.title}
+                          {category._count && category._count.blogs > 0 && (
+                            <span className="ml-auto text-[10px] text-muted-foreground">
+                              {category._count.blogs}
+                            </span>
+                          )}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                  {selectedCategory && (
+                    <div className="border-t border-border/50 p-2">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedCategory(null)}
+                        className="w-full rounded-lg py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        Clear category
+                      </button>
+                    </div>
+                  )}
+                </PopoverContent>
+              </Popover>
+              {hasActiveFilters && (
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="ml-auto rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
+                >
+                  <X className="w-3.5 h-3.5" />
+                  Clear
+                </button>
+              )}
+            </div>
           </div>
         </div>
 

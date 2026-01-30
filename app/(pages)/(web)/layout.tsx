@@ -5,7 +5,8 @@ import MicrosoftClarity from "@/components/MicrosoftClarity";
 import { Navbar } from "@/components/layouts/vscode/common/navbar";
 import { Footer } from "@/components/layouts/vscode/common/footer";
 import { FloatingActions } from "@/components/layouts/common/floating-actions";
-import { MouseFollower } from "@/components/layouts/common/mouse-follower";
+import { GlobalRippleEffect } from "@/components/layouts/common/global-ripple-effect";
+import CharacterCursor from "@/components/layouts/common/character-cusror";
 
 const WebLayout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -14,7 +15,8 @@ const WebLayout = ({ children }: { children: React.ReactNode }) => {
       <main className="min-h-screen">{children}</main>
       <Footer />
       <FloatingActions />
-      <MouseFollower />
+      <GlobalRippleEffect />
+      <CharacterCursor />
       <GoogleAnalytics />
       <MicrosoftClarity />
     </>

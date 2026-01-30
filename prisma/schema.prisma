@@ -102,7 +102,7 @@ model Project {
   thumbnail       String
   cover           String
   youtubeId       String?
-  body            Json?
+  body            String?
   techStack       String[]
   featured        Boolean       @default(false)
   status          ProjectStatus @default(DRAFT)
@@ -173,8 +173,7 @@ model Blog {
   featuredImageAlt String?
   publishedAt      DateTime?
   updatedAt        DateTime       @updatedAt
-  markdownContent  String?
-  body             Json?
+  body             String?
   readingTime      Int?
   wordCount        Int?
   views            Int            @default(0)

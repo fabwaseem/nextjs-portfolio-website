@@ -18,11 +18,17 @@ import {
   Grid3x3,
   List,
   Loader2,
+  Tag,
+  ChevronDown,
 } from "lucide-react";
 import { ProjectCardSkeleton } from "@/components/layouts/vscode/common/card-skeletons";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useProjects, Project } from "@/hooks/use-projects";
 import { useProjectTags } from "@/hooks/use-project-tags";
@@ -241,6 +247,7 @@ export default function ProjectsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [tagSearchQuery, setTagSearchQuery] = useState("");
   const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
@@ -345,6 +352,12 @@ export default function ProjectsPage() {
   const hasActiveFilters =
     debouncedSearchQuery || selectedTags.length > 0 || showFeaturedOnly;
 
+  const filteredTagsForPopover = useMemo(() => {
+    if (!tagSearchQuery.trim()) return tags;
+    const q = tagSearchQuery.trim().toLowerCase();
+    return tags.filter((t) => t.title.toLowerCase().includes(q));
+  }, [tags, tagSearchQuery]);
+
   return (
     <section
       ref={sectionRef}
@@ -378,72 +391,164 @@ export default function ProjectsPage() {
           </p>
         </motion.div>
 
-        <div className="mb-8 space-y-4">
-          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder="Search projects..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
+        {/* Search + filters – modern minimal */}
+        <div className="mb-10 rounded-2xl border border-border/60 bg-card/30 backdrop-blur-sm p-4 md:p-5">
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-wrap gap-3 sm:items-center sm:justify-between">
+              <div className="relative flex-1 max-w-xl min-w-60">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none z-10" />
+                <Input
+                  placeholder="Search projects..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="h-10 pl-10 rounded-xl border-border/80 bg-background/50 text-sm placeholder:text-muted-foreground focus-visible:ring-primary/20 focus-visible:border-primary/40 transition-colors"
+                />
+              </div>
+              <div className="flex items-center gap-1 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setViewMode("grid")}
+                  className={cn(
+                    "flex h-9 w-9 items-center justify-center rounded-lg border text-muted-foreground transition-colors hover:text-foreground hover:border-border",
+                    viewMode === "grid"
+                      ? "border-primary/50 bg-primary/10 text-primary"
+                      : "border-border/80 bg-transparent"
+                  )}
+                  aria-label="Grid view"
+                >
+                  <Grid3x3 className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode("list")}
+                  className={cn(
+                    "flex h-9 w-9 items-center justify-center rounded-lg border text-muted-foreground transition-colors hover:text-foreground hover:border-border",
+                    viewMode === "list"
+                      ? "border-primary/50 bg-primary/10 text-primary"
+                      : "border-border/80 bg-transparent"
+                  )}
+                  aria-label="List view"
+                >
+                  <List className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <Button
-                variant={viewMode === "grid" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setViewMode("grid")}
+            <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-border/40">
+              <span className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wider mr-1">
+                <Filter className="w-3.5 h-3.5" />
+                Filters
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowFeaturedOnly(!showFeaturedOnly)}
+                className={cn(
+                  "rounded-full px-3 py-1.5 text-xs font-medium transition-colors border",
+                  showFeaturedOnly
+                    ? "border-primary/50 bg-primary/10 text-primary"
+                    : "border-border/80 bg-transparent text-muted-foreground hover:text-foreground hover:border-border"
+                )}
               >
-                <Grid3x3 className="w-4 h-4" />
-              </Button>
-              <Button
-                variant={viewMode === "list" ? "default" : "outline"}
-                size="sm"
-                onClick={() => setViewMode("list")}
-              >
-                <List className="w-4 h-4" />
-              </Button>
+                Featured
+              </button>
+              <Popover onOpenChange={(open) => !open && setTagSearchQuery("")}>
+                <PopoverTrigger asChild>
+                  <button
+                    type="button"
+                    className={cn(
+                      "rounded-full px-3 py-1.5 text-xs font-medium transition-colors border inline-flex items-center gap-1.5",
+                      selectedTags.length > 0
+                        ? "border-primary/50 bg-primary/10 text-primary"
+                        : "border-border/80 bg-transparent text-muted-foreground hover:text-foreground hover:border-border"
+                    )}
+                  >
+                    <Tag className="w-3.5 h-3.5" />
+                    Tags
+                    {selectedTags.length > 0 && (
+                      <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-primary/20 px-1 text-[10px] font-semibold">
+                        {selectedTags.length}
+                      </span>
+                    )}
+                    <ChevronDown className="w-3.5 h-3.5 opacity-60" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="start"
+                  className="w-72 p-0"
+                  sideOffset={8}
+                >
+                  <div className="p-2 border-b border-border/50">
+                    <div className="relative">
+                      <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                      <Input
+                        placeholder="Search tags..."
+                        value={tagSearchQuery}
+                        onChange={(e) => setTagSearchQuery(e.target.value)}
+                        className="h-8 pl-8 text-xs border-0 bg-muted/50 focus-visible:ring-1"
+                      />
+                    </div>
+                  </div>
+                  <div className="max-h-60 overflow-y-auto p-1">
+                    {filteredTagsForPopover.length === 0 ? (
+                      <p className="py-4 text-center text-xs text-muted-foreground">
+                        No tags match
+                      </p>
+                    ) : (
+                      filteredTagsForPopover.map((tag) => (
+                        <button
+                          key={tag.id}
+                          type="button"
+                          onClick={() => toggleTag(tag.id)}
+                          className={cn(
+                            "flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-xs transition-colors hover:bg-muted/60",
+                            selectedTags.includes(tag.id)
+                              ? "bg-primary/10 text-primary font-medium"
+                              : "text-foreground"
+                          )}
+                        >
+                          <span
+                            className={cn(
+                              "flex h-4 w-4 shrink-0 items-center justify-center rounded border",
+                              selectedTags.includes(tag.id)
+                                ? "border-primary bg-primary text-primary-foreground"
+                                : "border-border"
+                            )}
+                          >
+                            {selectedTags.includes(tag.id) ? (
+                              <span className="text-[10px] leading-none">
+                                ✓
+                              </span>
+                            ) : null}
+                          </span>
+                          {tag.title}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                  {selectedTags.length > 0 && (
+                    <div className="border-t border-border/50 p-2">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedTags([])}
+                        className="w-full rounded-lg py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        Clear tag selection
+                      </button>
+                    </div>
+                  )}
+                </PopoverContent>
+              </Popover>
+              {hasActiveFilters && (
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="ml-auto rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
+                >
+                  <X className="w-3.5 h-3.5" />
+                  Clear
+                </button>
+              )}
             </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm font-medium">Filters:</span>
-            </div>
-
-            <Button
-              variant={showFeaturedOnly ? "default" : "outline"}
-              size="sm"
-              onClick={() => setShowFeaturedOnly(!showFeaturedOnly)}
-            >
-              Featured
-            </Button>
-
-            {tags.map((tag) => (
-              <Button
-                key={tag.id}
-                variant={selectedTags.includes(tag.id) ? "default" : "outline"}
-                size="sm"
-                onClick={() => toggleTag(tag.id)}
-              >
-                {tag.title}
-              </Button>
-            ))}
-
-            {hasActiveFilters && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={clearFilters}
-                className="ml-auto"
-              >
-                <X className="w-4 h-4 mr-1" />
-                Clear Filters
-              </Button>
-            )}
           </div>
         </div>
 

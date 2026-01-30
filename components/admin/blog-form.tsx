@@ -57,14 +57,15 @@ import {
   ImageIcon,
 } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-import "react-quill-new/dist/quill.snow.css";
 import { ImageUpload } from "./image-upload";
-import { setupQuillImageHandler } from "./quill-image-handler";
 
-const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
+const MDEditor = dynamic(
+  () => import("@uiw/react-md-editor").then((mod) => mod.default),
+  { ssr: false }
+);
 
 type BlogFormData = BlogFormInput;
 
@@ -82,7 +83,7 @@ export function BlogForm({ blog, onSuccess }: BlogFormProps) {
   const createTag = useCreateBlogTag();
   const generateBlog = useGenerateBlog();
 
-  const getBodyHtml = () => {
+  const getBodyContent = () => {
     if (!blog?.body) return "";
     if (typeof blog.body === "string") return blog.body;
     if (typeof blog.body === "object" && blog.body !== null) {
@@ -103,7 +104,7 @@ export function BlogForm({ blog, onSuccess }: BlogFormProps) {
       metaDescription: blog?.metaDescription || "",
       featuredImage: blog?.featuredImage || "",
       featuredImageAlt: blog?.featuredImageAlt || "",
-      body: getBodyHtml(),
+      body: getBodyContent(),
       featured: blog?.featured || false,
       status: blog?.status || "DRAFT",
       publishedAt: blog?.publishedAt || null,
@@ -122,58 +123,6 @@ export function BlogForm({ blog, onSuccess }: BlogFormProps) {
   const [generatedImagePrompt, setGeneratedImagePrompt] = useState("");
   const selectedCategoryIds = form.watch("categoryIds");
   const selectedTagIds = form.watch("tagIds");
-  const bodyValue = form.watch("body");
-  const quillEditorRef = useRef<any>(null);
-
-  // Quill editor configuration
-  const quillModules = {
-    toolbar: [
-      [{ header: [1, 2, 3, false] }],
-      ["bold", "italic", "underline", "strike", "blockquote"],
-      [
-        { list: "ordered" },
-        { list: "bullet" },
-        { indent: "-1" },
-        { indent: "+1" },
-      ],
-      ["link", "image", "code-block"],
-      ["clean"],
-    ],
-  };
-
-  const quillFormats = [
-    "header",
-    "bold",
-    "italic",
-    "underline",
-    "strike",
-    "blockquote",
-    "list",
-    "bullet",
-    "indent",
-    "link",
-    "image",
-    "code-block",
-  ];
-
-  // Setup Quill image handler
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const timer = setTimeout(() => {
-      const quillContainer = document.querySelector(".ql-container");
-      if (quillContainer && (window as any).Quill) {
-        const editor = (window as any).Quill.find(quillContainer);
-        if (editor && !quillEditorRef.current) {
-          setupQuillImageHandler(editor, blog?.id);
-          quillEditorRef.current = editor;
-        }
-      }
-    }, 500);
-
-    return () => clearTimeout(timer);
-     
-  }, [bodyValue]);
 
   const onSubmit = async (data: BlogFormData) => {
     const submitData = {
@@ -417,30 +366,30 @@ export function BlogForm({ blog, onSuccess }: BlogFormProps) {
           )}
         />
 
-        {/* Body Content */}
         <FormField
           control={form.control}
           name="body"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Content</FormLabel>
+              <FormLabel>Content (Markdown)</FormLabel>
               <FormControl>
-                <div className="min-h-[400px]">
+                <div className="min-h-[400px]" data-color-mode="light">
                   {typeof window !== "undefined" && (
-                    <ReactQuill
-                      theme="snow"
+                    <MDEditor
                       value={field.value || ""}
-                      onChange={field.onChange}
-                      modules={quillModules}
-                      formats={quillFormats}
-                      placeholder="Write your blog content here..."
-                      className="bg-background"
+                      onChange={(v) => field.onChange(v ?? "")}
+                      height={400}
+                      preview="live"
+                      visibleDragbar={false}
+                      textareaProps={{
+                        placeholder: "Write your blog in Markdown. Use ```language for code blocks.",
+                      }}
                     />
                   )}
                 </div>
               </FormControl>
               <FormDescription>
-                Write your blog content using the rich text editor
+                Markdown with code blocks: use ```javascript, ```typescript, etc.
               </FormDescription>
               <FormMessage />
             </FormItem>

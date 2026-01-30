@@ -3,8 +3,6 @@ import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { resolve } from "path";
 import { PrismaClient } from "@/lib/generated/prisma/client";
-import { remark } from "remark";
-import remarkHtml from "remark-html";
 
 config({ path: resolve(process.cwd(), ".env") });
 
@@ -14,11 +12,6 @@ const pg = new Pool({
 
 const adapter = new PrismaPg(pg);
 const prisma = new PrismaClient({ adapter });
-
-async function markdownToHtml(markdown: string): Promise<string> {
-  const result = await remark().use(remarkHtml).process(markdown);
-  return String(result);
-}
 
 function countWords(text: string): number {
   return text.split(/\s+/).filter((word) => word.length > 0).length;
@@ -234,7 +227,6 @@ Start building today and join the millions of developers already using Next.js!
 
 *Have questions? Feel free to reach out on Twitter or leave a comment below.*`;
 
-    const htmlContent = await markdownToHtml(markdownContent);
     const wordCount = countWords(markdownContent);
     const readingTime = calculateReadingTime(wordCount);
 
@@ -252,11 +244,7 @@ Start building today and join the millions of developers already using Next.js!
         featuredImageAlt:
           "Code on a laptop screen representing Next.js development",
         publishedAt: null,
-        markdownContent,
-        body: {
-          markdown: markdownContent,
-          html: htmlContent,
-        },
+        body: markdownContent,
         readingTime,
         wordCount,
         views: 0,
@@ -293,10 +281,18 @@ Start building today and join the millions of developers already using Next.js!
     console.log(`   Featured: ${blog.featured ? "Yes" : "No"}`);
     console.log(`   Word Count: ${blog.wordCount}`);
     console.log(`   Reading Time: ${blog.readingTime} min`);
-    console.log(
-      `\n📂 Categories: ${blog.categories.map((c) => c.title).join(", ")}`,
-    );
-    console.log(`🏷️  Tags: ${blog.tags.map((t) => t.title).join(", ")}`);
+    const blogWithRelations = await prisma.blog.findUnique({
+      where: { id: blog.id },
+      include: { categories: true, tags: true },
+    });
+    if (blogWithRelations) {
+      console.log(
+        `\n📂 Categories: ${blogWithRelations.categories.map((c: { title: string }) => c.title).join(", ")}`,
+      );
+      console.log(
+        `🏷️  Tags: ${blogWithRelations.tags.map((t: { title: string }) => t.title).join(", ")}`,
+      );
+    }
     console.log(`\n View in admin panel:`);
     console.log(`   /admin/blog`);
     console.log(`   /admin/blog/${blog.id}`);

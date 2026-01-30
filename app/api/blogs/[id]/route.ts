@@ -1,14 +1,15 @@
-import { NextRequest, NextResponse } from "next/server";
-import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { extractAndDeleteS3Images, extractImagesFromContent } from "@/lib/s3";
 import { updateBlogSchema } from "@/lib/validations";
+import { headers } from "next/headers";
+import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { extractAndDeleteS3Images, extractImagesFromHtml } from "@/lib/s3";
+import removeMd from "remove-markdown";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth.api.getSession({
@@ -38,14 +39,14 @@ export async function GET(
     console.error("Error fetching blog:", error);
     return NextResponse.json(
       { error: "Failed to fetch blog" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth.api.getSession({
@@ -76,7 +77,7 @@ export async function PUT(
       if (slugExists) {
         return NextResponse.json(
           { error: "Blog with this slug already exists" },
-          { status: 400 },
+          { status: 400 }
         );
       }
     }
@@ -97,26 +98,28 @@ export async function PUT(
       imagesToDelete.push(existingBlog.featuredImage);
     }
 
-    // Handle body content image cleanup
-    if (bodyContent && typeof bodyContent === "string") {
+    if (bodyContent) {
       const oldBody = existingBlog.body;
       if (oldBody && typeof oldBody === "string") {
-        const oldImages = extractImagesFromHtml(oldBody);
-        const newImages = extractImagesFromHtml(bodyContent);
+        const oldImages = extractImagesFromContent(String(oldBody));
+        const newImages = extractImagesFromContent(bodyContent);
         const removedImages = oldImages.filter(
-          (img) => !newImages.includes(img),
+          (img) => !newImages.includes(img)
         );
         imagesToDelete.push(...removedImages);
       }
     }
 
-    // Calculate reading time and word count
     let readingTime = existingBlog.readingTime;
-    let wordCount = existingBlog.wordCount;
-    if (bodyContent && typeof bodyContent === "string") {
-      const text = bodyContent.replace(/<[^>]*>/g, "");
-      wordCount = text.split(/\s+/).filter(Boolean).length;
-      readingTime = Math.ceil(wordCount / 200);
+    let wordCount: number | null = existingBlog.wordCount;
+    if (bodyContent) {
+      const text = removeMd(bodyContent, {
+        stripListLeaders: true,
+        gfm: true,
+        useImgAltText: true,
+      });
+      wordCount = text.split(/\s+/).filter(Boolean).length || null;
+      readingTime = Math.ceil(wordCount || 0 / 200);
     }
 
     const updatePayload: any = {
@@ -169,19 +172,19 @@ export async function PUT(
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: "Validation error", details: error.issues },
-        { status: 400 },
+        { status: 400 }
       );
     }
     return NextResponse.json(
       { error: "Failed to update blog" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth.api.getSession({
@@ -213,7 +216,7 @@ export async function DELETE(
     console.error("Error deleting blog:", error);
     return NextResponse.json(
       { error: "Failed to delete blog" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

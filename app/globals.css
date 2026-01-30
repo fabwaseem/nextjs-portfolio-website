@@ -332,7 +332,7 @@
   }
 
   .prose pre {
-    @apply bg-muted text-foreground;
+    @apply bg-muted text-foreground p-0!;
   }
 
   .prose blockquote {
@@ -518,7 +518,7 @@
 
 /* Terminal Styles */
 .terminal-window {
-  @apply bg-terminal-bg rounded-lg border border-border overflow-hidden font-mono;
+  @apply bg-terminal-bg/20 backdrop-blur rounded-lg border border-border overflow-hidden font-mono;
   box-shadow:
     0 0 0 1px oklch(0 0 0 / 5%),
     0 4px 6px -1px oklch(0 0 0 / 10%);
@@ -646,7 +646,7 @@
 /* Code Block Pattern - Like code editor with line numbers */
 .bg-code-block {
   background-image:
-    
+
     /* Code lines (horizontal) */
     repeating-linear-gradient(0deg,
       transparent,
