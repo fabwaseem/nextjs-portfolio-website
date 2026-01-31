@@ -5,7 +5,6 @@ import { generatePresignedUploadUrl, getS3Key } from "@/lib/s3";
 import { z } from "zod";
 
 const presignedUrlSchema = z.object({
-  projectId: z.string().optional(),
   filename: z.string().min(1, "Filename is required"),
   type: z.enum(["thumbnail", "cover"]),
   contentType: z.string().default("image/jpeg"),
@@ -24,8 +23,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = presignedUrlSchema.parse(body);
 
-    const projectId = validatedData.projectId || `temp-${Date.now()}`;
-    const key = getS3Key(projectId, validatedData.filename, validatedData.type);
+    const key = getS3Key(validatedData.filename, validatedData.type);
 
     const presignedUrl = await generatePresignedUploadUrl(
       key,
@@ -36,7 +34,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       presignedUrl,
       key,
-      url: `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION || "us-east-1"}.amazonaws.com/${key}`,
+      url: `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${
+        process.env.AWS_REGION || "us-east-1"
+      }.amazonaws.com/${key}`,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {

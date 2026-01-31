@@ -1,7 +1,7 @@
 // @ts-nocheck
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useColorSchemeOptional } from "@/lib/themes";
 
 interface Particle {
@@ -120,6 +120,27 @@ const CharacterCursor: React.FC<CharacterCursorProps> = ({
   const canvImagesRef = useRef<HTMLCanvasElement[]>([]);
   const schemeContext = useColorSchemeOptional();
   const colorScheme = schemeContext?.colorScheme ?? "vscode";
+  const [styleVersion, setStyleVersion] = useState(0);
+
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = window.setTimeout(() => {
+        debounceRef.current = null;
+        setStyleVersion((v) => v + 1);
+      }, 150);
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["style", "class"],
+    });
+    return () => {
+      observer.disconnect();
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia(
@@ -448,6 +469,7 @@ const CharacterCursor: React.FC<CharacterCursorProps> = ({
     characterNewRotationDegreesFunction,
     wrapperElement,
     colorScheme,
+    styleVersion,
   ]);
 
   return <canvas ref={canvasRef} aria-hidden="true" />;

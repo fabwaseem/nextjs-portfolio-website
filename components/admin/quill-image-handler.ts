@@ -1,6 +1,8 @@
+import { optimizeImageBeforeUpload } from "@/lib/image-optimize";
+
 export function setupQuillImageHandler(quillInstance: any, projectId?: string) {
   if (!quillInstance) return;
-  
+
   const toolbar = quillInstance.getModule("toolbar");
   if (!toolbar) return;
 
@@ -26,6 +28,7 @@ export function setupQuillImageHandler(quillInstance: any, projectId?: string) {
       }
 
       try {
+        const optimizedFile = await optimizeImageBeforeUpload(file, "cover");
         const response = await fetch("/api/upload/presigned-url", {
           method: "POST",
           headers: {
@@ -33,9 +36,9 @@ export function setupQuillImageHandler(quillInstance: any, projectId?: string) {
           },
           body: JSON.stringify({
             projectId: projectId || `temp-${Date.now()}`,
-            filename: file.name,
+            filename: optimizedFile.name,
             type: "cover",
-            contentType: file.type,
+            contentType: optimizedFile.type,
           }),
         });
 
@@ -47,9 +50,9 @@ export function setupQuillImageHandler(quillInstance: any, projectId?: string) {
 
         const uploadResponse = await fetch(presignedUrl, {
           method: "PUT",
-          body: file,
+          body: optimizedFile,
           headers: {
-            "Content-Type": file.type,
+            "Content-Type": optimizedFile.type,
           },
         });
 

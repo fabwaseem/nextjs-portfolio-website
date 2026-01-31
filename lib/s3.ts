@@ -17,14 +17,22 @@ const s3Client = new S3Client({
 const BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME!;
 const BUCKET_REGION = process.env.AWS_REGION || "us-east-1";
 
+const UPLOAD_PREFIX = (process.env.AWS_S3_UPLOAD_PREFIX || "").replace(
+  /^\/+|\/+$/g,
+  ""
+);
+
+function withUploadPrefix(key: string): string {
+  return UPLOAD_PREFIX ? `${UPLOAD_PREFIX}/${key}` : key;
+}
+
 export function getS3Key(
-  projectId: string,
   filename: string,
   type: "thumbnail" | "cover"
 ): string {
   const timestamp = Date.now();
   const extension = filename.split(".").pop()?.toLowerCase() || "jpg";
-  return `projects/${projectId}/${type}-${timestamp}.${extension}`;
+  return withUploadPrefix(`${type}-${timestamp}.${extension}`);
 }
 
 /**

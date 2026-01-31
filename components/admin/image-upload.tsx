@@ -4,12 +4,12 @@ import { useCallback } from "react";
 import axios from "axios";
 import { ImageDropzone } from "@/components/ui/image-dropzone";
 import { cn } from "@/lib/utils";
+import { optimizeImageBeforeUpload } from "@/lib/image-optimize";
 
 interface ImageUploadProps {
   value?: string;
   onChange: (url: string) => void;
   type: "thumbnail" | "cover";
-  projectId?: string;
   label?: string;
   className?: string;
   size?: "default" | "compact";
@@ -19,27 +19,26 @@ export function ImageUpload({
   value,
   onChange,
   type,
-  projectId,
   label,
   className,
   size = "default",
 }: ImageUploadProps) {
   const handleUpload = useCallback(
     async (file: File): Promise<string> => {
+      const optimizedFile = await optimizeImageBeforeUpload(file, type);
       try {
         const response = await axios.post("/api/upload/presigned-url", {
-          projectId: projectId || "temp",
-          filename: file.name,
+          filename: optimizedFile.name,
           type,
-          contentType: file.type,
+          contentType: optimizedFile.type,
         });
 
         const { presignedUrl, url } = response.data;
 
         try {
-          await axios.put(presignedUrl, file, {
+          await axios.put(presignedUrl, optimizedFile, {
             headers: {
-              "Content-Type": file.type,
+              "Content-Type": optimizedFile.type,
             },
             maxContentLength: Infinity,
             maxBodyLength: Infinity,
@@ -86,7 +85,6 @@ export function ImageUpload({
           fileName: file.name,
           fileType: file.type,
           fileSize: file.size,
-          projectId: projectId || "temp",
           type,
         });
         throw new Error(
@@ -98,7 +96,7 @@ export function ImageUpload({
         );
       }
     },
-    [projectId, type],
+    [ type],
   );
 
   return (

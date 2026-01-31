@@ -243,7 +243,7 @@ const TextPressure = ({
             style={{
               display: "inline-block",
               color: stroke ? undefined : textColor,
-              opacity: 0.01,
+              opacity: 0.03,
             }}
           >
             {char}

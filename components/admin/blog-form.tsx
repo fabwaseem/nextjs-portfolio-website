@@ -407,7 +407,6 @@ export function BlogForm({ blog, onSuccess }: BlogFormProps) {
                   value={field.value}
                   onChange={field.onChange}
                   type="cover"
-                  projectId={blog?.id}
                   label="Featured Image"
                   size="compact"
                 />

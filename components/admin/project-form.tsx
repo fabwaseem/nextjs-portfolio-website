@@ -340,7 +340,6 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
                     value={field.value}
                     onChange={field.onChange}
                     type="thumbnail"
-                    projectId={project?.id}
                     label="Thumbnail"
                   />
                 </FormControl>
@@ -359,7 +358,6 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
                     value={field.value}
                     onChange={field.onChange}
                     type="cover"
-                    projectId={project?.id}
                     label="Cover Image"
                   />
                 </FormControl>
