@@ -12,7 +12,11 @@ const DEFAULT_COLOR = "#6366f1";
  * Automatically updates when theme changes
  */
 export function TopLoader() {
-  const { colorScheme, getPreviewColors, mounted: schemeMounted } = useColorScheme();
+  const {
+    colorScheme,
+    getPreviewColors,
+    mounted: schemeMounted,
+  } = useColorScheme();
   const { resolvedTheme } = useTheme();
 
   // Derive color from theme - useMemo ensures it updates when dependencies change
@@ -36,7 +40,7 @@ export function TopLoader() {
     }
 
     return DEFAULT_COLOR;
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- resolvedTheme triggers re-computation when dark/light mode changes
+     
   }, [colorScheme, resolvedTheme, schemeMounted, getPreviewColors]);
 
   return (

@@ -200,7 +200,7 @@ export function ColorSchemeProvider({
         const isDark = resolvedTheme === "dark";
         const colors = isDark ? theme.dark : theme.light;
         applyCSSVariablesFromColors(colors);
-        
+
         // Load and apply theme font
         try {
           await loadFont(schemeId);
@@ -250,12 +250,12 @@ export function ColorSchemeProvider({
     (scheme: ColorScheme | null) => {
       previewSchemeRef.current = scheme;
       const schemeToApply = scheme || colorScheme;
-      
+
       // Preload font when hovering (before fully applying)
       if (scheme) {
         preloadFont(scheme);
       }
-      
+
       applyTheme(schemeToApply);
     },
     [colorScheme, applyTheme]
