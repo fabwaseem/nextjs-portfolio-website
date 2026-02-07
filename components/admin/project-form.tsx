@@ -44,15 +44,16 @@ import { cn } from "@/lib/utils";
 import { projectFormSchema, type ProjectFormInput } from "@/lib/validations";
 import { generateSlug } from "@/utils/slug";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, ChevronsUpDown, Sparkles, X } from "lucide-react";
+import { Check, ChevronsUpDown, Loader2, Sparkles, X } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { ImageUpload } from "./image-upload";
 
 const MDEditor = dynamic(
   () => import("@uiw/react-md-editor").then((mod) => mod.default),
-  { ssr: false }
+  { ssr: false },
 );
 
 type ProjectFormData = ProjectFormInput;
@@ -99,6 +100,7 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
   const [techStackInput, setTechStackInput] = useState("");
   const [tagsOpen, setTagsOpen] = useState(false);
   const [tagInput, setTagInput] = useState("");
+  const [isGeneratingSeo, setIsGeneratingSeo] = useState(false);
   const selectedTagIds = form.watch("tagIds");
 
   const onSubmit = async (data: ProjectFormData) => {
@@ -133,17 +135,17 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
     const current = form.getValues("techStack");
     form.setValue(
       "techStack",
-      current.filter((t) => t !== tech)
+      current.filter((t) => t !== tech),
     );
 
     const techAsTag = tagsData?.tags.find(
-      (tag) => tag.title.toLowerCase() === tech.toLowerCase()
+      (tag) => tag.title.toLowerCase() === tech.toLowerCase(),
     );
     if (techAsTag) {
       const currentTagIds = form.getValues("tagIds");
       form.setValue(
         "tagIds",
-        currentTagIds.filter((id) => id !== techAsTag.id)
+        currentTagIds.filter((id) => id !== techAsTag.id),
       );
     }
   };
@@ -155,7 +157,7 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
         form.setValue("techStack", [...current, tech.trim()]);
 
         const techAsTag = tagsData?.tags.find(
-          (tag) => tag.title.toLowerCase() === tech.trim().toLowerCase()
+          (tag) => tag.title.toLowerCase() === tech.trim().toLowerCase(),
         );
         if (techAsTag) {
           const currentTagIds = form.getValues("tagIds");
@@ -187,7 +189,7 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
     if (current.includes(tagId)) {
       form.setValue(
         "tagIds",
-        current.filter((id) => id !== tagId)
+        current.filter((id) => id !== tagId),
       );
     } else {
       form.setValue("tagIds", [...current, tagId]);
@@ -210,6 +212,49 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
       } catch (error) {
         console.error("Failed to create tag:", error);
       }
+    }
+  };
+
+  const handleGenerateSeo = async () => {
+    const title = form.getValues("title");
+    if (!title) {
+      toast.error("Please add a project title first");
+      return;
+    }
+
+    setIsGeneratingSeo(true);
+    try {
+      const res = await fetch("/api/ai/generate-project-seo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          description: form.getValues("description") || "",
+          body: form.getValues("body") || "",
+          techStack: form.getValues("techStack") || [],
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Failed to generate SEO");
+      }
+
+      const data = await res.json();
+      if (data.metaTitle) form.setValue("metaTitle", data.metaTitle);
+      if (data.metaDescription)
+        form.setValue("metaDescription", data.metaDescription);
+      if (data.seoKeywords) {
+        form.setValue("seoKeywords", data.seoKeywords.join(", "));
+      }
+      toast.success("SEO fields generated successfully");
+    } catch (error) {
+      console.error("SEO generation error:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to generate SEO",
+      );
+    } finally {
+      setIsGeneratingSeo(false);
     }
   };
 
@@ -549,7 +594,7 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
                       role="combobox"
                       className={cn(
                         "w-full justify-between",
-                        !selectedTagIds.length && "text-muted-foreground"
+                        !selectedTagIds.length && "text-muted-foreground",
                       )}
                     >
                       {selectedTagIds.length > 0
@@ -576,7 +621,7 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
                               ? tag.title
                                   .toLowerCase()
                                   .includes(tagInput.toLowerCase())
-                              : true
+                              : true,
                           )
                           .map((tag) => {
                             const isSelected = selectedTagIds.includes(tag.id);
@@ -589,7 +634,7 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
                                 <Check
                                   className={cn(
                                     "mr-2 h-4 w-4",
-                                    isSelected ? "opacity-100" : "opacity-0"
+                                    isSelected ? "opacity-100" : "opacity-0",
                                   )}
                                 />
                                 {tag.title}
@@ -599,7 +644,8 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
                         {tagInput.trim() &&
                           !tagsData?.tags.some(
                             (tag) =>
-                              tag.title.toLowerCase() === tagInput.toLowerCase()
+                              tag.title.toLowerCase() ===
+                              tagInput.toLowerCase(),
                           ) && (
                             <CommandItem
                               value={`create-${tagInput}`}
@@ -644,6 +690,24 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
             </FormItem>
           )}
         />
+
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-medium">SEO</h3>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleGenerateSeo}
+            disabled={isGeneratingSeo}
+          >
+            {isGeneratingSeo ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Sparkles className="mr-2 h-4 w-4" />
+            )}
+            {isGeneratingSeo ? "Generating..." : "Auto-generate SEO"}
+          </Button>
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
@@ -703,8 +767,8 @@ export function ProjectForm({ project, onSuccess }: ProjectFormProps) {
             {createProject.isPending || updateProject.isPending
               ? "Saving..."
               : project
-              ? "Update Project"
-              : "Create Project"}
+                ? "Update Project"
+                : "Create Project"}
           </Button>
         </div>
       </form>
