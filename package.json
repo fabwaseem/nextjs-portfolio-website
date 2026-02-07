@@ -11,6 +11,7 @@
     "typecheck": "tsc --noEmit",
     "create-admin": "tsx scripts/create-admin-user.ts",
     "create-test-project": "tsx scripts/create-test-project.ts",
+    "create-test-testimonials": "tsx scripts/create-test-testimonials.ts",
     "import-sanity-projects": "tsx scripts/import-sanity-projects.ts",
     "prepare": "husky"
   },

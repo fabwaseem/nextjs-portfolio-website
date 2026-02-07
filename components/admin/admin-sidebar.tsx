@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   FolderKanban,
   FileText,
+  MessageCircle,
   Tag,
   Settings,
   LogOut,
@@ -44,6 +45,11 @@ const menuItems = [
     title: "Blog Posts",
     url: "/admin/blog",
     icon: FileText,
+  },
+  {
+    title: "Testimonials",
+    url: "/admin/testimonials",
+    icon: MessageCircle,
   },
   {
     title: "Categories",

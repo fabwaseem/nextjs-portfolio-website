@@ -332,7 +332,7 @@
   }
 
   .prose pre {
-    @apply bg-muted text-foreground p-0!;
+    @apply bg-muted text-foreground p-0 ;
   }
 
   .prose blockquote {
@@ -573,16 +573,6 @@
     0 0 40px oklch(from var(--primary) l c h / 10%);
 }
 
-.glow-primary-strong {
-  box-shadow:
-    0 0 30px oklch(from var(--primary) l c h / 30%),
-    0 0 60px oklch(from var(--primary) l c h / 15%),
-    0 0 100px oklch(from var(--primary) l c h / 10%);
-}
-
-.text-glow {
-  text-shadow: 0 0 20px oklch(from var(--primary) l c h / 50%);
-}
 
 /* ===== Background Patterns ===== */
 
@@ -664,41 +654,6 @@
   opacity: 0.3;
 }
 
-/* Circuit Board Pattern */
-.bg-circuit {
-  background-image:
-    linear-gradient(90deg, oklch(from var(--primary) l c h / 4%) 1px, transparent 1px),
-    linear-gradient(oklch(from var(--primary) l c h / 4%) 1px, transparent 1px),
-    radial-gradient(oklch(from var(--primary) l c h / 15%) 2px, transparent 2px);
-  background-size: 60px 60px, 60px 60px, 60px 60px;
-  background-position: -1px -1px, -1px -1px, 29px 29px;
-}
-
-/* Hexagon Pattern */
-.bg-hex {
-  background-color: transparent;
-  background-image:
-    linear-gradient(30deg, oklch(from var(--primary) l c h / 5%) 12%, transparent 12.5%, transparent 87%, oklch(from var(--primary) l c h / 5%) 87.5%, oklch(from var(--primary) l c h / 5%)),
-    linear-gradient(150deg, oklch(from var(--primary) l c h / 5%) 12%, transparent 12.5%, transparent 87%, oklch(from var(--primary) l c h / 5%) 87.5%, oklch(from var(--primary) l c h / 5%)),
-    linear-gradient(30deg, oklch(from var(--primary) l c h / 5%) 12%, transparent 12.5%, transparent 87%, oklch(from var(--primary) l c h / 5%) 87.5%, oklch(from var(--primary) l c h / 5%)),
-    linear-gradient(150deg, oklch(from var(--primary) l c h / 5%) 12%, transparent 12.5%, transparent 87%, oklch(from var(--primary) l c h / 5%) 87.5%, oklch(from var(--primary) l c h / 5%)),
-    linear-gradient(60deg, oklch(from var(--primary) l c h / 8%) 25%, transparent 25.5%, transparent 75%, oklch(from var(--primary) l c h / 8%) 75%, oklch(from var(--primary) l c h / 8%)),
-    linear-gradient(60deg, oklch(from var(--primary) l c h / 8%) 25%, transparent 25.5%, transparent 75%, oklch(from var(--primary) l c h / 8%) 75%, oklch(from var(--primary) l c h / 8%));
-  background-size: 80px 140px;
-  background-position: 0 0, 0 0, 40px 70px, 40px 70px, 0 0, 40px 70px;
-}
-
-/* Crosshatch Pattern */
-.bg-crosshatch {
-  background-image:
-    linear-gradient(45deg, oklch(from var(--primary) l c h / 3%) 25%, transparent 25%),
-    linear-gradient(-45deg, oklch(from var(--primary) l c h / 3%) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, oklch(from var(--primary) l c h / 3%) 75%),
-    linear-gradient(-45deg, transparent 75%, oklch(from var(--primary) l c h / 3%) 75%);
-  background-size: 20px 20px;
-  background-position: 0 0, 0 10px, 10px -10px, -10px 0;
-}
-
 /* Gradient Mesh Background */
 .bg-mesh {
   background-image:
@@ -708,38 +663,6 @@
     radial-gradient(at 80% 50%, oklch(0.7 0.12 200 / 6%) 0px, transparent 50%),
     radial-gradient(at 0% 100%, oklch(from var(--primary) l c h / 8%) 0px, transparent 50%),
     radial-gradient(at 80% 100%, oklch(0.6 0.18 320 / 5%) 0px, transparent 50%);
-}
-
-/* Aurora / Northern Lights Effect */
-.bg-aurora {
-  background:
-    linear-gradient(135deg, oklch(from var(--primary) l c h / 3%) 0%, transparent 50%),
-    linear-gradient(225deg, oklch(0.6 0.15 280 / 3%) 0%, transparent 50%),
-    linear-gradient(315deg, oklch(0.7 0.12 180 / 3%) 0%, transparent 50%);
-}
-
-/* Scanlines Effect */
-.bg-scanlines {
-  background-image: repeating-linear-gradient(0deg,
-      oklch(0 0 0 / 3%),
-      oklch(0 0 0 / 3%) 1px,
-      transparent 1px,
-      transparent 2px);
-}
-
-/* Noise Texture */
-.bg-noise {
-  position: relative;
-}
-
-.bg-noise::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  opacity: 0.03;
-  pointer-events: none;
-  mix-blend-mode: overlay;
 }
 
 /* Gradient Spotlight */
@@ -847,11 +770,6 @@ html {
   color: var(--foreground);
 }
 
-/* Mouse follower styles */
-.mouse-follower {
-  @apply pointer-events-none fixed z-50 mix-blend-difference;
-}
-
 /* Animated underline */
 .animated-underline {
   @apply relative;
@@ -892,66 +810,58 @@ html {
 }
 
 .card-hover-lift:hover {
-  @apply -translate-y-1;
-  box-shadow:
-    0 10px 30px -10px oklch(0 0 0 / 20%),
-    0 0 20px oklch(from var(--primary) l c h / 10%);
+  @apply -translate-y-0.5;
+  box-shadow: 0 4px 20px oklch(0 0 0 / 8%);
 }
 
-/* Noise texture overlay */
-.noise-overlay {
-  position: relative;
-}
-
-.noise-overlay::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
-  opacity: 0.03;
-  pointer-events: none;
-  mix-blend-mode: overlay;
-}
-
-/* Typing animation */
-@keyframes typing {
+/* Marquee scroll animations */
+@keyframes marquee-left {
   from {
-    width: 0;
+    transform: translateX(0);
   }
 
   to {
-    width: 100%;
+    transform: translateX(-50%);
   }
 }
 
-.typing-effect {
-  overflow: hidden;
-  white-space: nowrap;
-  border-right: 2px solid var(--primary);
-  animation: typing 3s steps(40, end), blink 1s step-end infinite;
+@keyframes marquee-right {
+  from {
+    transform: translateX(-50%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
 }
 
-/* Stagger animation delays */
-.stagger-1 {
-  animation-delay: 0.1s;
+.animate-marquee-left {
+  animation: marquee-left var(--marquee-duration, 40s) linear infinite;
 }
 
-.stagger-2 {
-  animation-delay: 0.2s;
+.animate-marquee-right {
+  animation: marquee-right var(--marquee-duration, 40s) linear infinite;
 }
 
-.stagger-3 {
-  animation-delay: 0.3s;
+/* Section utilities */
+.section-separator {
+  @apply h-px w-full max-w-5xl mx-auto;
+  background: linear-gradient(90deg,
+    transparent,
+    oklch(from var(--border) l c h / 40%) 30%,
+    oklch(from var(--border) l c h / 40%) 70%,
+    transparent);
 }
 
-.stagger-4 {
-  animation-delay: 0.4s;
+.section-alt-bg {
+  background-color: oklch(from var(--background) calc(l - 0.015) c h);
 }
 
-.stagger-5 {
-  animation-delay: 0.5s;
+.dark .section-alt-bg {
+  background-color: oklch(from var(--background) calc(l + 0.015) c h);
 }
 
-.stagger-6 {
-  animation-delay: 0.6s;
+.section-label {
+  @apply text-xs font-mono tracking-wider uppercase text-muted-foreground;
+  letter-spacing: 0.15em;
 }

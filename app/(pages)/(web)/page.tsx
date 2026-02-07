@@ -5,6 +5,7 @@ import { SkillsSection } from "@/components/layouts/vscode/landing/skills-sectio
 import { ProjectsSection } from "@/components/layouts/vscode/landing/projects-section";
 import { ExperienceSection } from "@/components/layouts/vscode/landing/experience-section";
 import { VideosSection } from "@/components/layouts/vscode/landing/videos-section";
+import { TestimonialsSection } from "@/components/layouts/vscode/landing";
 
 export default function HomePage() {
   return (
@@ -18,6 +19,8 @@ export default function HomePage() {
       <ProjectsSection />
       <div className="glow-line" aria-hidden="true" />
       <ExperienceSection />
+      <div className="glow-line" aria-hidden="true" />
+      <TestimonialsSection />
       <div className="glow-line" aria-hidden="true" />
       <VideosSection />
       <div className="glow-line" aria-hidden="true" />
