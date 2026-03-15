@@ -1,10 +1,46 @@
 {
-  "name": "waseem-anjum",
-  "version": "0.1.0",
-  "private": true,
+  "name": "nextjs-portfolio-website",
+  "version": "1.0.0",
+  "private": false,
+  "description": "A modern, feature-rich portfolio and blog platform built with Next.js 16, TypeScript, and Prisma",
+  "author": {
+    "name": "Waseem Anjum",
+    "email": "waseemaofficial@gmail.com",
+    "url": "https://waseemanjum.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fabwaseem/nextjs-portfolio-website.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fabwaseem/nextjs-portfolio-website/issues"
+  },
+  "homepage": "https://github.com/fabwaseem/nextjs-portfolio-website#readme",
+  "keywords": [
+    "nextjs",
+    "portfolio",
+    "blog",
+    "typescript",
+    "prisma",
+    "tailwindcss",
+    "react",
+    "cms",
+    "admin-dashboard",
+    "aws-s3",
+    "openai",
+    "better-auth",
+    "full-stack",
+    "web-development",
+    "themes",
+    "multi-theme",
+    "178-themes",
+    "customizable",
+    "vscode-theme"
+  ],
   "scripts": {
     "postinstall": "npx prisma migrate deploy && npx prisma generate",
-    "dev": "next dev --port 3002",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
@@ -12,7 +48,6 @@
     "create-admin": "tsx scripts/create-admin-user.ts",
     "create-test-project": "tsx scripts/create-test-project.ts",
     "create-test-testimonials": "tsx scripts/create-test-testimonials.ts",
-    "import-sanity-projects": "tsx scripts/import-sanity-projects.ts",
     "prepare": "husky"
   },
   "lint-staged": {
