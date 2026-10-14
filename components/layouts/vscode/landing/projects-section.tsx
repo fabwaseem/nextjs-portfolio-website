@@ -49,6 +49,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
                     : project.title
                 }
                 fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
                 loading={index < 3 ? "eager" : "lazy"}
               />
@@ -62,33 +63,6 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
             )}
 
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-            <div className="absolute inset-0 flex items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-              {project.githubLink && (
-                <Link
-                  href={project.githubLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="p-3 rounded-full bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground transition-colors focus-visible:ring-2 focus-visible:ring-primary/50"
-                  aria-label={`View ${project.title} source code on GitHub`}
-                >
-                  <Github className="w-5 h-5" aria-hidden="true" />
-                </Link>
-              )}
-              {project.demoLink && (
-                <Link
-                  href={project.demoLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={(e) => e.stopPropagation()}
-                  className="p-3 rounded-full bg-background/90 text-foreground hover:bg-primary hover:text-primary-foreground transition-colors focus-visible:ring-2 focus-visible:ring-primary/50"
-                  aria-label={`View ${project.title} live demo`}
-                >
-                  <ExternalLink className="w-5 h-5" aria-hidden="true" />
-                </Link>
-              )}
-            </div>
 
             {project.featured && (
               <div className="absolute top-3 left-3">
@@ -138,6 +112,32 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
           </div>
         </div>
       </Link>
+      {(project.githubLink || project.demoLink) && (
+        <div className="pointer-events-none absolute inset-x-0 top-0 flex aspect-video items-center justify-center gap-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+          {project.githubLink && (
+            <Link
+              href={project.githubLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="pointer-events-auto rounded-full bg-background/90 p-3 text-foreground transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:pointer-events-auto focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-primary/50"
+              aria-label={`View ${project.title} source code on GitHub`}
+            >
+              <Github className="w-5 h-5" aria-hidden="true" />
+            </Link>
+          )}
+          {project.demoLink && (
+            <Link
+              href={project.demoLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="pointer-events-auto rounded-full bg-background/90 p-3 text-foreground transition-colors hover:bg-primary hover:text-primary-foreground focus-visible:pointer-events-auto focus-visible:ring-2 focus-visible:ring-primary/50"
+              aria-label={`View ${project.title} live demo`}
+            >
+              <ExternalLink className="w-5 h-5" aria-hidden="true" />
+            </Link>
+          )}
+        </div>
+      )}
     </motion.div>
   );
 }

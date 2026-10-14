@@ -11,9 +11,11 @@ const generateSeoSchema = z.object({
   techStack: z.array(z.string()).optional(),
 });
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+function getOpenAI() {
+  return new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -61,7 +63,7 @@ ${description ? `Description: ${description}` : ""}
 ${techStack?.length ? `Tech Stack: ${techStack.join(", ")}` : ""}
 ${body ? `Body content (first 2000 chars): ${body.substring(0, 2000)}` : ""}`;
 
-    const completion = await openai.chat.completions.create({
+    const completion = await getOpenAI().chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         { role: "system", content: systemPrompt },

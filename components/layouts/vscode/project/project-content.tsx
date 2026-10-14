@@ -163,6 +163,7 @@ export function ProjectContent({ project }: ProjectContentProps) {
                 src={project.cover}
                 alt={project.title}
                 fill
+                sizes="100vw"
                 className="object-cover"
                 priority
               />
@@ -171,6 +172,7 @@ export function ProjectContent({ project }: ProjectContentProps) {
                 src={project.thumbnail}
                 alt={project.title}
                 fill
+                sizes="100vw"
                 className="object-cover"
                 priority
               />

@@ -219,6 +219,8 @@ export function SkillsSection() {
           {skillCategories.map((category) => (
             <button
               key={category.id}
+              type="button"
+              aria-pressed={activeCategory === category.id}
               onClick={() => setActiveCategory(category.id)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {

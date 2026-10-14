@@ -40,7 +40,7 @@ export default function NotFound() {
                   <span className="text-terminal-cyan">#</span> Page Not Found
                 </p>
                 <p className="text-muted-foreground">
-                  <span className="text-terminal-yellow">//</span> The page
+                  <span className="text-terminal-yellow">{"//"}</span> The page
                   you&apos;re looking for doesn&apos;t exist.
                 </p>
                 <div className="flex items-center gap-2 text-muted-foreground mt-4">

@@ -10,9 +10,11 @@ const generateBlogSchema = z.object({
   title: z.string().optional(),
 });
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+function getOpenAI() {
+  return new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -113,7 +115,7 @@ IMPORTANT - Featured Image Prompt Guidelines:
 
     const userPrompt = getRandomBlogPrompt(title);
 
-    const completion = await openai.chat.completions.create({
+    const completion = await getOpenAI().chat.completions.create({
       model: "gpt-4o",
       messages: [
         { role: "system", content: systemPrompt },

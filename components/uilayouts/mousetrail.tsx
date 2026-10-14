@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client';
 import { cn } from '@/lib/utils';
-import { createRef, ReactNode, useRef } from 'react';
+import { ReactNode, useRef } from 'react';
 interface ImageMouseTrailProps {
   items: string[];
   children?: ReactNode;
@@ -20,20 +20,19 @@ export default function ImageMouseTrail({
   distance = 20,
   fadeAnimation = false,
 }: ImageMouseTrailProps) {
-  const containerRef = useRef(null);
-  const refs = useRef(items.map(() => createRef<HTMLImageElement>()));
+  const containerRef = useRef<HTMLElement>(null);
+  const refs = useRef<(HTMLImageElement | null)[]>([]);
   const currentZIndexRef = useRef(1);
-
-  let globalIndex = 0;
-  let last = { x: 0, y: 0 };
+  const globalIndexRef = useRef(0);
+  const lastRef = useRef({ x: 0, y: 0 });
 
   const activate = (image: HTMLImageElement, x: number, y: number) => {
     const containerRect = containerRef.current?.getBoundingClientRect();
+    if (!containerRect) return;
     const relativeX = x - containerRect.left;
     const relativeY = y - containerRect.top;
     image.style.left = `${relativeX}px`;
     image.style.top = `${relativeY}px`;
-    console.log(refs.current[refs.current?.length - 1]);
 
     if (currentZIndexRef.current > 40) {
       currentZIndexRef.current = 1;
@@ -47,29 +46,27 @@ export default function ImageMouseTrail({
         image.dataset.status = 'inactive';
       }, 1500);
     }
-    last = { x, y };
+    lastRef.current = { x, y };
   };
 
-  const distanceFromLast = (x, y) => {
-    return Math.hypot(x - last.x, y - last.y);
+  const distanceFromLast = (x: number, y: number) => {
+    return Math.hypot(x - lastRef.current.x, y - lastRef.current.y);
   };
-  const deactivate = (image) => {
+  const deactivate = (image: HTMLImageElement) => {
     image.dataset.status = 'inactive';
   };
 
-  const handleOnMove = (e) => {
+  const handleOnMove = (e: { clientX: number; clientY: number }) => {
     if (distanceFromLast(e.clientX, e.clientY) > window.innerWidth / distance) {
-      // console.log(e.clientX, e.clientY)
-
-      const lead = refs.current[globalIndex % refs.current.length].current;
-
+      const images = refs.current;
+      const globalIndex = globalIndexRef.current;
+      const lead = images[globalIndex % images.length];
       const tail =
-        refs.current[(globalIndex - maxNumberOfImages) % refs.current.length]
-          ?.current;
+        images[(globalIndex - maxNumberOfImages) % images.length] ?? null;
 
       if (lead) activate(lead, e.clientX, e.clientY);
       if (tail) deactivate(tail);
-      globalIndex++;
+      globalIndexRef.current++;
     }
   };
 
@@ -84,21 +81,22 @@ export default function ImageMouseTrail({
       )}
     >
       {items.map((item, index) => (
-        <>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            key={index}
-            className={cn(
-              "object-cover  scale-0 opacity:0 data-[status='active']:scale-100  data-[status='active']:opacity-100 transition-transform data-[status='active']:duration-500 duration-300 data-[status='active']:ease-out-expo  absolute   -translate-y-[50%] -translate-x-[50%] ",
-              imgClass
-            )}
-            data-index={index}
-            data-status='inactive'
-            src={item}
-            alt={`image-${index}`}
-            ref={refs.current[index]}
-          />
-        </>
+        // Decorative trail frames; position is applied from pointer events.
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          key={item + index}
+          className={cn(
+            "object-cover  scale-0 opacity:0 data-[status='active']:scale-100  data-[status='active']:opacity-100 transition-transform data-[status='active']:duration-500 duration-300 data-[status='active']:ease-out-expo  absolute   -translate-y-[50%] -translate-x-[50%] ",
+            imgClass
+          )}
+          data-index={index}
+          data-status='inactive'
+          src={item}
+          alt=""
+          ref={(node) => {
+            refs.current[index] = node;
+          }}
+        />
       ))}
       {children}
     </section>

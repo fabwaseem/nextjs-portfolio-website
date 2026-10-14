@@ -1,415 +1,123 @@
-# 🚀 Next.js Portfolio & Blog Platform
+# Next.js Portfolio & Blog Platform
 
-<div align="center">
+[![CI](https://github.com/fabwaseem/nextjs-portfolio-website/actions/workflows/ci.yml/badge.svg)](https://github.com/fabwaseem/nextjs-portfolio-website/actions/workflows/ci.yml)
+![Next.js](https://img.shields.io/badge/Next.js-16.4-black?style=flat-square&logo=next.js)
+![React](https://img.shields.io/badge/React-19.2-149ECA?style=flat-square&logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-7.10-2D3748?style=flat-square&logo=prisma&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-4.3-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
+![Themes](https://img.shields.io/badge/Themes-218-7C3AED?style=flat-square)
 
-![Next.js](https://img.shields.io/badge/Next.js-16.1-black?style=for-the-badge&logo=next.js)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)
-![Prisma](https://img.shields.io/badge/Prisma-7.2-2D3748?style=for-the-badge&logo=prisma)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
-![Themes](https://img.shields.io/badge/Themes-178+-purple?style=for-the-badge)
+A full-stack portfolio and blog you can run as your own site. It ships with a VS Code-inspired public layout, an admin dashboard, **218 themes**, PostgreSQL via Prisma, and optional AI writing, S3 uploads, and email.
 
-**A modern, feature-rich portfolio and blog platform with 178+ themes built with Next.js 16, TypeScript, and Prisma**
+[Live demo](https://fabwaseem.vercel.app) · [Themes](THEMES.md) · [Issues](https://github.com/fabwaseem/nextjs-portfolio-website/issues)
 
-[Live Demo](https://fabwaseem.vercel.app) · [Report Bug](https://github.com/fabwaseem/nextjs-portfolio-website/issues) · [Request Feature](https://github.com/fabwaseem/nextjs-portfolio-website/issues) · [View Themes](THEMES.md) · [Highlights](HIGHLIGHTS.md)
+## Screenshots
 
-</div>
+| Home | Projects | Blog |
+| --- | --- | --- |
+| ![Home hero](docs/screenshots/home.png) | ![Projects](docs/screenshots/projects.png) | ![Blog](docs/screenshots/blog.png) |
 
----
+## Features
 
-## ✨ Features
+- **218 themes** with light and dark variants, switched from the admin settings
+- Public portfolio: hero, skills, projects, experience, testimonials, videos, and blog
+- Blog and project CMS with drafts, tags, categories, featured flags, and SEO fields
+- Admin authentication with Better Auth (magic link and Google)
+- Image uploads to S3, compressed in the browser before upload and served through `next/image` (AVIF and WebP)
+- Optional OpenAI helpers for blog drafts and project SEO metadata
+- Contact form email, YouTube channel videos, sitemap, robots, Open Graph, and JSON-LD
+- Security headers on every response (CSP, HSTS, frame, referrer, and permissions policies)
 
-### 🎨 Modern Design & Theming
+## Stack
 
-- **178+ Beautiful Themes** - Massive collection of pre-built color schemes
-- **One-click theme switching** - Change your entire site's look instantly
-- **VS Code-inspired UI** with sleek, developer-friendly interface
-- **Dark/Light mode** variants for each theme
-- **Fully responsive** design that works on all devices
-- **GSAP animations** for engaging user experience
-- **Custom cursor effects** and interactive elements
-- **Theme categories**: Vibrant, Pastel, Dark, Light, Nature, Neon, and more
+| Area | Choice |
+| --- | --- |
+| App | Next.js 16 App Router, React 19, TypeScript |
+| UI | Tailwind CSS 4, Radix UI, Framer Motion, GSAP |
+| Data | PostgreSQL, Prisma 7, Zod |
+| Auth | Better Auth |
+| Media | AWS S3, Sharp, `next/image` |
+| Optional | OpenAI, Nodemailer, YouTube |
 
-### 📝 Content Management
+## Quick start
 
-- **Full-featured blog** with categories, tags, and search
-- **Project showcase** with filtering and sorting
-- **Rich text editor** with markdown support
-- **Image upload** to AWS S3 with presigned URLs
-- **SEO optimization** with meta tags, Open Graph, and JSON-LD
-- **Reading time** and **view counter** for blog posts
-- **Featured content** highlighting
-- **Draft/Published/Archived** status management
-
-### 🤖 AI-Powered Features
-
-- **AI blog generation** using OpenAI GPT
-- **Automatic SEO optimization** for projects and blogs
-- **Smart content suggestions**
-
-### 👨‍💼 Admin Dashboard
-
-- **Secure authentication** with Better Auth
-- **Complete CRUD operations** for blogs, projects, testimonials
-- **Category and tag management**
-- **Settings panel** for site configuration
-- **Analytics dashboard** with view statistics
-- **Bulk operations** and content management
-
-### 🎯 Portfolio Features
-
-- **Project showcase** with demo links and GitHub integration
-- **Tech stack display** with icons
-- **Video integration** (YouTube support)
-- **Testimonials section**
-- **Experience timeline**
-- **Skills showcase**
-- **Contact form** with email notifications
-
-### 🔧 Developer Experience
-
-- **TypeScript** for type safety
-- **ESLint** and **Prettier** for code quality
-- **Husky** git hooks for pre-commit checks
-- **Conventional Commits** enforcement
-- **Hot reload** development
-- **Prisma ORM** for database management
-
----
-
-## 🛠️ Tech Stack
-
-### Frontend
-
-- **Next.js 16** - React framework with App Router
-- **React 19** - UI library
-- **TypeScript** - Type safety
-- **Tailwind CSS 4** - Utility-first CSS
-- **Framer Motion** - Animations
-- **GSAP** - Advanced animations
-- **Radix UI** - Accessible components
-- **React Hook Form** - Form management
-- **Zod** - Schema validation
-
-### Backend
-
-- **Next.js API Routes** - Serverless functions
-- **Prisma** - Database ORM
-- **PostgreSQL** - Database
-- **Better Auth** - Authentication
-- **Nodemailer** - Email service
-
-### Services
-
-- **AWS S3** - Image storage
-- **OpenAI API** - AI content generation
-- **YouTube API** - Video integration
-
-### DevOps
-
-- **Vercel** - Deployment platform
-- **Husky** - Git hooks
-- **ESLint** - Code linting
-- **Commitlint** - Commit message linting
-
----
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Node.js 18+ and npm/yarn/pnpm
-- PostgreSQL database
-- AWS S3 bucket (for image uploads)
-- OpenAI API key (optional, for AI features)
-
-### Installation
-
-1. **Clone the repository**
+Node.js **20.9+** and a PostgreSQL database. S3, SMTP, and OpenAI are optional.
 
 ```bash
 git clone https://github.com/fabwaseem/nextjs-portfolio-website.git
 cd nextjs-portfolio-website
-```
-
-2. **Install dependencies**
-
-```bash
-npm install
-# or
-yarn install
-# or
-pnpm install
-```
-
-3. **Set up environment variables**
-
-```bash
 cp .env.example .env
 ```
 
-Edit `.env` and add your configuration:
-
-```env
-# Authentication
-BETTER_AUTH_SECRET=your-secret-key-here
-NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3000
-
-# Database
-DATABASE_URL=postgresql://user:password@localhost:5432/portfolio
-
-# AWS S3
-AWS_ACCESS_KEY_ID=your-access-key
-AWS_SECRET_ACCESS_KEY=your-secret-key
-AWS_REGION=us-east-1
-AWS_S3_BUCKET_NAME=your-bucket-name
-
-# Email (SMTP)
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=465
-SMTP_USER=your-email@gmail.com
-SMTP_PASS=your-app-password
-
-# OpenAI (Optional)
-OPENAI_API_KEY=your-openai-key
-
-# Site URL
-NEXT_PUBLIC_BASE_URL=http://localhost:3000
-```
-
-4. **Set up the database**
+Set `DATABASE_URL` and `BETTER_AUTH_SECRET` in `.env` (a long random string). Then:
 
 ```bash
-npx prisma migrate deploy
-npx prisma generate
-```
-
-5. **Create an admin user**
-
-```bash
+npm install
+npm run db:migrate
 npm run create-admin
-```
-
-6. **Run the development server**
-
-```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to see your portfolio!
+Open [http://localhost:3000](http://localhost:3000). The admin login is at `/admin/login`.
 
----
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `DATABASE_URL` | Yes | PostgreSQL connection string |
+| `BETTER_AUTH_SECRET` | Yes | Session signing secret |
+| `NEXT_PUBLIC_BASE_URL` | Yes | Canonical site URL |
+| `NEXT_PUBLIC_BETTER_AUTH_URL` | Yes | Auth base URL, usually the same origin |
+| `AWS_*` | For uploads | S3 bucket, region, and keys |
+| `SMTP_*` | For email | Contact form and magic links |
+| `OPENAI_API_KEY` | No | AI blog and SEO helpers |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | No | Google sign-in |
 
-## 📖 Usage
+## Scripts
 
-### Admin Panel
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Development server |
+| `npm run build` | Apply migrations, then production build |
+| `npm start` | Start the production server |
+| `npm run lint` | ESLint |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm run db:migrate` | `prisma migrate deploy` |
+| `npm run db:generate` | Regenerate the Prisma client |
+| `npm run create-admin` | Create an admin user |
 
-Access the admin panel at `/admin/login` and use the credentials you created.
+GitHub Actions (`.github/workflows/ci.yml`) runs lint, typecheck, and the production build against PostgreSQL 16.
 
-**Admin Features:**
-
-- 📝 Create and manage blog posts
-- 🎨 Manage projects with images and videos
-- 💬 Add and organize testimonials
-- 🏷️ Create categories and tags
-- ⚙️ Configure site settings
-- 📊 View analytics and statistics
-
-### Content Management
-
-#### Creating a Blog Post
-
-1. Navigate to `/admin/blog/new`
-2. Fill in the title, excerpt, and content
-3. Add categories and tags
-4. Upload a featured image
-5. Use AI to generate content (optional)
-6. Publish or save as draft
-
-#### Adding a Project
-
-1. Go to `/admin/projects/new`
-2. Enter project details
-3. Add tech stack, demo link, and GitHub link
-4. Upload thumbnail and cover images
-5. Optionally add a YouTube video
-6. Publish when ready
-
-### Customization
-
-#### Changing Themes
-
-The platform includes 178+ pre-built themes! Change your site's entire look with one click:
-
-1. Go to `/admin/settings`
-2. Navigate to "Theme Settings"
-3. Browse through available themes
-4. Click on any theme to preview
-5. Save to apply
-
-**Popular Themes:**
-
-- Aurora Borealis - Northern lights inspired
-- Matrix - Classic green terminal
-- Sunset - Warm evening colors
-- Ocean Breeze - Cool blue tones
-- Cherry Blossom - Soft pink aesthetics
-- Midnight Oil - Deep dark theme
-- Golden Hour - Warm golden tones
-- And 171+ more!
-
-**Theme Categories:**
-
-- 🌈 Vibrant (Neon, Spectrum, Joker)
-- 🌸 Pastel (Blush, Lavender, Peach)
-- 🌑 Dark (Obsidian, Midnight, Abyss)
-- ☀️ Light (Snow, Pearl, Vanilla)
-- 🌿 Nature (Forest, Moss, Bamboo)
-- 🎨 Artistic (Chaos Theory, Witch Girl, Godspeed)
-
-#### Changing Site Information
-
-Edit `app/layout.tsx` to update:
-
-- Site name and title
-- Meta description
-- Social links
-- SEO keywords
-
-#### Styling
-
-- Modify `app/globals.css` for global styles
-- Update Tailwind config in `tailwind.config.ts`
-- Customize components in `components/` directory
-
-#### Theme
-
-The project uses a VS Code-inspired theme. To customize:
-
-- Edit color variables in `globals.css`
-- Modify theme provider in `components/providers/theme-provider.tsx`
-
----
-
-## 📁 Project Structure
+## Project structure
 
 ```
-nextjs-portfolio-website/
-├── app/                      # Next.js app directory
-│   ├── (pages)/             # Page routes
-│   │   ├── (web)/          # Public pages
-│   │   └── admin/          # Admin dashboard
-│   ├── api/                # API routes
-│   └── globals.css         # Global styles
-├── components/              # React components
-│   ├── admin/              # Admin components
-│   ├── layouts/            # Layout components
-│   ├── providers/          # Context providers
-│   └── ui/                 # UI components (Radix)
-├── lib/                    # Utility functions
-├── prisma/                 # Database schema
-├── public/                 # Static assets
-├── scripts/                # Utility scripts
-└── config/                 # Configuration files
+app/                 App Router pages, metadata routes, and API handlers
+components/          Public layout, admin, and UI primitives
+lib/themes/          218 theme definitions and the theme provider
+prisma/              Schema and migrations
+docs/screenshots/    README screenshots
 ```
 
----
+## Security
 
-## 🔒 Security
+Responses set `Content-Security-Policy`, `Strict-Transport-Security`, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, and `Permissions-Policy`. `X-Powered-By` is disabled. API input is validated with Zod, and database access goes through Prisma. Put secrets in the environment, not in the repo.
 
-- **Authentication** via Better Auth with secure session management
-- **Environment variables** for sensitive data
-- **Input validation** with Zod schemas
-- **SQL injection protection** via Prisma ORM
-- **XSS protection** with React's built-in sanitization
-- **CSRF protection** on API routes
+## Deploy
 
----
+Import the repo on [Vercel](https://vercel.com/new/clone?repository-url=https://github.com/fabwaseem/nextjs-portfolio-website), add the environment variables, and deploy. The build command `npm run build` applies migrations before `next build`.
 
-## 🚢 Deployment
+The same build works on any Node 20 host that can reach PostgreSQL: Netlify, Railway, Render, or a container. Set the env vars, then use `npm run build` and `npm start`.
 
-### Deploy to Vercel (Recommended)
+## Contributing
 
-1. Push your code to GitHub
-2. Import your repository on [Vercel](https://vercel.com)
-3. Add environment variables in Vercel dashboard
-4. Deploy!
+1. Fork and create a branch.
+2. Commit with [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`).
+3. Open a pull request. CI must pass.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/fabwaseem/nextjs-portfolio-website)
+## License
 
-### Other Platforms
+[MIT](LICENSE) © 2026 Waseem Anjum
 
-The app can be deployed to any platform that supports Next.js:
+## Author
 
-- **Netlify**
-- **Railway**
-- **Render**
-- **AWS Amplify**
-- **DigitalOcean App Platform**
-
-Make sure to:
-
-1. Set all environment variables
-2. Run database migrations
-3. Configure build command: `npm run build`
-4. Set start command: `npm start`
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-Please ensure your commits follow [Conventional Commits](https://www.conventionalcommits.org/).
-
----
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 👨‍💻 Author
-
-**Waseem Anjum**
-
-- Website: [waseemanjum.com](https://waseemanjum.com)
-- GitHub: [@fabwaseem](https://github.com/fabwaseem)
-- LinkedIn: [fabwaseem](https://linkedin.com/in/fabwaseem)
-- Twitter: [@fabwaseeem](https://twitter.com/fabwaseeem)
-
----
-
-## 🙏 Acknowledgments
-
-- [Next.js](https://nextjs.org/) - The React Framework
-- [Vercel](https://vercel.com/) - Deployment platform
-- [Radix UI](https://www.radix-ui.com/) - Accessible components
-- [Tailwind CSS](https://tailwindcss.com/) - CSS framework
-- [Prisma](https://www.prisma.io/) - Database ORM
-- [Better Auth](https://www.better-auth.com/) - Authentication
-
----
-
-## 📊 Stats
-
-![GitHub stars](https://img.shields.io/github/stars/fabwaseem/nextjs-portfolio-website?style=social)
-![GitHub forks](https://img.shields.io/github/forks/fabwaseem/nextjs-portfolio-website?style=social)
-![GitHub issues](https://img.shields.io/github/issues/fabwaseem/nextjs-portfolio-website)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/fabwaseem/nextjs-portfolio-website)
-
----
-
-<div align="center">
-
-**If you find this project helpful, please give it a ⭐️!**
-
-Made with ❤️ by [Waseem Anjum](https://github.com/fabwaseem)
-
-</div>
+**Waseem Anjum** — [waseemanjum.com](https://waseemanjum.com) · [GitHub](https://github.com/fabwaseem) · [LinkedIn](https://linkedin.com/in/fabwaseem)

@@ -2,6 +2,8 @@ import { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 import { BASE_URL } from "@/config/config";
 
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Fetch all published projects
   const projects = await prisma.project.findMany({

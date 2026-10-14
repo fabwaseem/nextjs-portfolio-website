@@ -142,6 +142,7 @@ export function Navbar() {
             {/* Logo */}
             <Link
               href="/"
+              aria-label="Waseem Anjum home"
               className="flex items-center gap-2 font-mono font-bold text-lg group"
             >
               <div className="p-2 rounded-lg bg-primary/10 border border-primary/20 group-hover:bg-primary/20 transition-colors">
@@ -225,6 +226,9 @@ export function Navbar() {
                 size="icon"
                 className="md:hidden"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+                aria-expanded={isMobileMenuOpen}
+                aria-controls="mobile-navigation"
               >
                 {isMobileMenuOpen ? (
                   <X className="w-5 h-5" />
@@ -256,6 +260,8 @@ export function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              id="mobile-navigation"
+              aria-label="Mobile"
               className="fixed top-0 right-0 bottom-0 w-[280px] z-50 bg-background border-l border-border shadow-xl md:hidden"
             >
               <div className="p-6">
@@ -265,6 +271,7 @@ export function Navbar() {
                     variant="ghost"
                     size="icon"
                     onClick={() => setIsMobileMenuOpen(false)}
+                    aria-label="Close menu"
                   >
                     <X className="w-5 h-5" />
                   </Button>

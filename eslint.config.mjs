@@ -6,13 +6,23 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export default defineConfig([{
-    extends: [...nextCoreWebVitals],
-
-    rules: {
-        "react/no-unescaped-entities": "off",
-        "react-hooks/set-state-in-effect": "off",
-        "react-hooks/rules-of-hooks": "off",
-        "react-hooks/exhaustive-deps": "off",
+export default defineConfig([
+    {
+        ignores: [
+            "lib/generated/**",
+            ".next/**",
+            "node_modules/**",
+            "coverage/**",
+        ],
     },
-}]);
+    {
+        extends: [...nextCoreWebVitals],
+
+        rules: {
+            "react/no-unescaped-entities": "off",
+            "react-hooks/set-state-in-effect": "off",
+            "react-hooks/rules-of-hooks": "off",
+            "react-hooks/exhaustive-deps": "off",
+        },
+    },
+]);

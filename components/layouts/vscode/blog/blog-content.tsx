@@ -48,6 +48,7 @@ function RelatedPostCard({ blog, index }: { blog: Blog; index: number }) {
                 src={blog.featuredImage}
                 alt={blog.featuredImageAlt || blog.title}
                 fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
               />
             ) : (
@@ -239,6 +240,7 @@ export function BlogContent({ blog }: BlogContentProps) {
                   src={blog.featuredImage}
                   alt={blog.featuredImageAlt || blog.title}
                   fill
+                  sizes="100vw"
                   className="object-cover"
                   priority
                 />
