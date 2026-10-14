@@ -1,6 +1,6 @@
 # 🎨 Theme Gallery
 
-One of the standout features of this portfolio platform is the **massive collection of 178+ professionally designed themes**. Change your entire site's look and feel with just one click!
+One of the standout features of this portfolio platform is the **collection of 218 professionally designed themes**. Change your entire site's look and feel with just one click!
 
 ## 🌟 Why Multiple Themes?
 

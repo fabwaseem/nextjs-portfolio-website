@@ -43,15 +43,18 @@ export function ImageDropzone({
     wide: "aspect-[2/1]",
   }[aspectRatio];
 
-  const validateFile = (file: File): string | null => {
-    if (!file.type.startsWith("image/")) {
-      return "Please select an image file";
-    }
-    if (file.size > maxSize * 1024 * 1024) {
-      return `Image size must be less than ${maxSize}MB`;
-    }
-    return null;
-  };
+  const validateFile = useCallback(
+    (file: File): string | null => {
+      if (!file.type.startsWith("image/")) {
+        return "Please select an image file";
+      }
+      if (file.size > maxSize * 1024 * 1024) {
+        return `Image size must be less than ${maxSize}MB`;
+      }
+      return null;
+    },
+    [maxSize],
+  );
 
   const handleUpload = useCallback(
     async (file: File) => {
@@ -94,7 +97,7 @@ export function ImageDropzone({
         setUploadProgress(0);
       }
     },
-    [onUpload, onChange, maxSize],
+    [validateFile, onUpload, onChange],
   );
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -185,7 +188,13 @@ export function ImageDropzone({
         {value ? (
           // Image Preview
           <div className="absolute inset-0 group">
-            <Image src={value} alt="Preview" fill className="object-cover" />
+            <Image
+              src={value}
+              alt="Preview"
+              fill
+              sizes="(max-width: 768px) 100vw, 480px"
+              className="object-cover"
+            />
             {/* Overlay on hover */}
             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2">
               <Button
