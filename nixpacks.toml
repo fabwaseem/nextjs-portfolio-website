@@ -1,0 +1,8 @@
+# Nixpacks runs this via `bash -l -c`. `exec` replaces the shell so node
+# is the container process and receives SIGTERM/SIGINT directly.
+[variables]
+PORT = "3000"
+HOSTNAME = "0.0.0.0"
+
+[start]
+cmd = "exec node server.mjs"
