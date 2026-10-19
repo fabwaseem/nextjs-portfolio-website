@@ -42,7 +42,7 @@
     "postinstall": "prisma generate",
     "dev": "next dev",
     "build": "prisma migrate deploy && next build",
-    "start": "next start",
+    "start": "node server.mjs",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "db:migrate": "prisma migrate deploy",
