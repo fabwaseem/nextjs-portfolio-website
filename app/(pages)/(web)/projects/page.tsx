@@ -30,7 +30,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { useProjects, Project } from "@/hooks/use-projects";
+import type { Project } from "@/hooks/use-projects";
+import { queryProjects } from "@/lib/data/static-content";
 import { useProjectTags } from "@/hooks/use-project-tags";
 
 function ProjectCard({
@@ -286,27 +287,15 @@ export default function ProjectsPage() {
         tags: selectedTags.length > 0 ? selectedTags : undefined,
       },
     ],
-    queryFn: async ({ pageParam = 1 }) => {
-      const searchParams = new URLSearchParams({
+    queryFn: async ({ pageParam = 1 }) =>
+      queryProjects({
         status: "PUBLISHED",
-        page: pageParam.toString(),
-        limit: "12",
-      });
-
-      if (debouncedSearchQuery)
-        searchParams.set("search", debouncedSearchQuery);
-      if (showFeaturedOnly) searchParams.set("featured", "true");
-      if (selectedTags.length > 0) {
-        selectedTags.forEach((tag) => searchParams.append("tags", tag));
-      }
-
-      const response = await fetch(`/api/projects?${searchParams.toString()}`);
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to fetch projects");
-      }
-      return response.json();
-    },
+        page: pageParam,
+        limit: 12,
+        search: debouncedSearchQuery || undefined,
+        featured: showFeaturedOnly ? "true" : undefined,
+        tags: selectedTags.length > 0 ? selectedTags : undefined,
+      }),
     getNextPageParam: (lastPage) => {
       const { pagination } = lastPage;
       if (pagination.page < pagination.totalPages) {

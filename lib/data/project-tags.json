@@ -1,0 +1,219 @@
+[
+  {
+    "id": "pt_nestjs",
+    "title": "NestJS",
+    "slug": "nestjs",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_typescript",
+    "title": "TypeScript",
+    "slug": "typescript",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_yt-dlp",
+    "title": "yt-dlp",
+    "slug": "yt-dlp",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_postgresql",
+    "title": "PostgreSQL",
+    "slug": "postgresql",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_docker",
+    "title": "Docker",
+    "slug": "docker",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_open-source",
+    "title": "Open Source",
+    "slug": "open-source",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_next-js",
+    "title": "Next.js",
+    "slug": "next-js",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_authentication",
+    "title": "authentication",
+    "slug": "authentication",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_content-management",
+    "title": "content management",
+    "slug": "content-management",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_web-app",
+    "title": "web app",
+    "slug": "web-app",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_video-downloader",
+    "title": "video downloader",
+    "slug": "video-downloader",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_social-media",
+    "title": "social media",
+    "slug": "social-media",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_api",
+    "title": "API",
+    "slug": "api",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_media-extraction",
+    "title": "media extraction",
+    "slug": "media-extraction",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_shopify",
+    "title": "Shopify",
+    "slug": "shopify",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_whatsapp-sales-assistant",
+    "title": "WhatsApp sales assistant",
+    "slug": "whatsapp-sales-assistant",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_ai-commerce",
+    "title": "AI commerce",
+    "slug": "ai-commerce",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_real-time-sync",
+    "title": "real-time sync",
+    "slug": "real-time-sync",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_customer-support",
+    "title": "customer support",
+    "slug": "customer-support",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_windows",
+    "title": "Windows",
+    "slug": "windows",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_tauri",
+    "title": "Tauri",
+    "slug": "tauri",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_python",
+    "title": "Python",
+    "slug": "python",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_react",
+    "title": "React",
+    "slug": "react",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_text-to-speech",
+    "title": "Text-to-Speech",
+    "slug": "text-to-speech",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_tailwind-css",
+    "title": "Tailwind CSS",
+    "slug": "tailwind-css",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_electron",
+    "title": "Electron",
+    "slug": "electron",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_comfyui",
+    "title": "ComfyUI",
+    "slug": "comfyui",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_civitai",
+    "title": "CivitAI",
+    "slug": "civitai",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_desktop",
+    "title": "Desktop",
+    "slug": "desktop",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_vite",
+    "title": "Vite",
+    "slug": "vite",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  },
+  {
+    "id": "pt_radix-ui",
+    "title": "Radix UI",
+    "slug": "radix-ui",
+    "createdAt": "2026-10-14T15:02:02.501",
+    "updatedAt": "2026-10-14T15:02:02.501"
+  }
+]

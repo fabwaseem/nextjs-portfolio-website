@@ -1,6 +1,9 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
+import {
+  getBlogPostBySlug,
+  getPublishedBlogSlugs,
+} from "@/lib/data/static-content";
 import { BlogContent } from "@/components/layouts/vscode/blog/blog-content";
 import { BASE_URL } from "@/config/config";
 
@@ -11,38 +14,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
 
-  const blog = await prisma.blog.findUnique({
-    where: {
-      slug,
-      status: "PUBLISHED",
-      deletedAt: null,
-    },
-    select: {
-      title: true,
-      metaTitle: true,
-      metaDescription: true,
-      excerpt: true,
-      featuredImage: true,
-      featuredImageAlt: true,
-      seoKeywords: true,
-      publishedAt: true,
-      updatedAt: true,
-      readingTime: true,
-      wordCount: true,
-      categories: {
-        select: {
-          title: true,
-          slug: true,
-        },
-      },
-      tags: {
-        select: {
-          title: true,
-          slug: true,
-        },
-      },
-    },
-  });
+  const blog = getBlogPostBySlug(slug);
 
   if (!blog) {
     return {
@@ -122,18 +94,8 @@ export async function generateMetadata({
 }
 
 export async function generateStaticParams() {
-  const blogs = await prisma.blog.findMany({
-    where: {
-      status: "PUBLISHED",
-      deletedAt: null,
-    },
-    select: {
-      slug: true,
-    },
-  });
-
-  return blogs.map((blog) => ({
-    slug: blog.slug,
+  return getPublishedBlogSlugs().map((slug) => ({
+    slug,
   }));
 }
 
@@ -144,28 +106,7 @@ export default async function BlogPostPage({
 }) {
   const { slug } = await params;
 
-  const blog = await prisma.blog.findUnique({
-    where: {
-      slug,
-      status: "PUBLISHED",
-      deletedAt: null,
-    },
-    include: {
-      categories: true,
-      tags: true,
-      relatedTo: {
-        where: {
-          status: "PUBLISHED",
-          deletedAt: null,
-        },
-        include: {
-          categories: true,
-          tags: true,
-        },
-        take: 3,
-      },
-    },
-  });
+  const blog = getBlogPostBySlug(slug);
 
   if (!blog) {
     notFound();

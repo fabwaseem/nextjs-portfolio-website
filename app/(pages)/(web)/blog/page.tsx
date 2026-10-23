@@ -32,7 +32,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { useBlogs, Blog } from "@/hooks/use-blogs";
+import type { Blog } from "@/hooks/use-blogs";
+import { queryBlogs } from "@/lib/data/static-content";
 import { useBlogCategories } from "@/hooks/use-blog-categories";
 
 function BlogCard({
@@ -309,25 +310,15 @@ export default function BlogPage() {
         categoryId: selectedCategory || undefined,
       },
     ],
-    queryFn: async ({ pageParam = 1 }) => {
-      const searchParams = new URLSearchParams({
+    queryFn: async ({ pageParam = 1 }) =>
+      queryBlogs({
         status: "PUBLISHED",
-        page: pageParam.toString(),
-        limit: "12",
-      });
-
-      if (debouncedSearchQuery)
-        searchParams.set("search", debouncedSearchQuery);
-      if (showFeaturedOnly) searchParams.set("featured", "true");
-      if (selectedCategory) searchParams.set("categoryId", selectedCategory);
-
-      const response = await fetch(`/api/blogs?${searchParams.toString()}`);
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Failed to fetch blogs");
-      }
-      return response.json();
-    },
+        page: pageParam,
+        limit: 12,
+        search: debouncedSearchQuery || undefined,
+        featured: showFeaturedOnly ? "true" : undefined,
+        categoryId: selectedCategory || undefined,
+      }),
     getNextPageParam: (lastPage) => {
       const { pagination } = lastPage;
       if (pagination.page < pagination.totalPages) {

@@ -1,0 +1,35 @@
+[
+  {
+    "id": "bc_engineering",
+    "title": "Engineering",
+    "slug": "engineering",
+    "description": null,
+    "color": "#3B82F6",
+    "icon": "💻",
+    "order": 0,
+    "createdAt": "2026-10-14T14:56:49.37",
+    "updatedAt": "2026-10-14T14:56:49.37"
+  },
+  {
+    "id": "bc_design",
+    "title": "Design",
+    "slug": "design",
+    "description": null,
+    "color": "#EC4899",
+    "icon": "🎨",
+    "order": 1,
+    "createdAt": "2026-10-14T14:56:49.37",
+    "updatedAt": "2026-10-14T14:56:49.37"
+  },
+  {
+    "id": "bc_career",
+    "title": "Career",
+    "slug": "career",
+    "description": null,
+    "color": "#10B981",
+    "icon": "🚀",
+    "order": 2,
+    "createdAt": "2026-10-14T14:56:49.37",
+    "updatedAt": "2026-10-14T14:56:49.37"
+  }
+]

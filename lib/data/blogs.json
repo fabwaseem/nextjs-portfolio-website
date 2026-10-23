@@ -1,0 +1,101 @@
+[
+  {
+    "id": "demo_b0",
+    "title": "Shipping a Faster Next.js App: 7 Changes That Mattered",
+    "slug": "faster-nextjs-app",
+    "excerpt": "A practical checklist of Next.js changes that improve Core Web Vitals.",
+    "metaTitle": "Shipping a Faster Next.js App: 7 Changes That Mattered",
+    "metaDescription": "A practical checklist of Next.js changes that improve Core Web Vitals.",
+    "featuredImage": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=1600&q=80&auto=format&fit=crop",
+    "featuredImageAlt": "Shipping a Faster Next.js App: 7 Changes That Mattered",
+    "publishedAt": "2026-10-05T14:56:49.37",
+    "updatedAt": "2026-10-14T15:02:02.501",
+    "body": "Performance work is mostly about measuring before you guess. Here are seven changes that usually make the biggest difference.\n\n## 1. Move data fetching to the server\nServer Components let you fetch on the server and ship zero client JavaScript for static sections.\n\n```tsx\nexport default async function Page() {\n  const posts = await getPosts();\n  return <PostList posts={posts} />;\n}\n```\n\n## 2. Use `next/image` everywhere\nAutomatic AVIF/WebP and correct `sizes` cut image bytes by more than half.\n\n## 3. Cache aggressively, revalidate deliberately\nTag your fetches and call `revalidateTag` from mutations instead of disabling caching.\n\n## 4. Lazy-load heavy client widgets\nCharts and editors can load with `dynamic(() => import(...), { ssr: false })`.\n\n## 5. Audit your fonts\nSelf-host with `next/font` and subset to the glyphs you use.\n\n## 6. Kill layout shift\nReserve space for images and embeds.\n\n## 7. Watch the bundle\nRun the bundle analyzer on every major dependency bump.\n\n## Wrapping up\nNone of these are exotic; the win comes from doing all of them consistently.",
+    "readingTime": 2,
+    "wordCount": 172,
+    "views": 340,
+    "featured": true,
+    "status": "PUBLISHED",
+    "seoKeywords": [
+      "nextjs",
+      "performance"
+    ],
+    "order": 0,
+    "createdAt": "2026-10-14T14:56:49.37",
+    "deletedAt": null
+  },
+  {
+    "id": "demo_b3",
+    "title": "From Side Project to Portfolio Piece",
+    "slug": "side-project-to-portfolio",
+    "excerpt": "How to present a side project so it tells a story recruiters and clients remember.",
+    "metaTitle": "From Side Project to Portfolio Piece",
+    "metaDescription": "How to present a side project so it tells a story recruiters and clients remember.",
+    "featuredImage": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1600&q=80&auto=format&fit=crop",
+    "featuredImageAlt": "From Side Project to Portfolio Piece",
+    "publishedAt": "2026-09-08T14:56:49.37",
+    "updatedAt": "2026-10-14T15:02:02.501",
+    "body": "A good portfolio entry answers three questions fast: what is it, why does it matter, and what did you do.\n\n## Lead with the outcome\n\"Cut checkout time in half\" beats \"Built a checkout page\".\n\n## Show, don't tell\nA short video or three good screenshots do more than paragraphs of text.\n\n## Explain one hard decision\nPick a single trade-off and explain why you chose it.\n\n## Keep it current\nArchive projects that no longer represent your best work. Fewer, stronger entries win.",
+    "readingTime": 2,
+    "wordCount": 84,
+    "views": 157,
+    "featured": false,
+    "status": "PUBLISHED",
+    "seoKeywords": [
+      "nextjs"
+    ],
+    "order": 3,
+    "createdAt": "2026-10-14T14:56:49.37",
+    "deletedAt": null
+  },
+  {
+    "id": "demo_b1",
+    "title": "Designing Accessible Forms Without Losing Your Mind",
+    "slug": "accessible-forms",
+    "excerpt": "Practical patterns for labels, errors and focus management that work for everyone.",
+    "metaTitle": "Designing Accessible Forms Without Losing Your Mind",
+    "metaDescription": "Practical patterns for labels, errors and focus management that work for everyone.",
+    "featuredImage": "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=1600&q=80&auto=format&fit=crop",
+    "featuredImageAlt": "Designing Accessible Forms Without Losing Your Mind",
+    "publishedAt": "2026-09-26T14:56:49.37",
+    "updatedAt": "2026-10-14T15:02:02.501",
+    "body": "Forms are where accessibility issues hurt users the most. A few habits fix most of them.\n\n## Always use real labels\nPlaceholders are not labels. Pair every input with a `<label htmlFor>`.\n\n## Announce errors\nLink error text with `aria-describedby` and move focus to the first invalid field on submit.\n\n## Keep the tab order natural\nIf you need `tabIndex` greater than 0, the layout is probably wrong.\n\n## Test with a keyboard and a screen reader\nFive minutes with VoiceOver or NVDA catches more than any linter.\n\n## Checklist\n- Visible focus styles\n- Sufficient color contrast\n- Clear, specific error messages",
+    "readingTime": 2,
+    "wordCount": 103,
+    "views": 279,
+    "featured": true,
+    "status": "PUBLISHED",
+    "seoKeywords": [
+      "accessibility",
+      "react"
+    ],
+    "order": 1,
+    "createdAt": "2026-10-14T14:56:49.37",
+    "deletedAt": null
+  },
+  {
+    "id": "demo_b2",
+    "title": "Postgres Tips Every Full Stack Developer Should Know",
+    "slug": "postgres-tips",
+    "excerpt": "Indexes, EXPLAIN, and a few features that save you from writing extra code.",
+    "metaTitle": "Postgres Tips Every Full Stack Developer Should Know",
+    "metaDescription": "Indexes, EXPLAIN, and a few features that save you from writing extra code.",
+    "featuredImage": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1600&q=80&auto=format&fit=crop",
+    "featuredImageAlt": "Postgres Tips Every Full Stack Developer Should Know",
+    "publishedAt": "2026-09-17T14:56:49.37",
+    "updatedAt": "2026-10-14T15:02:02.501",
+    "body": "You don't need to be a DBA to get a lot out of Postgres.\n\n## Read the query plan\n`EXPLAIN ANALYZE` tells you what actually happened, not what you hoped would happen.\n\n```sql\nEXPLAIN ANALYZE SELECT * FROM orders WHERE customer_id = 42;\n```\n\n## Index what you filter and sort by\nComposite indexes follow the left-most rule; order the columns accordingly.\n\n## Use partial indexes\nIndex only the rows you query, like `WHERE deleted_at IS NULL`.\n\n## Let the database enforce rules\nConstraints and unique indexes beat application-level checks every time.\n\n## JSONB is a tool, not a schema\nGreat for flexible metadata; keep core relations in real columns.",
+    "readingTime": 2,
+    "wordCount": 110,
+    "views": 218,
+    "featured": false,
+    "status": "PUBLISHED",
+    "seoKeywords": [
+      "postgres",
+      "typescript"
+    ],
+    "order": 2,
+    "createdAt": "2026-10-14T14:56:49.37",
+    "deletedAt": null
+  }
+]
