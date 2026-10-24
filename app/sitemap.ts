@@ -1,35 +1,16 @@
 import { MetadataRoute } from "next";
-import { prisma } from "@/lib/prisma";
+import {
+  getAllPublishedBlogs,
+  getAllPublishedProjects,
+} from "@/lib/data/static-content";
 import { BASE_URL } from "@/config/config";
 
 export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  // Fetch all published projects
-  const projects = await prisma.project.findMany({
-    where: {
-      status: "PUBLISHED",
-      deletedAt: null,
-    },
-    select: {
-      slug: true,
-      updatedAt: true,
-    },
-    orderBy: { updatedAt: "desc" },
-  });
-
-  // Fetch all published blog posts
-  const blogs = await prisma.blog.findMany({
-    where: {
-      status: "PUBLISHED",
-      deletedAt: null,
-    },
-    select: {
-      slug: true,
-      updatedAt: true,
-    },
-    orderBy: { updatedAt: "desc" },
-  });
+  // All published projects and blog posts (static content)
+  const projects = getAllPublishedProjects();
+  const blogs = getAllPublishedBlogs();
 
   // Static pages with their priorities and change frequencies
   const staticPages: MetadataRoute.Sitemap = [
@@ -62,7 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Generate project URLs
   const projectUrls: MetadataRoute.Sitemap = projects.map((project) => ({
     url: `${BASE_URL}/projects/${project.slug}`,
-    lastModified: project.updatedAt,
+    lastModified: new Date(project.updatedAt),
     changeFrequency: "monthly",
     priority: 0.7,
   }));
@@ -70,7 +51,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Generate blog URLs
   const blogUrls: MetadataRoute.Sitemap = blogs.map((blog) => ({
     url: `${BASE_URL}/blog/${blog.slug}`,
-    lastModified: blog.updatedAt,
+    lastModified: new Date(blog.updatedAt),
     changeFrequency: "weekly",
     priority: 0.8,
   }));

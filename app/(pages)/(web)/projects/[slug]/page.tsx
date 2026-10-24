@@ -1,6 +1,9 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
+import {
+  getProjectBySlug,
+  getPublishedProjectSlugs,
+} from "@/lib/data/static-content";
 import { ProjectContent } from "@/components/layouts/vscode/project/project-content";
 import { BASE_URL } from "@/config/config";
 
@@ -11,30 +14,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
 
-  const project = await prisma.project.findUnique({
-    where: {
-      slug,
-      status: "PUBLISHED",
-      deletedAt: null,
-    },
-    select: {
-      title: true,
-      metaTitle: true,
-      metaDescription: true,
-      description: true,
-      excerpt: true,
-      cover: true,
-      thumbnail: true,
-      seoKeywords: true,
-      publishedAt: true,
-      updatedAt: true,
-      tags: {
-        select: {
-          title: true,
-        },
-      },
-    },
-  });
+  const project = getProjectBySlug(slug);
 
   if (!project) {
     return {
@@ -100,18 +80,8 @@ export async function generateMetadata({
 }
 
 export async function generateStaticParams() {
-  const projects = await prisma.project.findMany({
-    where: {
-      status: "PUBLISHED",
-      deletedAt: null,
-    },
-    select: {
-      slug: true,
-    },
-  });
-
-  return projects.map((project) => ({
-    slug: project.slug,
+  return getPublishedProjectSlugs().map((slug) => ({
+    slug,
   }));
 }
 
@@ -122,16 +92,7 @@ export default async function ProjectPage({
 }) {
   const { slug } = await params;
 
-  const project = await prisma.project.findUnique({
-    where: {
-      slug,
-      status: "PUBLISHED",
-      deletedAt: null,
-    },
-    include: {
-      tags: true,
-    },
-  });
+  const project = getProjectBySlug(slug);
 
   if (!project) {
     notFound();

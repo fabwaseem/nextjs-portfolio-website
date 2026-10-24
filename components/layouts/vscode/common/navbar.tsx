@@ -19,9 +19,7 @@ import {
   Mail,
   Moon,
   Sun,
-  Settings,
 } from "lucide-react";
-import { useSession } from "@/hooks/use-auth";
 
 const navItems = [
   { name: "About", href: "/#about", icon: User },
@@ -38,7 +36,6 @@ export function Navbar() {
   const pathname = usePathname();
   const prevPathnameRef = useRef(pathname);
   const { setTheme, resolvedTheme, theme } = useTheme();
-  const { isAuthenticated } = useSession();
 
   // Derive mounted state from theme being resolved (next-themes handles hydration)
   const mounted = theme !== undefined;
@@ -198,20 +195,6 @@ export function Navbar() {
                 </Button>
               )}
 
-              {/* Admin Panel Button - Only show when authenticated */}
-              {isAuthenticated && (
-                <Button
-                  asChild
-                  variant="outline"
-                  size="sm"
-                  className="hidden md:flex gap-2"
-                >
-                  <Link href="/admin/dashboard">
-                    <Settings className="w-4 h-4" />
-                    Admin
-                  </Link>
-                </Button>
-              )}
 
               <Button asChild size="sm" className="hidden md:flex gap-2">
                 <Link href="/contact">
@@ -317,15 +300,6 @@ export function Navbar() {
                     </Link>
                   </Button>
 
-                  {/* Admin Panel Button - Only show when authenticated */}
-                  {isAuthenticated && (
-                    <Button asChild variant="outline" className="w-full gap-2">
-                      <Link href="/admin/dashboard">
-                        <Settings className="w-4 h-4" />
-                        Admin Panel
-                      </Link>
-                    </Button>
-                  )}
                 </motion.div>
 
                 {/* Terminal prompt */}

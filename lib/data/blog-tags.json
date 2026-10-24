@@ -1,0 +1,44 @@
+[
+  {
+    "id": "bt_nextjs",
+    "title": "Next.js",
+    "slug": "nextjs",
+    "createdAt": "2026-10-14T14:56:49.37",
+    "updatedAt": "2026-10-14T14:56:49.37"
+  },
+  {
+    "id": "bt_react",
+    "title": "React",
+    "slug": "react",
+    "createdAt": "2026-10-14T14:56:49.37",
+    "updatedAt": "2026-10-14T14:56:49.37"
+  },
+  {
+    "id": "bt_typescript",
+    "title": "TypeScript",
+    "slug": "typescript",
+    "createdAt": "2026-10-14T14:56:49.37",
+    "updatedAt": "2026-10-14T14:56:49.37"
+  },
+  {
+    "id": "bt_performance",
+    "title": "Performance",
+    "slug": "performance",
+    "createdAt": "2026-10-14T14:56:49.37",
+    "updatedAt": "2026-10-14T14:56:49.37"
+  },
+  {
+    "id": "bt_accessibility",
+    "title": "Accessibility",
+    "slug": "accessibility",
+    "createdAt": "2026-10-14T14:56:49.37",
+    "updatedAt": "2026-10-14T14:56:49.37"
+  },
+  {
+    "id": "bt_postgres",
+    "title": "PostgreSQL",
+    "slug": "postgres",
+    "createdAt": "2026-10-14T14:56:49.37",
+    "updatedAt": "2026-10-14T14:56:49.37"
+  }
+]
